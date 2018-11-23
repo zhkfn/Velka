@@ -141,7 +141,7 @@ class Judge:
             else:
                 self._process_scores(member, 1, type)
                 if self.settings['RESPOND_ON_POINT']:
-                    if type = "Sunlight":
+                    if type == "Sunlight":
                         msg = ":WhiteSoap: "
                     else:
                         msg = ":RedSoap: "
