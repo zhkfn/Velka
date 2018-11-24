@@ -147,7 +147,7 @@ class Judge:
                     if type == "Sunlight":
                         msg = whiteSoap
                     else:
-                        msg = RedSoap
+                        msg = redSoap
                     msg += "{} now has {} points.".format(
                         member.name, self.scores[member.id][type])
                     await self.bot.send_message(message.channel, msg)
