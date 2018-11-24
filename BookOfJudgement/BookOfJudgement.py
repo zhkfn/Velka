@@ -68,7 +68,7 @@ class Judge:
                                 if key in member_ids]
         names = list(map(lambda mid: discord.utils.get(server.members, id=mid),
                          karma_server_members))
-        scores = list(map(lambda mid: self.scores[mid]["Sunlight"],
+        scores = list(map(lambda mid: self.scores[mid]["Wraith"],
                           karma_server_members))
         headers = ["User", "Sin"]
         body = sorted(zip(names, scores), key=lambda tup: tup[1],
@@ -77,7 +77,7 @@ class Judge:
         await self.bot.say(box(table))
         scores = list(map(lambda mid: self.scores[mid]["Sunlight"],
                           karma_server_members))
-        headers = ["User", "Sunlight Medals"]
+        headers = ["User", "Sun"]
         body = sorted(zip(names, scores), key=lambda tup: tup[1],
                       reverse=True)[:10]
         table = tabulate.tabulate(body, headers, tablefmt="psql")
