@@ -178,6 +178,6 @@ def setup(bot):
         raise RuntimeError("Run `pip install tabulate` to use judgement.")
     check_folder()
     check_file()
-    n = BookOfJudgement(bot)
+    n = Judge(bot)
     bot.add_listener(n.check_for_score, "on_message")
     bot.add_cog(n)
