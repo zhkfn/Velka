@@ -48,9 +48,9 @@ class Judge:
             member_dict = self.scores[member.id]
             msg = "Judgement for " + member.name + ":\n"
             if "Sunlight" in self.scores.get(member_id, {}):
-                msg += ":WhiteSoap: " + str(member_dict["Sunlight"]) + " victories.\n"
+                msg += "\:WhiteSoap: " + str(member_dict["Sunlight"]) + " victories.\n"
             if "Wraith" in self.scores.get(member_id, {}):
-                msg += ":RedSoap: " + str(member_dict["Wraith"]) + " sin."
+                msg += "\:RedSoap: " + str(member_dict["Wraith"]) + " sin."
             await self.bot.say(msg)
         else:
             await self.bot.say(member.name + " has not yet been judged.")
@@ -139,9 +139,9 @@ class Judge:
                 self._process_scores(member, 1, type)
                 if self.settings['RESPOND_ON_POINT']:
                     if type == "Sunlight":
-                        msg = ":WhiteSoap: "
+                        msg = "\:WhiteSoap: "
                     else:
-                        msg = ":RedSoap: "
+                        msg = "\:RedSoap: "
                     msg += "{} now has {} points.".format(
                         member.name, self.scores[member.id][type])
                     await self.bot.send_message(message.channel, msg)
