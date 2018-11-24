@@ -142,10 +142,10 @@ class Judge:
             else:
                 self._process_scores(member, 1, type)
                 if self.settings['RESPOND_ON_POINT']:
-                    whiteSoap = str(discord.utils.get(self. bot.get_all_emojis(), id=515521115607662593)) 
-                    redSoap = str(discord.utils.get(self. bot.get_all_emojis(), id=515521115762851840)) 
+                    whiteSoap = str(discord.utils.get(self.bot.get_all_emojis(), id=515521115607662593)) 
+                    redSoap = str(discord.utils.get(self.bot.get_all_emojis(), id=515521115762851840)) 
                     if type == "Sunlight":
-                        msg = whiteSoap
+                        msg = "<a:WhiteSoap:515521115607662593>"
                     else:
                         msg = redSoap
                     msg += "{} now has {} points.".format(
