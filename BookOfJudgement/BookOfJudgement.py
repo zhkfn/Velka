@@ -65,8 +65,7 @@ class Judge:
         server = ctx.message.server
         member_ids = [m.id for m in server.members]
         karma_server_members = [key for key in self.scores.keys()
-                                if key in member_ids]
-            karma_server_members))
+                                if key in member_ids]
         names = list(map(lambda mid: discord.utils.get(server.members, id=mid),
                          karma_server_members))
         scores = list(map(lambda mid: self.scores[mid]["Sunlight"],
