@@ -61,37 +61,23 @@ class Judge:
 
     @commands.command(pass_context=True)
     async def bookOfJudgement(self, ctx):
-        """sinner leaderboard"""
+        """leaderboard"""
         server = ctx.message.server
         member_ids = [m.id for m in server.members]
         karma_server_members = [key for key in self.scores.keys()
-                                if key in member_ids]
-        log.debug("Book of the Guilty:\n\t{}".format(
+                                if key in member_ids]
             karma_server_members))
         names = list(map(lambda mid: discord.utils.get(server.members, id=mid),
                          karma_server_members))
-        log.debug("Names:\n\t{}".format(names))
-        scores = list(map(lambda mid: self.scores[mid]["Wraith"],
+        scores = list(map(lambda mid: self.scores[mid]["Sunlight"],
                           karma_server_members))
-        log.debug("Sin:\n\t{}".format(scores))
         headers = ["User", "Sin"]
         body = sorted(zip(names, scores), key=lambda tup: tup[1],
                       reverse=True)[:10]
         table = tabulate.tabulate(body, headers, tablefmt="psql")
         await self.bot.say(box(table))
-        """co-op leaderboard"""
-        server = ctx.message.server
-        member_ids = [m.id for m in server.members]
-        karma_server_members = [key for key in self.scores.keys()
-                                if key in member_ids]
-        log.debug("\n\nWarriors of Sunlight:\n\t{}".format(
-            karma_server_members))
-        names = list(map(lambda mid: discord.utils.get(server.members, id=mid),
-                         karma_server_members))
-        log.debug("Names:\n\t{}".format(names))
         scores = list(map(lambda mid: self.scores[mid]["Sunlight"],
                           karma_server_members))
-        log.debug("Sin:\n\t{}".format(scores))
         headers = ["User", "Sunlight Medals"]
         body = sorted(zip(names, scores), key=lambda tup: tup[1],
                       reverse=True)[:10]
