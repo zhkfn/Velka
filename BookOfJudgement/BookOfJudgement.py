@@ -137,15 +137,15 @@ class Judge:
         else:
             return
         for member in mentions:
-            if member == user:
+            if member == false:
                 await self.bot.send_message(message.channel, "Thou canst not judge thyself. ")
             else:
                 self._process_scores(member, 1, type)
                 if self.settings['RESPOND_ON_POINT']:
-                    whiteSoap = str(discord.utils.get(self.bot.get_all_emojis(), id=515521115607662593)) 
+                    whiteSoap = discord.utils.get(self.bot.get_all_emojis(), id=515521115607662593).name
                     redSoap = str(discord.utils.get(self.bot.get_all_emojis(), id=515521115762851840)) 
                     if type == "Sunlight":
-                        msg = "<a:WhiteSoap:515521115607662593>"
+                        msg = whiteSoap
                     else:
                         msg = redSoap
                     msg += "{} now has {} points.".format(
