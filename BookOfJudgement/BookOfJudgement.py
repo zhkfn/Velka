@@ -42,9 +42,6 @@ class Judge:
         """Checks a user's judgement points
 
            Example: !judgement """
-        if len(ctx.message.mentions) != 1:
-            await send_cmd_help(ctx)
-            return
         member = ctx.message.author
         member_id = member.id
         if self.scores.get(member.id, 0) != 0:
