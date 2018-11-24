@@ -47,10 +47,14 @@ class Judge:
         if self.scores.get(member.id, 0) != 0:
             member_dict = self.scores[member.id]
             msg = "Judgement for " + member.name + ":\n"
+
+            whiteSoap = str(discord.utils.get(bot.get_all_emojis(), id=515521115607662593)) 
+            redSoap = str(discord.utils.get(bot.get_all_emojis(), id=515521115762851840)) 
+
             if "Sunlight" in self.scores.get(member_id, {}):
-                msg += "\:WhiteSoap: " + str(member_dict["Sunlight"]) + " victories.\n"
+                msg += whiteSoap + str(member_dict["Sunlight"]) + " victories.\n"
             if "Wraith" in self.scores.get(member_id, {}):
-                msg += "\:RedSoap: " + str(member_dict["Wraith"]) + " sin."
+                msg += redSoap + str(member_dict["Wraith"]) + " sin."
             await self.bot.say(msg)
         else:
             await self.bot.say(member.name + " has not yet been judged.")
@@ -138,10 +142,12 @@ class Judge:
             else:
                 self._process_scores(member, 1, type)
                 if self.settings['RESPOND_ON_POINT']:
+            whiteSoap = str(discord.utils.get(bot.get_all_emojis(), id=515521115607662593)) 
+            redSoap = str(discord.utils.get(bot.get_all_emojis(), id=515521115762851840)) 
                     if type == "Sunlight":
-                        msg = "\:WhiteSoap: "
+                        msg = whiteSoap
                     else:
-                        msg = "\:RedSoap: "
+                        msg = RedSoap
                     msg += "{} now has {} points.".format(
                         member.name, self.scores[member.id][type])
                     await self.bot.send_message(message.channel, msg)
