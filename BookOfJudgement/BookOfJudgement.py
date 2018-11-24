@@ -115,17 +115,20 @@ class Judge:
         if len(splitted) >= 1:
             if "!Sunlight" == splitted[0] or "!sunlight" == splitted[0]:
                 type = "Sunlight"
+                notype = "Wraith"
             elif "!Wraith" == splitted[0] or "!wraith" == splitted[0]:
                 type = "Wraith"
+                notype = "Sunlight"
             else:
                 return
         else:
             return
         for member in mentions:
-            if member == user:
+            if member != user:
                 await self.bot.send_message(message.channel, "Thou canst not judge thyself. ")
             else:
                 self._process_scores(member, 1, type)
+                self._process_scores(member, 0, notype)
                 if self.settings['RESPOND_ON_POINT']:
                     whiteSoap = str(discord.utils.get(self.bot.get_all_emojis(), id="515521115607662593")) 
                     redSoap = str(discord.utils.get(self.bot.get_all_emojis(), id="515521115762851840")) 
