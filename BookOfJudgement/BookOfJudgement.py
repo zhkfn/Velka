@@ -137,7 +137,7 @@ class Judge:
         else:
             return
         for member in mentions:
-            if member == false:
+            if member != user:
                 await self.bot.send_message(message.channel, "Thou canst not judge thyself. ")
             else:
                 self._process_scores(member, 1, type)
