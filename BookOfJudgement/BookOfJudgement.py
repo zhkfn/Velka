@@ -6,59 +6,115 @@ from cogs.utils import checks
 from __main__ import send_cmd_help
 import logging
 import os
+import asyncio
+import time
 try:
     import tabulate
 except:
     tabulate = None
 
-
 log = logging.getLogger("red.judgement")
 
-class Judge:
+class Velka:
     """Keep track of user scores through ![judgement_type] @mention
     For now judgement types are hard coded: Sunlight & Wraith"""
 
+    # Initiate: Load existing scores and settings
     def __init__(self, bot):
         self.bot = bot
         self.scores = fileIO("data/judgement/scores.json", "load")
-        self.settings = fileIO("data/judgement/settings.json", 'load')
+        self.settingsLoc = ("data/judgement/settings.json")
+        self.settings = fileIO(self.settingsLoc, 'load')
+    
+    def saveSettings(self):
+        fileIO(self.settingsLoc, 'save', self.settings)
+        
+    def saveScores(self):
+        fileIO("data/judgement/scores.json", "save", self.scores)
+        
+    def emote(self, scoreType):
+        if self.settings["SCORE_TYPE"][scoreType]["emoteID"] == "0":
+            return ""
+        return str(discord.utils.get(self.bot.get_all_emojis(), idself.settings["SCORE_TYPE"][scoreType]["emoteID"]))
 
+    # Method for storing and adding points
     def _process_scores(self, member, score_to_add, judgement_type):
         member_id = member.id
         if member_id in self.scores:
             if judgement_type in self.scores.get(member_id, {}):
-                if self.scores[member_id][judgement_type] - score_to_add < 0:
+                if self.scores[member_id][judgement_type] - score_to_add <= 0:
                     self.scores[member_id][judgement_type] = 0
+                    total = 0
+                    for score in self.scores[member_id]:
+                        total += score
+                    if total <= 0 and score_to_add < 0:
+                        self.scores.pop(member_id)
                 else:
                     self.scores[member_id][judgement_type] += score_to_add
             else:
                 self.scores[member_id][judgement_type] = score_to_add
         else:
             self.scores[member_id] = {}
+            for st in self.settings["SCORE_TYPE"]:
+                self.scores[member_id][st] = 0
             self.scores[member_id][judgement_type] = score_to_add
+        saveScores(self)
 
+    # Give out points to users
+    # todo: Look at score type list
+    # todo: process multiple users at once
+    # todo: Obey daily limit
+    async def check_for_score(self, message):
+        user = message.author
+        content = message.content
+        mentions = message.mentions
+        if message.author.id == self.bot.user.id:
+            return
+        if len(mentions) < 1:
+            return
+        splitted = content.split(" ")
+        if len(splitted) >= 1:
+            command = splitted[0].lower()
+            scoreType = ""
+            for st in self.settings['SCORE_TYPE']:
+                if "!"+st.lower() == splitted[0].lower():
+                    scoreType = st
+                    break
+            if scoreType == "":
+                return
+        else:
+            return
+        for member in mentions:
+            if member == user:
+                await self.bot.send_message(message.channel, "Thou canst not judge thyself. ")
+            else:
+                # Add cooldown and daily limit
+                self._process_scores(member, 1, scoreType)
+                if self.settings['RESPOND_ON_POINT']:
+                    msg = "{}{} now has {} {}.".format(
+                        emote(self, scoreType), member.name,
+                        self.scores[member.id][scoreType],
+                        self.settings['SCORE_TYPE'][scoreType]["noun"])
+                    await self.bot.say(msg)
+
+    # Check user score
     @commands.command(pass_context=True)
     async def judgement(self, ctx):
-        """Checks a user's judgement points
-
-           Example: !judgement """
+        """Checks a user's judgement points"""
         member = ctx.message.author
         member_id = member.id
         if self.scores.get(member.id, 0) != 0:
             member_dict = self.scores[member.id]
-            msg = "Judgement for " + member.name + ":\n"
-
-            whiteSoap = str(discord.utils.get(self. bot.get_all_emojis(), id="515521115607662593")) 
-            redSoap = str(discord.utils.get(self. bot.get_all_emojis(), id="515521115762851840")) 
-
-            if "Sunlight" in self.scores.get(member_id, {}):
-                msg += whiteSoap + str(member_dict["Sunlight"]) + " victories.\n"
-            if "Wraith" in self.scores.get(member_id, {}):
-                msg += redSoap + str(member_dict["Wraith"]) + " sin."
+            msg = "Judgement for " + member.name + ":"
+            for st in self.settings["SCORE_TYPE"]:
+                msg += "\n" + emote(self, st) + str(member_dict[st]) + " " + st["noun"] + "."
             await self.bot.say(msg)
         else:
             await self.bot.say(member.name + " has not yet been judged.")
 
+    # Leaderboard
+    # todo: Look at score type list
+    # todo: separate out score types
     @commands.command(pass_context=True)
     async def bookOfJudgement(self, ctx):
         """leaderboard"""
@@ -70,78 +126,226 @@ class Judge:
                          karma_server_members))
         scores = list(map(lambda mid: self.scores[mid]["Wraith"],
                           karma_server_members))
-        headers = ["User", "Sin"]
-        body = sorted(zip(names, scores), key=lambda tup: tup[1],
+        headers = ["Sin", "user"]
+        body = sorted(zip(=scores, names), key=lambda tup: tup[1],
                       reverse=True)[:10]
         table = tabulate.tabulate(body, headers, tablefmt="psql")
         await self.bot.say(box(table))
-        scores = list(map(lambda mid: self.scores[mid]["Sunlight"],
-                          karma_server_members))
-        headers = ["User", "Sun"]
-        body = sorted(zip(names, scores), key=lambda tup: tup[1],
-                      reverse=True)[:10]
-        table = tabulate.tabulate(body, headers, tablefmt="psql")
-        await self.bot.say(box(table))
+        
+    # Decay scores weekly. Delete any users with no score.
+    # Take away roles when score too low
+    
+    # Assign role based on points
 
-
+    # Settings
     @commands.group(pass_context=True)
     @checks.mod_or_permissions(manage_messages=True)
-    async def karmaset(self, ctx):
-        """Manage karma settings"""
+    async def velkaset(self, ctx):
+        """Manage Velka's settings"""
         if ctx.invoked_subcommand is None:
             await send_cmd_help(ctx)
             return
-
-    @karmaset.command(pass_context=True, name="respond")
-    async def _karmaset_respond(self, ctx):
-        """Toggles if bot will respond when points get added/removed"""
+    
+    # Should velka respond to points added?
+    @velkaset.command(pass_context=True, name="respond")
+    async def _velkaset_respond(self, ctx):
+        """- Toggles if Velka will respond when points are awarded"""
         if self.settings['RESPOND_ON_POINT']:
             await self.bot.say("Responses disabled.")
         else:
             await self.bot.say('Responses enabled.')
         self.settings['RESPOND_ON_POINT'] = \
             not self.settings['RESPOND_ON_POINT']
-        fileIO('data/karma/settings.json', 'save', self.settings)
-
-    async def check_for_score(self, message):
-        user = message.author
-        content = message.content
-        mentions = message.mentions
-        if message.author.id == self.bot.user.id:
-            return
-        if len(mentions) < 1:
-            return
-        splitted = content.split(" ")
-        if len(splitted) >= 1:
-            if "!Sunlight" == splitted[0] or "!sunlight" == splitted[0]:
-                type = "Sunlight"
-                notype = "Wraith"
-            elif "!Wraith" == splitted[0] or "!wraith" == splitted[0]:
-                type = "Wraith"
-                notype = "Sunlight"
-            else:
-                return
+        saveSettings(self)
+    
+    # Edit score types
+    @velkaset.command(pass_context=True, name="scoreEditType")
+    async def _velkaset_scoreEditType(self, ctx, scoreType : str)):
+        """- Edit the categories of scores"""
+        if scoreType:
+            for st in self.settings["SCORE_TYPE"]:
+                if st == scoreType:
+                    msg = "Currently Editing " + st + ".\n"
+                    msg += "Which property do you want to edit?"
+                    msg += "\n    1. Counter Noun: " + str(self.settings["SCORE_TYPE"][st]["noun"])
+                    msg += "\n    2. Emote ID: " + str(self.settings["SCORE_TYPE"][st]["emoteID"])
+                    msg += "\n    3. Weekly Decay Rate: " + str(self.settings["SCORE_TYPE"][st]["decayRate"])
+                    msg += "\n    4. Daily Limit: " + str(self.settings["SCORE_TYPE"][st]["dailyLimit"])
+                    msg += "\n    5. Award Role: " + str(self.settings["SCORE_TYPE"][st]["role"])
+                    msg += "\n    6. Role Cost: " + str(self.settings["SCORE_TYPE"][st]["roleCost"])
+                    msg += "\n    0. Exit"
+                    await self.bot.say(msg)
+                    msg = await self.bot.wait_for_message(author=ctx.message.author, timeout=60)
+                    if msg is None:
+                        await self.bot.say("Nothing selected. Quitting edit mode.)
+                        return
+                    if str.isdigit(msg) and int(msg) > 0 and int(msg) < 7:
+                        sel = int(msg)
+                        await self.bot.say("What value should it be set to?")
+                        val = await self.bot.wait_for_message(author=ctx.message.author, timeout=60)
+                        if val is None:
+                            await self.bot.say("No value given. Quitting edit mode.)
+                            return
+                        elif sel == 1:
+                            self.settings["SCORE_TYPE"][st]"noun"] = val
+                        elif sel == 2:
+                            self.settings["SCORE_TYPE"][st]["emoteID"] = val
+                        elif sel == 5:
+                            self.settings["SCORE_TYPE"][st]["role"] = val
+                        elif str.isdigit(val):
+                            if sel = 3:
+                                self.settings["SCORE_TYPE"][st]["decayRate"] = int(val)
+                            elif sel = 4:
+                                self.settings["SCORE_TYPE"][st]["dailyLimit"] = int(val)
+                            elif sel = 6:
+                                self.settings["SCORE_TYPE"][st]["roleCost"] = int(val)
+                        else:
+                            await self.bot.say("Invalid value.")
+                            _velkaset_scoreEditType(self, ctx, scoreType)
+                            return
+                        saveSettings(self)
+                        await self.bot.say("Value saved.")
+                         _velkaset_scoreEditType(self, ctx, scoreType)
+                         return
+                    if msg == "0":
+                        await self.bot.say("Quitting edit mode.")
+                        return
+                    await self.bot.say("Invalid selection. Quitting edit mode.")
+                    return
+            await self.bot.say("That score type does not exist.")
         else:
-            return
-        for member in mentions:
-            if member == user:
-                await self.bot.send_message(message.channel, "Thou canst not judge thyself. ")
-            else:
-                self._process_scores(member, 1, type)
-                self._process_scores(member, 0, notype)
-                if self.settings['RESPOND_ON_POINT']:
-                    whiteSoap = str(discord.utils.get(self.bot.get_all_emojis(), id="515521115607662593")) 
-                    redSoap = str(discord.utils.get(self.bot.get_all_emojis(), id="515521115762851840")) 
-                    if type == "Sunlight":
-                        msg = whiteSoap
-                    else:
-                        msg = redSoap
-                    msg += "{} now has {} points.".format(
-                        member.name, self.scores[member.id][type])
-                    await self.bot.send_message(message.channel, msg)
-                fileIO("data/judgement/scores.json", "save", self.scores)
+            msg ="Which score type would you like to edit?"
+            num = 0
+            for st in self.settings["SCORE_TYPES"]:
+                msg += "\n    " + st["command"]
+                num ++
+            if num < 1:
+                await self.bot.say("You have not defined any scores yet. Please create one first.")
                 return
-
+            await self.bot.say(msg)=
+            msg = await self.bot.wait_for_message(author=ctx.message.author, timeout=60)
+            if msg is None:
+                await self.bot.say("No score type selected. Quitting edit mode.)
+                return
+            if msg.content.lower().strip() == "exit":
+                await self.bot.say("Quitting edit mode")
+                return
+            _velkaset_scoreEditType(msg)
+    
+    # Debug mode?
+    @velkaset.command(pass_context=True, name="debug")
+    async def _velkaset_debug(self, ctx):
+        """- Toggles debug mode - award yourself points with no limits"""
+        if self.settings['DEBUG']:
+            await self.bot.say("Debug mode disabled.")
+        else:
+            await self.bot.say('Debug mode enabled.')
+        self.settings['DEBUG'] = \
+            not self.settings['DEBUG']
+        saveSettings(self)
+    
+    # Cooldown between awarded points
+    @velkaset.command(pass_context=True, name="cooldown")
+    async def _velkaset_cooldown(self, ctx):
+        """- Set the cooldown timer between points awarded to one person."""
+        if 'COOLDOWN' not in self.settings:
+            self.settings.['COOLDOWN'] = 300
+        cd = self.settings.['COOLDOWN'];
+        await self.bot.say("Cooldown is currently set to " + str(cd) + "s (" + str(cd/60) + "m). How many seconds should it be set to?")
+        msg = await self.bot.wait_for_message(author=ctx.message.author, timeout=60)
+        if msg is None:
+            await self.bot.say("No cooldown value given.")
+        elif str.isdigit(msg):
+            cd = int(msg)
+            self.settings.['COOLDOWN'] = cd
+            await self.bot.say("Cooldown set to " + str(cd) + "s.")
+            saveSettings(self)
+        else:
+            await self.bot.say("Invalid cooldown.")
+    
+    # Create a new score type
+    @velkaset.command(pass_context=True, name="scoreAddType")
+    async def _velkaset_scoreAddType(self, ctx, command : str):
+        """- Create a new score type to track"""
+        if command:
+            if command in self.settings['SCORE_TYPE']:
+                self.bot.say(command + " already exists. Would you like to edit it?")
+                msg = await self.bot.wait_for_message(author=ctx.message.author, timeout=60)
+                if msg.lower() == "yes" or msg.lower() = "y":
+                    _velkaset_scoreEditType(self, ctx, command)
+                else:
+                    self.bot.say('No score type was added.')
+            else:
+                self.settings['SCORE_TYPE'][command] = {"noun":"points", "emoteID":"0", "decayRate":2, "dailyLimit":2, "role":"", "roleCost":0}
+                for m in self.scores:
+                    self.scores[m][command] = 0
+                saveSettings(self)
+                saveScores(self)
+                self.bot.say(command + " created.")
+                _velkaset_scoreEditType(self, ctx, command)
+        else:
+            self.bot.say('Please type a unique score type command name after "scoreAddType".')
+    
+    # delete an existing score type
+    @velkaset.command(pass_context=True, name="scoreDeleteType")
+    async def _velkaset_scoreDeleteType(self, ctx, command : str):
+        """- Delete an existing score"""
+        if command:
+            if command in self.settings['SCORE_TYPE']:
+                self.bot.say("Are you sure you want to permanently delete " + command + "?")
+                msg = await self.bot.wait_for_message(author=ctx.message.author, timeout=60)
+                if msg.lower() == "yes" or msg.lower() = "y":
+                    self.settings['SCORE_TYPE'].pop(command)
+                    for m in self.scores:
+                        self.scores[m].pop(command)
+                    saveSettings(self)
+                    saveScores(self)
+                    self.bot.say(command + " has been deleted.")
+                else:
+                    self.bot.say('No score types were deleted.')
+            else:
+                self.bot.say('That score type does not exist.')
+        else:
+            self.bot.say('Please type an existing score type command after "scoreDeleteType".')
+    
+    # Edit a user score
+    @velkaset.command(pass_context=True, name="editUserScore")
+    async def _velkaset_editUserScore(self, ctx):
+        """- Manage a user's scores"""
+        if len(ctx.message.mentions) != 1:
+            await self.bot.say('Please mention a user after "editUserScore"')
+            return
+        member = ctx.message.mentions[0]
+        if self.scores.get(member.id, 0) != 0:
+            member_dict = self.scores[member.id]
+            msg = "Judgement for " + member.name + ":"
+            for s in member_dict:
+                msg += "\n   " + s + " : " + member_dict[s]
+            msg += "Which score would you like to edit?"
+            await self.bot.say(msg)
+            msg = await self.bot.wait_for_message(author=ctx.message.author, timeout=60)
+            if msg is None:
+                await self.bot.say("None selected. Quitting.")
+            elif msg in self.settings["SCORE_TYPE"]:
+                scoreType = msg
+                await self.bot.say("What should it be set to?")
+                msg = await self.bot.wait_for_message(author=ctx.message.author, timeout=60)
+                if msg is None:
+                    await self.bot.say("No value given. Quitting.")
+                elif str.isdigit(msg):
+                    _process_scores(self, member, int(msg) - member_dict[scoreType], scoreType)
+                    await self.bot.say(scoreType + " is now " + msg)
+                else
+                    await self.bot.say("Invalid value.")
+            else:
+                await self.bot.say("Invalid score type.")
+                
+        else:
+            await self.bot.say(member.name + " has not yet been judged. Would you like to create a new judgement?")
+            msg = await self.bot.wait_for_message(author=ctx.message.author, timeout=60)
+                if msg.lower() == "yes" or msg.lower() = "y":
+                    _process_scores(self, member, 0, list(self.settings["SCORE_TYPE"].keys())[0])
+                    _velkaset_editUserScore(self, ctx)
 
 def check_folder():
     if not os.path.exists("data/judgement"):
@@ -169,6 +373,6 @@ def setup(bot):
         raise RuntimeError("Run `pip install tabulate` to use judgement.")
     check_folder()
     check_file()
-    n = Judge(bot)
+    n = Velka(bot)
     bot.add_listener(n.check_for_score, "on_message")
     bot.add_cog(n)
