@@ -60,7 +60,9 @@ class Velka:
             self.scores[member_id][judgement_type] = score_to_add
         saveScores(self)
 
-    # Give out points to users
+    # Give out points to users
+
+
     # todo: Obey daily limit
     async def check_for_score(self, message):
         user = message.author
@@ -158,7 +160,7 @@ class Velka:
     
     # Edit score types
     @velkaset.command(pass_context=True, name="scoreEditType")
-    async def _velkaset_scoreEditType(self, ctx, scoreType : str)):
+    async def _velkaset_scoreEditType(self, ctx, scoreType : str):
         """- Edit the categories of scores"""
         if scoreType:
             for st in self.settings["SCORE_TYPE"]:
