@@ -193,11 +193,11 @@ class Velka:
                         elif sel == 5:
                             self.settings["SCORE_TYPE"][st]["role"] = val
                         elif str.isdigit(val):
-                            if sel = 3:
+                            if sel == 3:
                                 self.settings["SCORE_TYPE"][st]["decayRate"] = int(val)
-                            elif sel = 4:
+                            elif sel == 4:
                                 self.settings["SCORE_TYPE"][st]["dailyLimit"] = int(val)
-                            elif sel = 6:
+                            elif sel == 6:
                                 self.settings["SCORE_TYPE"][st]["roleCost"] = int(val)
                         else:
                             await self.bot.say("Invalid value.")
