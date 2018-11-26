@@ -60,9 +60,7 @@ class Velka:
             self.scores[member_id][judgement_type] = score_to_add
         saveScores(self)
 
-    # Give out points to users
-    # todo: Look at score type list
-    # todo: process multiple users at once
+    # Give out points to users
     # todo: Obey daily limit
     async def check_for_score(self, message):
         user = message.author
@@ -127,7 +125,7 @@ class Velka:
         scores = list(map(lambda mid: self.scores[mid]["Wraith"],
                           karma_server_members))
         headers = ["Sin", "user"]
-        body = sorted(zip(=scores, names), key=lambda tup: tup[1],
+        body = sorted(zip(scores, names), key=lambda tup: tup[1],
                       reverse=True)[:10]
         table = tabulate.tabulate(body, headers, tablefmt="psql")
         await self.bot.say(box(table))
