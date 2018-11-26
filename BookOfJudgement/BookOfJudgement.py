@@ -177,14 +177,14 @@ class Velka:
                     await self.bot.say(msg)
                     msg = await self.bot.wait_for_message(author=ctx.message.author, timeout=60)
                     if msg is None:
-                        await self.bot.say("Nothing selected. Quitting edit mode.)
+                        await self.bot.say("Nothing selected. Quitting edit mode.")
                         return
                     if str.isdigit(msg) and int(msg) > 0 and int(msg) < 7:
                         sel = int(msg)
                         await self.bot.say("What value should it be set to?")
                         val = await self.bot.wait_for_message(author=ctx.message.author, timeout=60)
                         if val is None:
-                            await self.bot.say("No value given. Quitting edit mode.)
+                            await self.bot.say("No value given. Quitting edit mode.")
                             return
                         elif sel == 1:
                             self.settings["SCORE_TYPE"][st]"noun"] = val
@@ -218,14 +218,14 @@ class Velka:
             num = 0
             for st in self.settings["SCORE_TYPES"]:
                 msg += "\n    " + st["command"]
-                num ++
+                num += 1
             if num < 1:
                 await self.bot.say("You have not defined any scores yet. Please create one first.")
                 return
             await self.bot.say(msg)=
             msg = await self.bot.wait_for_message(author=ctx.message.author, timeout=60)
             if msg is None:
-                await self.bot.say("No score type selected. Quitting edit mode.)
+                await self.bot.say("No score type selected. Quitting edit mode.")
                 return
             if msg.content.lower().strip() == "exit":
                 await self.bot.say("Quitting edit mode")
