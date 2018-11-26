@@ -205,8 +205,8 @@ class Velka:
                             return
                         saveSettings(self)
                         await self.bot.say("Value saved.")
-                         _velkaset_scoreEditType(self, ctx, scoreType)
-                         return
+                        _velkaset_scoreEditType(self, ctx, scoreType)
+                        return
                     if msg == "0":
                         await self.bot.say("Quitting edit mode.")
                         return
