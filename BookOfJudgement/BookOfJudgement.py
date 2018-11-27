@@ -281,8 +281,8 @@ class Velka:
                 self.settings['SCORE_TYPE'][command] = {"noun":"points", "emoteID":"0", "decayRate":2, "dailyLimit":2, "role":"", "roleCost":0}
                 for m in self.scores:
                     self.scores[m][command] = 0
-                _saveSettings(self)
-                _saveScores(self)
+                fileIO(self.settingsLoc, 'save', self.settings)
+                fileIO("data/judgement/scores.json", "save", self.scores)
                 self.bot.say(command + " created.")
                 _velkaset_scoreEditType(self, ctx, command)
         else:
