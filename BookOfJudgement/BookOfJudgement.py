@@ -27,7 +27,7 @@ class Velka:
         self.settings = fileIO(self.settingsLoc, 'load')
     
     def _saveSettings(self):
-        fileIO(self.settingsLoc, 'save', self.settings)
+        fileIO("data/judgement/settings.json", 'save', self.settings)
         
     def _saveScores(self):
         fileIO("data/judgement/scores.json", "save", self.scores)
