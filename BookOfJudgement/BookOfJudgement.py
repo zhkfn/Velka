@@ -222,7 +222,7 @@ class Velka:
             if num < 1:
                 await self.bot.say("You have not defined any scores yet. Please create one first.")
                 return
-            await self.bot.say(msg)=
+            await self.bot.say(msg)
             msg = await self.bot.wait_for_message(author=ctx.message.author, timeout=60)
             if msg is None:
                 await self.bot.say("No score type selected. Quitting edit mode.")
