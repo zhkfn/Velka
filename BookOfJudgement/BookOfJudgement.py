@@ -267,6 +267,8 @@ class Velka:
     @velkaset.command(pass_context=True, name="scoreAddType")
     async def _velkaset_scoreAddType(self, ctx, command : str):
         """- Create a new score type to track"""
+        if self.scores.get('SCORE_TYPE', 0) == 0:
+            self.settings['SCORE_TYPE'] = {}
         if command:
             if command in self.settings['SCORE_TYPE']:
                 self.bot.say(command + " already exists. Would you like to edit it?")
