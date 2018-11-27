@@ -269,6 +269,7 @@ class Velka:
         """- Create a new score type to track"""
         if self.scores.get('SCORE_TYPE', 0) == 0:
             self.settings['SCORE_TYPE'] = {}
+            saveSettings(self)
         if command:
             if command in self.settings['SCORE_TYPE']:
                 await self.bot.say(command + " already exists. Would you like to edit it?")
