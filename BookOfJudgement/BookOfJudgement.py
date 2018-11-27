@@ -284,7 +284,7 @@ class Velka:
                 fileIO(self.settingsLoc, 'save', self.settings)
                 fileIO("data/judgement/scores.json", "save", self.scores)
                 self.bot.say(command + " created.")
-                _velkaset_scoreEditType(self, ctx, command)
+                Velka._velkaset_scoreEditType(self, ctx, command)
         else:
             self.bot.say('Please type a unique score type command name after "scoreAddType".')
     
