@@ -249,15 +249,15 @@ class Velka:
     async def _velkaset_cooldown(self, ctx):
         """- Set the cooldown timer between points awarded to one person."""
         if 'COOLDOWN' not in self.settings:
-            self.settings.['COOLDOWN'] = 300
-        cd = self.settings.['COOLDOWN'];
+            self.settings['COOLDOWN'] = 300
+        cd = self.settings['COOLDOWN'];
         await self.bot.say("Cooldown is currently set to " + str(cd) + "s (" + str(cd/60) + "m). How many seconds should it be set to?")
         msg = await self.bot.wait_for_message(author=ctx.message.author, timeout=60)
         if msg is None:
             await self.bot.say("No cooldown value given.")
         elif str.isdigit(msg):
             cd = int(msg)
-            self.settings.['COOLDOWN'] = cd
+            self.settings['COOLDOWN'] = cd
             await self.bot.say("Cooldown set to " + str(cd) + "s.")
             saveSettings(self)
         else:
