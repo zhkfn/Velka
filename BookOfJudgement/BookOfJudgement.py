@@ -335,7 +335,7 @@ class Velka:
                 elif str.isdigit(msg):
                     _process_scores(self, member, int(msg) - member_dict[scoreType], scoreType)
                     await self.bot.say(scoreType + " is now " + msg)
-                else
+                else:
                     await self.bot.say("Invalid value.")
             else:
                 await self.bot.say("Invalid score type.")
