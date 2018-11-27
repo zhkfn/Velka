@@ -271,7 +271,7 @@ class Velka:
             if command in self.settings['SCORE_TYPE']:
                 self.bot.say(command + " already exists. Would you like to edit it?")
                 msg = await self.bot.wait_for_message(author=ctx.message.author, timeout=60)
-                if msg.lower() == "yes" or msg.lower() = "y":
+                if msg.lower() == "yes" or msg.lower() == "y":
                     _velkaset_scoreEditType(self, ctx, command)
                 else:
                     self.bot.say('No score type was added.')
@@ -294,7 +294,7 @@ class Velka:
             if command in self.settings['SCORE_TYPE']:
                 self.bot.say("Are you sure you want to permanently delete " + command + "?")
                 msg = await self.bot.wait_for_message(author=ctx.message.author, timeout=60)
-                if msg.lower() == "yes" or msg.lower() = "y":
+                if msg.lower() == "yes" or msg.lower() == "y":
                     self.settings['SCORE_TYPE'].pop(command)
                     for m in self.scores:
                         self.scores[m].pop(command)
@@ -343,7 +343,7 @@ class Velka:
         else:
             await self.bot.say(member.name + " has not yet been judged. Would you like to create a new judgement?")
             msg = await self.bot.wait_for_message(author=ctx.message.author, timeout=60)
-                if msg.lower() == "yes" or msg.lower() = "y":
+                if msg.lower() == "yes" or msg.lower() == "y":
                     _process_scores(self, member, 0, list(self.settings["SCORE_TYPE"].keys())[0])
                     _velkaset_editUserScore(self, ctx)
 
