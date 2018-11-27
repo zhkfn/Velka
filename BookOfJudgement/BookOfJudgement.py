@@ -271,22 +271,22 @@ class Velka:
             self.settings['SCORE_TYPE'] = {}
         if command:
             if command in self.settings['SCORE_TYPE']:
-                self.bot.say(command + " already exists. Would you like to edit it?")
+                await self.bot.say(command + " already exists. Would you like to edit it?")
                 msg = await self.bot.wait_for_message(author=ctx.message.author, timeout=60)
                 if msg.lower() == "yes" or msg.lower() == "y":
                     _velkaset_scoreEditType(self, ctx, command)
                 else:
-                    self.bot.say('No score type was added.')
+                    await self.bot.say('No score type was added.')
             else:
                 self.settings['SCORE_TYPE'][command] = {"noun":"points", "emoteID":"0", "decayRate":2, "dailyLimit":2, "role":"", "roleCost":0}
                 for m in self.scores:
                     self.scores[m][command] = 0
                 saveSettings(self)
                 saveScores(self)
-                self.bot.say(command + " created.")
+                await self.bot.say(command + " created.")
                 _velkaset_scoreEditType(self, ctx, command)
         else:
-            self.bot.say('Please type a unique score type command name after "scoreAddType".')
+            await self.bot.say('Please type a unique score type command name after "scoreAddType".')
     
     # delete an existing score type
     @velkaset.command(pass_context=True, name="scoreDeleteType")
@@ -294,7 +294,7 @@ class Velka:
         """- Delete an existing score"""
         if command:
             if command in self.settings['SCORE_TYPE']:
-                self.bot.say("Are you sure you want to permanently delete " + command + "?")
+                await self.bot.say("Are you sure you want to permanently delete " + command + "?")
                 msg = await self.bot.wait_for_message(author=ctx.message.author, timeout=60)
                 if msg.lower() == "yes" or msg.lower() == "y":
                     self.settings['SCORE_TYPE'].pop(command)
@@ -302,13 +302,13 @@ class Velka:
                         self.scores[m].pop(command)
                     saveSettings(self)
                     saveScores(self)
-                    self.bot.say(command + " has been deleted.")
+                    await self.bot.say(command + " has been deleted.")
                 else:
-                    self.bot.say('No score types were deleted.')
+                    await self.bot.say('No score types were deleted.')
             else:
-                self.bot.say('That score type does not exist.')
+                await self.bot.say('That score type does not exist.')
         else:
-            self.bot.say('Please type an existing score type command after "scoreDeleteType".')
+            await self.bot.say('Please type an existing score type command after "scoreDeleteType".')
     
     # Edit a user score
     @velkaset.command(pass_context=True, name="editUserScore")
