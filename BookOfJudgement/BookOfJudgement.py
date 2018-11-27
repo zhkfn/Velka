@@ -26,13 +26,13 @@ class Velka:
         self.settingsLoc = ("data/judgement/settings.json")
         self.settings = fileIO(self.settingsLoc, 'load')
     
-    def saveSettings(self):
+    def _saveSettings(self):
         fileIO(self.settingsLoc, 'save', self.settings)
         
-    def saveScores(self):
+    def _saveScores(self):
         fileIO("data/judgement/scores.json", "save", self.scores)
         
-    def emote(self, scoreType):
+    def _emote(self, scoreType):
         if self.settings["SCORE_TYPE"][scoreType]["emoteID"] == "0":
             return ""
         return str(discord.utils.get(self.bot.get_all_emojis(), idself.settings["SCORE_TYPE"][scoreType]["emoteID"]))
@@ -58,7 +58,7 @@ class Velka:
             for st in self.settings["SCORE_TYPE"]:
                 self.scores[member_id][st] = 0
             self.scores[member_id][judgement_type] = score_to_add
-        saveScores(self)
+        _saveScores(self)
 
     # Give out points to users
 
@@ -92,7 +92,7 @@ class Velka:
                 self._process_scores(member, 1, scoreType)
                 if self.settings['RESPOND_ON_POINT']:
                     msg = "{}{} now has {} {}.".format(
-                        emote(self, scoreType), member.name,
+                        _emote(self, scoreType), member.name,
                         self.scores[member.id][scoreType],
                         self.settings['SCORE_TYPE'][scoreType]["noun"])
                     await self.bot.say(msg)
@@ -107,7 +107,7 @@ class Velka:
             member_dict = self.scores[member.id]
             msg = "Judgement for " + member.name + ":"
             for st in self.settings["SCORE_TYPE"]:
-                msg += "\n" + emote(self, st) + str(member_dict[st]) + " " + st["noun"] + "."
+                msg += "\n" + _emote(self, st) + str(member_dict[st]) + " " + st["noun"] + "."
             await self.bot.say(msg)
         else:
             await self.bot.say(member.name + " has not yet been judged.")
@@ -156,7 +156,7 @@ class Velka:
             await self.bot.say('Responses enabled.')
         self.settings['RESPOND_ON_POINT'] = \
             not self.settings['RESPOND_ON_POINT']
-        saveSettings(self)
+        _saveSettings(self)
     
     # Edit score types
     @velkaset.command(pass_context=True, name="scoreEditType")
@@ -203,7 +203,7 @@ class Velka:
                             await self.bot.say("Invalid value.")
                             _velkaset_scoreEditType(self, ctx, scoreType)
                             return
-                        saveSettings(self)
+                        _saveSettings(self)
                         await self.bot.say("Value saved.")
                         _velkaset_scoreEditType(self, ctx, scoreType)
                         return
@@ -242,7 +242,7 @@ class Velka:
             await self.bot.say('Debug mode enabled.')
         self.settings['DEBUG'] = \
             not self.settings['DEBUG']
-        saveSettings(self)
+        _saveSettings(self)
     
     # Cooldown between awarded points
     @velkaset.command(pass_context=True, name="cooldown")
@@ -259,7 +259,7 @@ class Velka:
             cd = int(msg)
             self.settings['COOLDOWN'] = cd
             await self.bot.say("Cooldown set to " + str(cd) + "s.")
-            saveSettings(self)
+            _saveSettings(self)
         else:
             await self.bot.say("Invalid cooldown.")
     
@@ -281,8 +281,8 @@ class Velka:
                 self.settings['SCORE_TYPE'][command] = {"noun":"points", "emoteID":"0", "decayRate":2, "dailyLimit":2, "role":"", "roleCost":0}
                 for m in self.scores:
                     self.scores[m][command] = 0
-                saveSettings(self)
-                saveScores(self)
+                _saveSettings(self)
+                _saveScores(self)
                 self.bot.say(command + " created.")
                 _velkaset_scoreEditType(self, ctx, command)
         else:
@@ -300,8 +300,8 @@ class Velka:
                     self.settings['SCORE_TYPE'].pop(command)
                     for m in self.scores:
                         self.scores[m].pop(command)
-                    saveSettings(self)
-                    saveScores(self)
+                    _saveSettings(self)
+                    _saveScores(self)
                     self.bot.say(command + " has been deleted.")
                 else:
                     self.bot.say('No score types were deleted.')
