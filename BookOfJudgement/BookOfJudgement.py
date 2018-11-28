@@ -136,6 +136,8 @@ class Velka:
     @velkaset.command(pass_context=True, name="respond")
     async def _velkaset_respond(self, ctx):
         """- Toggles if Velka will respond when points are awarded"""
+        if 'RESPOND_ON_POINT' not in self.settings:
+            self.settings['RESPOND_ON_POINT'] = True
         if self.settings.get('RESPOND_ON_POINT', 0) == 0:
             self.settings['RESPOND_ON_POINT'] = True
             self.saveSettings()
@@ -154,7 +156,6 @@ class Velka:
         """- Toggles debug mode - award yourself points with no limits"""
         if 'DEBUG' not in self.settings:
             self.settings['DEBUG'] = True
-            self.saveSettings()
         if self.settings['DEBUG']:
             await self.bot.say("Debug mode disabled.")
         else:
@@ -270,7 +271,7 @@ class Velka:
                 self.saveSettings()
                 self.saveScores()
                 await self.bot.say(command + " created.")
-                await self.self.ScoreEditType(ctx, command)
+                await self.ScoreEditType(ctx, command)
         else:
             await self.bot.say('Please type a unique score type command name after "scoreAddType".')
     
