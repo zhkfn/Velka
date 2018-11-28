@@ -254,6 +254,9 @@ class Velka:
             if command in self.settings['SCORE_TYPE']:
                 await self.bot.say(command + " already exists. Would you like to edit it?")
                 msg = await self.bot.wait_for_message(author=ctx.message.author, timeout=60)
+                if msg is None:
+                    await self.bot.say('No score type was added.')
+                    return
                 msg = msg.content
                 if msg.lower() == "yes" or msg.lower() == "y":
                     self.ScoreEditType(ctx, command)
@@ -278,6 +281,9 @@ class Velka:
             if command in self.settings['SCORE_TYPE']:
                 await self.bot.say("Are you sure you want to permanently delete " + command + "?")
                 msg = await self.bot.wait_for_message(author=ctx.message.author, timeout=60)
+                if msg is none:
+                    await self.bot.say('No score types were deleted.')
+                    return
                 msg = msg.content
                 if msg.lower() == "yes" or msg.lower() == "y":
                     self.settings['SCORE_TYPE'].pop(command)
@@ -319,7 +325,9 @@ class Velka:
                 msg = await self.bot.wait_for_message(author=ctx.message.author, timeout=60)
                 if msg is None:
                     await self.bot.say("No value given. Quitting.")
-                elif str.isdigit(msg):
+                    return
+                msg = msg.content
+                if str.isdigit(msg):
                     _process_scores(self, member, int(msg) - member_dict[scoreType], scoreType)
                     await self.bot.say(scoreType + " is now " + msg)
                 else:
@@ -330,6 +338,8 @@ class Velka:
         else:
             await self.bot.say(member.name + " has not yet been judged. Would you like to create a new judgement?")
             msg = await self.bot.wait_for_message(author=ctx.message.author, timeout=60)
+            if msg is None:
+                return
             msg = msg.content
             if msg.lower() == "yes" or msg.lower() == "y":
                 _process_scores(self, member, 0, list(self.settings["SCORE_TYPE"].keys())[0])
