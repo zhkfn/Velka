@@ -167,7 +167,7 @@ class Velka:
     @velkaset.command(pass_context=True, name="scoreEditType")
     async def _velkaset_scoreEditType(self, ctx, scoreType : str):
         """- Edit the categories of scores"""
-        self.ScoreEditType(ctx, scoreType)
+        await self.ScoreEditType(ctx, scoreType)
             
     # Edit score types
     async def ScoreEditType(self, ctx, scoreType : str):
@@ -211,11 +211,11 @@ class Velka:
                                 self.settings["SCORE_TYPE"][st]["roleCost"] = int(val)
                         else:
                             await self.bot.say("Invalid value.")
-                            self.ScoreEditType(ctx, scoreType)
+                            await self.ScoreEditType(ctx, scoreType)
                             return
                         self.saveSettings()
                         await self.bot.say("Value saved.")
-                        self.ScoreEditType(ctx, scoreType)
+                        await self.ScoreEditType(ctx, scoreType)
                         return
                     if msg == "0":
                         await self.bot.say("Quitting edit mode.")
@@ -259,7 +259,7 @@ class Velka:
                     return
                 msg = msg.content
                 if msg.lower() == "yes" or msg.lower() == "y":
-                    self.ScoreEditType(ctx, command)
+                    await self.ScoreEditType(ctx, command)
                 else:
                     await self.bot.say('No score type was added.')
             else:
@@ -269,7 +269,7 @@ class Velka:
                 self.saveSettings()
                 self.saveScores()
                 await self.bot.say(command + " created.")
-                self.self.ScoreEditType(ctx, command)
+                await self.self.ScoreEditType(ctx, command)
         else:
             await self.bot.say('Please type a unique score type command name after "scoreAddType".')
     
