@@ -72,14 +72,14 @@ class Velka:
         else:
             return
         for member in mentions:
-            if member == user:
+            if member == user and self.settings['DEBUG'] == False:
                 await self.bot.send_message(message.channel, "Thou canst not judge thyself. ")
             else:
                 # Add cooldown and daily limit
                 self._process_scores(member, 1, scoreType)
                 if self.settings['RESPOND_ON_POINT']:
                     msg = "{}{} now has {} {}.".format(
-                        emote(self, scoreType), member.name,
+                        self.emote(scoreType), member.name,
                         self.scores[member.id][scoreType],
                         self.settings['SCORE_TYPE'][scoreType]["noun"])
                     await self.bot.say(msg)
@@ -94,7 +94,7 @@ class Velka:
             member_dict = self.scores[member.id]
             msg = "Judgement for " + member.name + ":"
             for st in self.settings["SCORE_TYPE"]:
-                msg += "\n" + emote(self, st) + str(member_dict[st]) + " " + st["noun"] + "."
+                msg += "\n" + self.emote(st) + str(member_dict[st]) + " " + st["noun"] + "."
             await self.bot.say(msg)
         else:
             await self.bot.say(member.name + " has not yet been judged.")
@@ -152,7 +152,8 @@ class Velka:
     @velkaset.command(pass_context=True, name="debug")
     async def _velkaset_debug(self, ctx):
         """- Toggles debug mode - award yourself points with no limits"""
-        if self.settings.get('DEBUG', 0) == 0:
+        if 'DEBUG' in self.settings:
+        else:
             self.settings['DEBUG'] = True
             self.saveSettings()
         if self.settings['DEBUG']:
@@ -282,7 +283,7 @@ class Velka:
             if command in self.settings['SCORE_TYPE']:
                 await self.bot.say("Are you sure you want to permanently delete " + command + "?")
                 msg = await self.bot.wait_for_message(author=ctx.message.author, timeout=60)
-                if msg is none:
+                if msg is None:
                     await self.bot.say('No score types were deleted.')
                     return
                 msg = msg.content
