@@ -152,8 +152,7 @@ class Velka:
     @velkaset.command(pass_context=True, name="debug")
     async def _velkaset_debug(self, ctx):
         """- Toggles debug mode - award yourself points with no limits"""
-        if 'DEBUG' in self.settings:
-        else:
+        if 'DEBUG' not in self.settings:
             self.settings['DEBUG'] = True
             self.saveSettings()
         if self.settings['DEBUG']:
