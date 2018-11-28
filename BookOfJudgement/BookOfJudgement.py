@@ -47,7 +47,7 @@ class Velka:
             for st in self.settings["SCORE_TYPE"]:
                 self.scores[member_id][st] = 0
             self.scores[member_id][judgement_type] = score_to_add
-        saveScores(self)
+        self.saveScores()
 
     # Give out points to users
     # todo: Obey daily limit
@@ -145,7 +145,7 @@ class Velka:
             await self.bot.say('Responses enabled.')
         self.settings['RESPOND_ON_POINT'] = \
             not self.settings['RESPOND_ON_POINT']
-        saveSettings(self)
+        self.saveSettings()
         
     
     # Debug mode?
@@ -161,7 +161,7 @@ class Velka:
             await self.bot.say('Debug mode enabled.')
         self.settings['DEBUG'] = \
             not self.settings['DEBUG']
-        saveSettings(self)
+        self.saveSettings()
     
     # Edit score types
     @velkaset.command(pass_context=True, name="scoreEditType")
@@ -209,7 +209,7 @@ class Velka:
                             await self.bot.say("Invalid value.")
                             _velkaset_scoreEditType(self, ctx, scoreType)
                             return
-                        saveSettings(self)
+                        self.saveSettings()
                         await self.bot.say("Value saved.")
                         _velkaset_scoreEditType(self, ctx, scoreType)
                         return
@@ -219,24 +219,6 @@ class Velka:
                     await self.bot.say("Invalid selection. Quitting edit mode.")
                     return
             await self.bot.say("That score type does not exist.")
-        else:
-            msg ="Which score type would you like to edit?"
-            num = 0
-            for st in self.settings["SCORE_TYPES"]:
-                msg += "\n    " + st["command"]
-                num += 1
-            if num < 1:
-                await self.bot.say("You have not defined any scores yet. Please create one first.")
-                return
-            await self.bot.say(msg)
-            msg = await self.bot.wait_for_message(author=ctx.message.author, timeout=60)
-            if msg is None:
-                await self.bot.say("No score type selected. Quitting edit mode.")
-                return
-            if msg.content.lower().strip() == "exit":
-                await self.bot.say("Quitting edit mode")
-                return
-            _velkaset_scoreEditType(msg)
     
     # Cooldown between awarded points
     @velkaset.command(pass_context=True, name="cooldown")
@@ -253,7 +235,7 @@ class Velka:
             cd = int(msg.content)
             self.settings['COOLDOWN'] = cd
             await self.bot.say("Cooldown set to " + str(cd) + "s.")
-            saveSettings(self)
+            self.saveSettings()
         else:
             await self.bot.say("Invalid cooldown.")
     
@@ -296,8 +278,8 @@ class Velka:
                     self.settings['SCORE_TYPE'].pop(command)
                     for m in self.scores:
                         self.scores[m].pop(command)
-                    saveSettings(self)
-                    saveScores(self)
+                    self.saveSettings()
+                    self.saveScores()
                     await self.bot.say(command + " has been deleted.")
                 else:
                     await self.bot.say('No score types were deleted.')
