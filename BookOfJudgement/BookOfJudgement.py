@@ -138,9 +138,6 @@ class Velka:
         """- Toggles if Velka will respond when points are awarded"""
         if 'RESPOND_ON_POINT' not in self.settings:
             self.settings['RESPOND_ON_POINT'] = True
-        if self.settings.get('RESPOND_ON_POINT', 0) == 0:
-            self.settings['RESPOND_ON_POINT'] = True
-            self.saveSettings()
         if self.settings['RESPOND_ON_POINT']:
             await self.bot.say("Responses disabled.")
         else:
@@ -312,7 +309,7 @@ class Velka:
         if self.scores.get(member.id, 0) != 0:
             member_dict = self.scores[member.id]
             msg = "Judgement for " + member.name + ":"
-            for s in member_dict:
+            for st, s in member_dict.iteritems()
                 msg += "\n   " + s + " : " + member_dict[s]
             msg += "Which score would you like to edit?"
             await self.bot.say(msg)
