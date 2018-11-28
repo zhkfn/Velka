@@ -196,7 +196,8 @@ class Velka:
                         if val is None:
                             await self.bot.say("No value given. Quitting edit mode.")
                             return
-                        elif sel == 1:
+                        val = val.content
+                        if sel == 1:
                             self.settings["SCORE_TYPE"][st]["noun"] = val
                         elif sel == 2:
                             self.settings["SCORE_TYPE"][st]["emoteID"] = val
