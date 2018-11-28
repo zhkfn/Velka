@@ -55,10 +55,10 @@ class Velka:
                 #self.settings['SCORE_TYPE'][command] = {"noun":"points", "emoteID":"0", "decayRate":2, "dailyLimit":2, "role":"", "roleCost":0}
                 #for m in self.scores:
                 #    self.scores[m][command] = 0
-                saveSettings(self)
-                saveScores(self)
+                #saveSettings(self)
+                #saveScores(self)
                 await self.bot.say(command + " created.")
-                _velkaset_scoreEditType(self, ctx, command)
+                #_velkaset_scoreEditType(self, ctx, command)
         else:
             await self.bot.say('Please type a unique score type command name after "scoreAddType".')
             
