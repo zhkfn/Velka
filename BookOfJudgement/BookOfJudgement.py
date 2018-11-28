@@ -35,7 +35,7 @@ class Velka:
                     self.scores[member_id][judgement_type] = 0
                     total = 0
                     for score in self.scores[member_id]:
-                        total += score
+                        total += self.scores[menber_id][score]
                     if total <= 0 and score_to_add < 0:
                         self.scores.pop(member_id)
                 else:
