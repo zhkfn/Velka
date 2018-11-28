@@ -13,9 +13,9 @@ try:
 except:
     tabulate = None
 
-log = logging.getLogger("red.judgement")
+log = logging.getLogger("red.VelkaTest")
 
-class Velka:
+class VelkaTest:
     """Keep track of user scores through ![judgement_type] @mention
     For now judgement types are hard coded: Sunlight & Wraith"""
 
@@ -217,6 +217,6 @@ def setup(bot):
         raise RuntimeError("Run `pip install tabulate` to use judgement.")
     check_folder()
     check_file()
-    n = Velka(bot)
+    n = VelkaTest(bot)
     bot.add_listener(n.check_for_score, "on_message")
     bot.add_cog(n)
