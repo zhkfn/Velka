@@ -153,7 +153,7 @@ class Velka:
     async def _velkaset_debug(self, ctx):
         """- Toggles debug mode - award yourself points with no limits"""
         if self.settings.get('DEBUG', 0) == 0:
-            self.settings['DEBUG] = True
+            self.settings['DEBUG'] = True
             self.saveSettings()
         if self.settings['DEBUG']:
             await self.bot.say("Debug mode disabled.")
