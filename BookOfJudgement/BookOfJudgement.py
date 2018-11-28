@@ -250,6 +250,7 @@ class Velka:
             if command in self.settings['SCORE_TYPE']:
                 await self.bot.say(command + " already exists. Would you like to edit it?")
                 msg = await self.bot.wait_for_message(author=ctx.message.author, timeout=60)
+                msg = msg.content
                 if msg.lower() == "yes" or msg.lower() == "y":
                     _velkaset_scoreEditType(self, ctx, command)
                 else:
