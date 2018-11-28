@@ -136,12 +136,31 @@ class Velka:
     @velkaset.command(pass_context=True, name="respond")
     async def _velkaset_respond(self, ctx):
         """- Toggles if Velka will respond when points are awarded"""
+        if self.settings.get('RESPOND_ON_POINT', 0) == 0:
+            self.settings['RESPOND_ON_POINT'] = True
+            self.saveSettings()
         if self.settings['RESPOND_ON_POINT']:
             await self.bot.say("Responses disabled.")
         else:
             await self.bot.say('Responses enabled.')
         self.settings['RESPOND_ON_POINT'] = \
             not self.settings['RESPOND_ON_POINT']
+        saveSettings(self)
+        
+    
+    # Debug mode?
+    @velkaset.command(pass_context=True, name="debug")
+    async def _velkaset_debug(self, ctx):
+        """- Toggles debug mode - award yourself points with no limits"""
+        if self.settings.get('DEBUG', 0) == 0:
+            self.settings['DEBUG] = True
+            self.saveSettings()
+        if self.settings['DEBUG']:
+            await self.bot.say("Debug mode disabled.")
+        else:
+            await self.bot.say('Debug mode enabled.')
+        self.settings['DEBUG'] = \
+            not self.settings['DEBUG']
         saveSettings(self)
     
     # Edit score types
@@ -165,6 +184,7 @@ class Velka:
                     if msg is None:
                         await self.bot.say("Nothing selected. Quitting edit mode.")
                         return
+                    msg = msg.content
                     if str.isdigit(msg) and int(msg) > 0 and int(msg) < 7:
                         sel = int(msg)
                         await self.bot.say("What value should it be set to?")
@@ -218,18 +238,6 @@ class Velka:
                 return
             _velkaset_scoreEditType(msg)
     
-    # Debug mode?
-    @velkaset.command(pass_context=True, name="debug")
-    async def _velkaset_debug(self, ctx):
-        """- Toggles debug mode - award yourself points with no limits"""
-        if self.settings['DEBUG']:
-            await self.bot.say("Debug mode disabled.")
-        else:
-            await self.bot.say('Debug mode enabled.')
-        self.settings['DEBUG'] = \
-            not self.settings['DEBUG']
-        saveSettings(self)
-    
     # Cooldown between awarded points
     @velkaset.command(pass_context=True, name="cooldown")
     async def _velkaset_cooldown(self, ctx):
@@ -241,8 +249,8 @@ class Velka:
         msg = await self.bot.wait_for_message(author=ctx.message.author, timeout=60)
         if msg is None:
             await self.bot.say("No cooldown value given.")
-        elif str.isdigit(msg):
-            cd = int(msg)
+        elif str.isdigit(msg.content):
+            cd = int(msg.content)
             self.settings['COOLDOWN'] = cd
             await self.bot.say("Cooldown set to " + str(cd) + "s.")
             saveSettings(self)
@@ -253,7 +261,7 @@ class Velka:
     @velkaset.command(pass_context=True, name="scoreAddType")
     async def _velkaset_scoreAddType(self, ctx, command : str):
         """- Create a new score type to track"""
-        if self.scores.get('SCORE_TYPE', 0) == 0:
+        if self.settings.get('SCORE_TYPE', 0) == 0:
             self.settings['SCORE_TYPE'] = {}
             self.saveSettings()
         if command:
@@ -283,6 +291,7 @@ class Velka:
             if command in self.settings['SCORE_TYPE']:
                 await self.bot.say("Are you sure you want to permanently delete " + command + "?")
                 msg = await self.bot.wait_for_message(author=ctx.message.author, timeout=60)
+                msg = msg.content
                 if msg.lower() == "yes" or msg.lower() == "y":
                     self.settings['SCORE_TYPE'].pop(command)
                     for m in self.scores:
@@ -315,7 +324,9 @@ class Velka:
             msg = await self.bot.wait_for_message(author=ctx.message.author, timeout=60)
             if msg is None:
                 await self.bot.say("None selected. Quitting.")
-            elif msg in self.settings["SCORE_TYPE"]:
+                return
+            msg = msg.content
+            if msg in self.settings["SCORE_TYPE"]:
                 scoreType = msg
                 await self.bot.say("What should it be set to?")
                 msg = await self.bot.wait_for_message(author=ctx.message.author, timeout=60)
@@ -332,6 +343,7 @@ class Velka:
         else:
             await self.bot.say(member.name + " has not yet been judged. Would you like to create a new judgement?")
             msg = await self.bot.wait_for_message(author=ctx.message.author, timeout=60)
+            msg = msg.content
             if msg.lower() == "yes" or msg.lower() == "y":
                 _process_scores(self, member, 0, list(self.settings["SCORE_TYPE"].keys())[0])
                 _velkaset_editUserScore(self, ctx)
