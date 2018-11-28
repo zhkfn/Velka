@@ -98,6 +98,14 @@ class Velka:
             await self.bot.say(msg)
         else:
             await self.bot.say(member.name + " has not yet been judged.")
+            
+    # Testing:
+    @commands.command(pass_context=True)
+    async def test(self, ctx):
+        """test command"""
+        saveSettings(self)
+        saveScores(self)
+        self.bot.say("I did a thing!")
 
     # Leaderboard
     # todo: Look at score type list
