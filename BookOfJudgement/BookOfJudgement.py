@@ -167,6 +167,10 @@ class Velka:
     @velkaset.command(pass_context=True, name="scoreEditType")
     async def _velkaset_scoreEditType(self, ctx, scoreType : str):
         """- Edit the categories of scores"""
+        self.ScoreEditType(self, ctx, scoreType)
+            
+    # Edit score types
+    async def ScoreEditType(self, ctx, scoreType : str):
         if scoreType:
             for st in self.settings["SCORE_TYPE"]:
                 if st == scoreType:
@@ -207,11 +211,11 @@ class Velka:
                                 self.settings["SCORE_TYPE"][st]["roleCost"] = int(val)
                         else:
                             await self.bot.say("Invalid value.")
-                            self._velkaset_scoreEditType(self, ctx, scoreType)
+                            self.ScoreEditType(self, ctx, scoreType)
                             return
                         self.saveSettings()
                         await self.bot.say("Value saved.")
-                        self._velkaset_scoreEditType(self, ctx, scoreType)
+                        self.ScoreEditType(self, ctx, scoreType)
                         return
                     if msg == "0":
                         await self.bot.say("Quitting edit mode.")
@@ -252,7 +256,7 @@ class Velka:
                 msg = await self.bot.wait_for_message(author=ctx.message.author, timeout=60)
                 msg = msg.content
                 if msg.lower() == "yes" or msg.lower() == "y":
-                    self._velkaset_scoreEditType(self, ctx, command)
+                    self.ScoreEditType(self, ctx, command)
                 else:
                     await self.bot.say('No score type was added.')
             else:
@@ -262,7 +266,7 @@ class Velka:
                 self.saveSettings()
                 self.saveScores()
                 await self.bot.say(command + " created.")
-                self.self._velkaset_scoreEditType(self, ctx, command)
+                self.self.ScoreEditType(self, ctx, command)
         else:
             await self.bot.say('Please type a unique score type command name after "scoreAddType".')
     
