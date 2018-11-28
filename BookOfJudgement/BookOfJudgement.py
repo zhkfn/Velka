@@ -309,8 +309,8 @@ class Velka:
         if self.scores.get(member.id, 0) != 0:
             member_dict = self.scores[member.id]
             msg = "Judgement for " + member.name + ":"
-            for st, s in member_dict.iteritems()
-                msg += "\n   " + s + " : " + member_dict[s]
+            for st, s in enumerate(member_dict)
+                msg += "\n   " + st + " : " + str(s)
             msg += "Which score would you like to edit?"
             await self.bot.say(msg)
             msg = await self.bot.wait_for_message(author=ctx.message.author, timeout=60)
