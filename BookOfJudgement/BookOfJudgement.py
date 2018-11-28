@@ -26,16 +26,6 @@ class Velka:
         self.settingsLoc = ("data/judgement/settings.json")
         self.settings = fileIO(self.settingsLoc, 'load')
     
-    def saveSettings(self):
-        fileIO(self.settingsLoc, 'save', self.settings)
-        
-    def saveScores(self):
-        fileIO("data/judgement/scores.json", "save", self.scores)
-        
-    def emote(self, scoreType):
-        if self.settings["SCORE_TYPE"][scoreType]["emoteID"] == "0":
-            return ""
-        return str(discord.utils.get(self.bot.get_all_emojis(), idself.settings["SCORE_TYPE"][scoreType]["emoteID"]))
 
     # Settings
     @commands.group(pass_context=True)
@@ -146,6 +136,18 @@ class Velka:
                 _velkaset_scoreEditType(self, ctx, command)
         else:
             await self.bot.say('Please type a unique score type command name after "scoreAddType".')
+            
+    # Helper Functions
+    def saveSettings(self):
+        fileIO(self.settingsLoc, 'save', self.settings)
+        
+    def saveScores(self):
+        fileIO("data/judgement/scores.json", "save", self.scores)
+        
+    def emote(self, scoreType):
+        if self.settings["SCORE_TYPE"][scoreType]["emoteID"] == "0":
+            return ""
+        return str(discord.utils.get(self.bot.get_all_emojis(), idself.settings["SCORE_TYPE"][scoreType]["emoteID"]))
 
 def check_folder():
     if not os.path.exists("data/judgement"):
