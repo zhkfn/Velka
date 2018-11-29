@@ -16,8 +16,7 @@ except:
 log = logging.getLogger("red.judgement")
 
 class Velka:
-    """Keep track of user scores through ![judgement_type] @mention
-    For now judgement types are hard coded: Sunlight & Wraith"""
+    """Keep track of user scores through ![judgement_type] @mention"""
 
     # Initiate: Load existing scores and settings
     def __init__(self, bot):
@@ -78,7 +77,6 @@ class Velka:
                 # Add cooldown and daily limit
                 self._process_scores(member, 1, scoreType)
                 if self.settings['RESPOND_ON_POINT']:
-                    await self.bot.say(scoreType)
                     msg = "{}{} now has {} {}.".format(
                         self.emote(scoreType), member.name,
                         self.scores[member.id][scoreType],
@@ -312,7 +310,7 @@ class Velka:
             msg = "Judgement for " + member.name + ":"
             for st, s in member_dict.items():
                 msg += "\n   " + st + " : " + str(s)
-            msg += "Which score would you like to edit?"
+            msg += "\nWhich score would you like to edit?"
             await self.bot.say(msg)
             msg = await self.bot.wait_for_message(author=ctx.message.author, timeout=60)
             if msg is None:
