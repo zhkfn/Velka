@@ -56,8 +56,8 @@ class Velka:
         mentions = message.mentions
         if message.author.id == self.bot.user.id:
             return
-        if message.guild is None:
-            return
+        #if message.guild is None:
+        #    return
         if len(mentions) < 1:
             return
         splitted = content.split(" ")
@@ -113,8 +113,8 @@ class Velka:
     @commands.command(pass_context=True)
     async def book(self, ctx):
         """leaderboard"""
-        if ctx.message.guild is None:
-            return
+        #if ctx.message.guild is None:
+        #    return
         server = ctx.message.server
         splitted = ctx.message.content.split(" ")
         if len(splitted) >= 2:
