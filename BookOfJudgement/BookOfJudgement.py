@@ -77,7 +77,7 @@ class Velka:
                 # Add cooldown and daily limit
                 self._process_scores(member, 1, scoreType)
                 if self.settings['RESPOND_ON_POINT']:
-                    if self.scores[member.id][scoreType] == 1:
+                    if str(self.scores[member.id][scoreType]) == "1":
                         noun = self.settings['SCORE_TYPE'][scoreType]["noun_s"]
                     else:
                         noun = self.settings['SCORE_TYPE'][scoreType]["noun"]
@@ -99,7 +99,7 @@ class Velka:
             member_dict = self.scores[member.id]
             msg = "Judgement for " + member.name + ":"
             for st, s in self.settings["SCORE_TYPE"].items():
-                if member_dict[st] == "1":
+                if str(member_dict[st]) == "1":
                     noun = s["noun_s"]
                 else:
                     noun = s["noun"]
