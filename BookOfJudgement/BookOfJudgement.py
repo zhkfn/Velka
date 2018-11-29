@@ -111,7 +111,7 @@ class Velka:
             await self.bot.say(member.name + " has not yet been judged.")
 
     # Leaderboard
-    @commands.command(pass_context=True)
+    @commands.command(pass_context=True, no_pm=True)
     async def book(self, ctx):
         """leaderboard"""
         #if ctx.message.guild is None:
