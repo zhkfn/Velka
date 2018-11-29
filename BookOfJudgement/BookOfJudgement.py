@@ -30,7 +30,7 @@ class Velka:
         member_id = member.id
         if member_id in self.scores:
             if judgement_type in self.scores.get(member_id, {}):
-                if self.scores[member_id][judgement_type] - score_to_add <= 0:
+                if self.scores[member_id][judgement_type] + score_to_add <= 0:
                     self.scores[member_id][judgement_type] = 0
                     total = 0
                     for score in self.scores[member_id]:
