@@ -359,7 +359,7 @@ class Velka:
     def emote(self, scoreType):
         if self.settings["SCORE_TYPE"][scoreType]["emoteID"] == "0":
             return ""
-        return str(discord.utils.get(self.bot.get_all_emojis(), idself.settings["SCORE_TYPE"][scoreType]["emoteID"]))
+        return str(discord.utils.get(self.bot.get_all_emojis(), self.settings["SCORE_TYPE"][scoreType]["emoteID"]))
     
 def check_folder():
     if not os.path.exists("data/judgement"):
