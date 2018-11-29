@@ -88,7 +88,9 @@ class Velka:
     async def judgement(self, ctx):
         """Checks a user's judgement points"""
         member = ctx.message.author
-        member_id = member.id
+        mentions = message.mentions
+        if len(mentions) > 0:
+            member = mentions[0]
         if self.scores.get(member.id, 0) != 0:
             member_dict = self.scores[member.id]
             msg = "Judgement for " + member.name + ":"
