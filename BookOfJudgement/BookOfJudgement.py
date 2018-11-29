@@ -83,8 +83,7 @@ class Velka:
                         noun = self.settings['SCORE_TYPE'][scoreType]["noun"]
                     msg = "{}{} now has {} {}.".format(
                         self.emote(scoreType), member.name,
-                        self.scores[member.id][scoreType],
-                        self.settings['SCORE_TYPE'][scoreType]["noun"])
+                        self.scores[member.id][scoreType], noun)
                     await self.bot.send_message(message.channel, msg)
 
     # Check user score
