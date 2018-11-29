@@ -128,7 +128,7 @@ class Velka:
                 return
             await self.Leaderboard(msg.content)
     
-    async def Leaderboard(self, scoreType)
+    async def Leaderboard(self, scoreType):
         if scoreType in self.settings['SCORE_TYPE']:
             server = ctx.message.server
             member_ids = [m.id for m in server.members]
