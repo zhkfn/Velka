@@ -63,7 +63,7 @@ class Velka:
         if len(splitted) >= 1:
             command = splitted[0].lower()
             scoreType = ""
-            for st in self.settings['SCORE_TYPE']:
+            for st, s in self.settings['SCORE_TYPE'].items():
                 if "!"+st.lower() == splitted[0].lower():
                     scoreType = st
                     break
@@ -73,16 +73,17 @@ class Velka:
             return
         for member in mentions:
             if member == user and self.settings['DEBUG'] == False:
-                await self.bot.send_message(message.channel, "Thou canst not judge thyself. ")
+                await self.bot.send_message(message.channel, "Thou canst not judge thyself.")
             else:
                 # Add cooldown and daily limit
                 self._process_scores(member, 1, scoreType)
                 if self.settings['RESPOND_ON_POINT']:
+                    await self.bot.say(scoreType)
                     msg = "{}{} now has {} {}.".format(
                         self.emote(scoreType), member.name,
                         self.scores[member.id][scoreType],
                         self.settings['SCORE_TYPE'][scoreType]["noun"])
-                    await self.bot.say(msg)
+                    await self.bot.send_message(message.channel, msg)
 
     # Check user score
     @commands.command(pass_context=True)
