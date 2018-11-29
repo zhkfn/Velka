@@ -135,7 +135,7 @@ class Velka:
             karma_server_members = [key for key in self.scores.keys() if key in member_ids]
             names = list(map(lambda mid: discord.utils.get(server.members, id=mid), karma_server_members))
             scores = list(map(lambda mid: self.scores[mid][scoreType],karma_server_members))
-            headers = [self.settings['SCORE_TYPE']["noun"], "User"]
+            headers = [self.settings['SCORE_TYPE'][scoreType]["noun"], "User"]
             body = sorted(zip(scores, names), key=lambda tup: tup[1], reverse=True)[:10]
             table = tabulate.tabulate(body, headers, tablefmt="psql")
             await self.bot.say(scoreType.upper() + " LEADERBOARD")
