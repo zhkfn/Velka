@@ -195,6 +195,7 @@ class Velka:
     async def ScoreEditType(self, ctx, scoreType : str):
         if scoreType:
             if scoreType in self.settings['SCORE_TYPE']:
+                st = scoreType
                 msg = "Currently Editing " + st + ".\n"
                 msg += "Which property do you want to edit?"
                 msg += "\n    1. Plural Counter Noun: " + str(self.settings["SCORE_TYPE"][st]["noun"])
