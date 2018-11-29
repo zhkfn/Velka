@@ -77,6 +77,10 @@ class Velka:
                 # Add cooldown and daily limit
                 self._process_scores(member, 1, scoreType)
                 if self.settings['RESPOND_ON_POINT']:
+                    if self.scores[member.id][scoreType] == 1:
+                        noun = self.settings['SCORE_TYPE'][scoreType]["noun_s"]
+                    else:
+                        noun = self.settings['SCORE_TYPE'][scoreType]["noun"]
                     msg = "{}{} now has {} {}.".format(
                         self.emote(scoreType), member.name,
                         self.scores[member.id][scoreType],
@@ -95,7 +99,11 @@ class Velka:
             member_dict = self.scores[member.id]
             msg = "Judgement for " + member.name + ":"
             for st, s in self.settings["SCORE_TYPE"].items():
-                msg += "\n" + self.emote(st) + str(member_dict[st]) + " " + s["noun"] + "."
+                if member_dict[st] == 1:
+                    noun = s["noun_s"]
+                else:
+                    noun = s["noun"]
+                msg += "\n" + self.emote(st) + str(member_dict[st]) + " " + noun + "."
             await self.bot.say(msg)
         else:
             await self.bot.say(member.name + " has not yet been judged.")
@@ -106,19 +114,34 @@ class Velka:
     @commands.command(pass_context=True)
     async def bookOfJudgement(self, ctx):
         """leaderboard"""
-        server = ctx.message.server
-        member_ids = [m.id for m in server.members]
-        karma_server_members = [key for key in self.scores.keys()
-                                if key in member_ids]
-        names = list(map(lambda mid: discord.utils.get(server.members, id=mid),
-                         karma_server_members))
-        scores = list(map(lambda mid: self.scores[mid]["Wraith"],
-                          karma_server_members))
-        headers = ["Sin", "user"]
-        body = sorted(zip(scores, names), key=lambda tup: tup[1],
-                      reverse=True)[:10]
-        table = tabulate.tabulate(body, headers, tablefmt="psql")
-        await self.bot.say(box(table))
+        splitted = ctx.message.content.split(" ")
+        if len(splitted) >= 2:
+            scoreType = splitted[1]
+            await self.Leaderboard(scoreType)
+        else:
+            msg = "Which leaderboard would you like to see?")
+            for st in self.settings["SCORE_TYPE"]:
+                msg += "\n    " + st
+            await self.bot.say(msg)
+            msg = await self.bot.wait_for_message(author=ctx.message.author, timeout=60)
+            if msg is None:
+                return
+            await self.Leaderboard(
+    
+    async def Leaderboard(self, scoreType)
+        if scoreType in self.settings['SCORE_TYPE']:
+            server = ctx.message.server
+            member_ids = [m.id for m in server.members]
+            karma_server_members = [key for key in self.scores.keys() if key in member_ids]
+            names = list(map(lambda mid: discord.utils.get(server.members, id=mid), karma_server_members))
+            scores = list(map(lambda mid: self.scores[mid][scoreType],karma_server_members))
+            headers = [self.settings['SCORE_TYPE']["noun"], "User"]
+            body = sorted(zip(scores, names), key=lambda tup: tup[1], reverse=True)[:10]
+            table = tabulate.tabulate(body, headers, tablefmt="psql")
+            await self.bot.say(scoreType.upper() + " LEADERBOARD")
+            await self.bot.say(box(table))
+        else:
+            await self.bot.say("That leaderboard does not exist.")
         
     # Decay scores weekly. Delete any users with no score.
     # Take away roles when score too low
@@ -171,57 +194,63 @@ class Velka:
     # Edit score types
     async def ScoreEditType(self, ctx, scoreType : str):
         if scoreType:
-            for st in self.settings["SCORE_TYPE"]:
-                if st == scoreType:
-                    msg = "Currently Editing " + st + ".\n"
-                    msg += "Which property do you want to edit?"
-                    msg += "\n    1. Counter Noun: " + str(self.settings["SCORE_TYPE"][st]["noun"])
-                    msg += "\n    2. Emote ID: " + str(self.settings["SCORE_TYPE"][st]["emoteID"])
-                    msg += "\n    3. Weekly Decay Rate: " + str(self.settings["SCORE_TYPE"][st]["decayRate"])
-                    msg += "\n    4. Daily Limit: " + str(self.settings["SCORE_TYPE"][st]["dailyLimit"])
-                    msg += "\n    5. Award Role: " + str(self.settings["SCORE_TYPE"][st]["role"])
-                    msg += "\n    6. Role Cost: " + str(self.settings["SCORE_TYPE"][st]["roleCost"])
-                    msg += "\n    0. Exit"
-                    await self.bot.say(msg)
-                    msg = await self.bot.wait_for_message(author=ctx.message.author, timeout=60)
-                    if msg is None:
-                        await self.bot.say("Nothing selected. Quitting edit mode.")
+            if scoreType in self.settings['SCORE_TYPE']:
+                msg = "Currently Editing " + st + ".\n"
+                msg += "Which property do you want to edit?"
+                msg += "\n    1. Plural Counter Noun: " + str(self.settings["SCORE_TYPE"][st]["noun"])
+                msg += "\n    2. Singular Counter Noun: "
+                if "noun_s" in self.settings["SCORE_TYPE"][st]:
+                    msg += str(self.settings["SCORE_TYPE"][st]["noun_s"])
+                else:
+                    msg += str(self.settings["SCORE_TYPE"][st]["noun"])
+                msg += "\n    3. Emote ID: " + str(self.settings["SCORE_TYPE"][st]["emoteID"])
+                msg += "\n    4. Weekly Decay Rate: " + str(self.settings["SCORE_TYPE"][st]["decayRate"])
+                msg += "\n    5. Daily Limit: " + str(self.settings["SCORE_TYPE"][st]["dailyLimit"])
+                msg += "\n    6. Award Role: " + str(self.settings["SCORE_TYPE"][st]["role"])
+                msg += "\n    7. Role Cost: " + str(self.settings["SCORE_TYPE"][st]["roleCost"])
+                msg += "\n    0. Exit"
+                await self.bot.say(msg)
+                msg = await self.bot.wait_for_message(author=ctx.message.author, timeout=60)
+                if msg is None:
+                    await self.bot.say("Nothing selected. Quitting edit mode.")
+                    return
+                msg = msg.content
+                if str.isdigit(msg) and int(msg) > 0 and int(msg) < 8:
+                    sel = int(msg)
+                    await self.bot.say("What value should it be set to?")
+                    val = await self.bot.wait_for_message(author=ctx.message.author, timeout=60)
+                    if val is None:
+                        await self.bot.say("No value given. Quitting edit mode.")
                         return
-                    msg = msg.content
-                    if str.isdigit(msg) and int(msg) > 0 and int(msg) < 7:
-                        sel = int(msg)
-                        await self.bot.say("What value should it be set to?")
-                        val = await self.bot.wait_for_message(author=ctx.message.author, timeout=60)
-                        if val is None:
-                            await self.bot.say("No value given. Quitting edit mode.")
-                            return
-                        val = val.content
-                        if sel == 1:
-                            self.settings["SCORE_TYPE"][st]["noun"] = val
-                        elif sel == 2:
-                            self.settings["SCORE_TYPE"][st]["emoteID"] = val
+                    val = val.content
+                    if sel == 1:
+                        self.settings["SCORE_TYPE"][st]["noun"] = val
+                    if sel == 2:
+                        self.settings["SCORE_TYPE"][st]["noun_s"] = val
+                    elif sel == 3:
+                        self.settings["SCORE_TYPE"][st]["emoteID"] = val
+                    elif sel == 6:
+                        self.settings["SCORE_TYPE"][st]["role"] = val
+                    elif str.isdigit(val):
+                        if sel == 4:
+                            self.settings["SCORE_TYPE"][st]["decayRate"] = int(val)
                         elif sel == 5:
-                            self.settings["SCORE_TYPE"][st]["role"] = val
-                        elif str.isdigit(val):
-                            if sel == 3:
-                                self.settings["SCORE_TYPE"][st]["decayRate"] = int(val)
-                            elif sel == 4:
-                                self.settings["SCORE_TYPE"][st]["dailyLimit"] = int(val)
-                            elif sel == 6:
-                                self.settings["SCORE_TYPE"][st]["roleCost"] = int(val)
-                        else:
-                            await self.bot.say("Invalid value.")
-                            await self.ScoreEditType(ctx, scoreType)
-                            return
-                        self.saveSettings()
-                        await self.bot.say("Value saved.")
+                            self.settings["SCORE_TYPE"][st]["dailyLimit"] = int(val)
+                        elif sel == 7:
+                            self.settings["SCORE_TYPE"][st]["roleCost"] = int(val)
+                    else:
+                        await self.bot.say("Invalid value.")
                         await self.ScoreEditType(ctx, scoreType)
                         return
-                    if msg == "0":
-                        await self.bot.say("Quitting edit mode.")
-                        return
-                    await self.bot.say("Invalid selection. Quitting edit mode.")
+                    self.saveSettings()
+                    await self.bot.say("Value saved.")
+                    await self.ScoreEditType(ctx, scoreType)
                     return
+                if msg == "0":
+                    await self.bot.say("Quitting edit mode.")
+                    return
+                await self.bot.say("Invalid selection. Quitting edit mode.")
+                return
             await self.bot.say("That score type does not exist.")
     
     # Cooldown between awarded points
