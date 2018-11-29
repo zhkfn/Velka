@@ -108,8 +108,6 @@ class Velka:
             await self.bot.say(member.name + " has not yet been judged.")
 
     # Leaderboard
-    # todo: Look at score type list
-    # todo: separate out score types
     @commands.command(pass_context=True)
     async def book(self, ctx):
         """leaderboard"""
@@ -131,7 +129,7 @@ class Velka:
     async def Leaderboard(self, scoreType, server):
         if scoreType in self.settings['SCORE_TYPE']:
             member_ids = [m.id for m in server.members]
-            karma_server_members = [key for key in self.scores.keys() if key in member_ids]
+            karma_server_members = [key for key in self.scores.keys() if key in member_ids and self.scores[key][scoreType] > 0]
             names = list(map(lambda mid: discord.utils.get(server.members, id=mid), karma_server_members))
             scores = list(map(lambda mid: self.scores[mid][scoreType],karma_server_members))
             noun = self.settings['SCORE_TYPE'][scoreType]["noun"]
