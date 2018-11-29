@@ -226,7 +226,7 @@ class Velka:
                     val = val.content
                     if sel == 1:
                         self.settings["SCORE_TYPE"][st]["noun"] = val
-                    if sel == 2:
+                    elif sel == 2:
                         self.settings["SCORE_TYPE"][st]["noun_s"] = val
                     elif sel == 3:
                         self.settings["SCORE_TYPE"][st]["emoteID"] = val
@@ -293,7 +293,7 @@ class Velka:
                 else:
                     await self.bot.say('No score type was added.')
             else:
-                self.settings['SCORE_TYPE'][command] = {"noun":"points", "emoteID":"0", "decayRate":2, "dailyLimit":2, "role":"", "roleCost":0}
+                self.settings['SCORE_TYPE'][command] = {"noun":"points", "noun_s":"point", "emoteID":"0", "decayRate":2, "dailyLimit":2, "role":"", "roleCost":0}
                 for m in self.scores:
                     self.scores[m][command] = 0
                 self.saveSettings()
