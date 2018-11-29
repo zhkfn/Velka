@@ -56,6 +56,8 @@ class Velka:
         mentions = message.mentions
         if message.author.id == self.bot.user.id:
             return
+        if message.channel.type != "text":
+            return
         if len(mentions) < 1:
             return
         splitted = content.split(" ")
