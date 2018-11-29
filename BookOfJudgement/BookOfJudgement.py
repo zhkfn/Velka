@@ -119,14 +119,14 @@ class Velka:
             scoreType = splitted[1]
             await self.Leaderboard(scoreType)
         else:
-            msg = "Which leaderboard would you like to see?")
+            msg = "Which leaderboard would you like to see?"
             for st in self.settings["SCORE_TYPE"]:
                 msg += "\n    " + st
             await self.bot.say(msg)
             msg = await self.bot.wait_for_message(author=ctx.message.author, timeout=60)
             if msg is None:
                 return
-            await self.Leaderboard(
+            await self.Leaderboard(msg.content)
     
     async def Leaderboard(self, scoreType)
         if scoreType in self.settings['SCORE_TYPE']:
