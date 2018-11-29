@@ -92,8 +92,8 @@ class Velka:
         if self.scores.get(member.id, 0) != 0:
             member_dict = self.scores[member.id]
             msg = "Judgement for " + member.name + ":"
-            for st in self.settings["SCORE_TYPE"]:
-                msg += "\n" + self.emote(st) + str(member_dict[st]) + " " + st["noun"] + "."
+            for st, s in self.settings["SCORE_TYPE"].items():
+                msg += "\n" + self.emote(st) + str(member_dict[st]) + " " + s["noun"] + "."
             await self.bot.say(msg)
         else:
             await self.bot.say(member.name + " has not yet been judged.")
@@ -134,7 +134,7 @@ class Velka:
     # Should velka respond to points added?
     @velkaset.command(pass_context=True, name="respond")
     async def _velkaset_respond(self, ctx):
-        """- Toggles if Velka will respond when points are awarded"""
+        """Toggles if Velka will respond when points are awarded"""
         if 'RESPOND_ON_POINT' not in self.settings:
             self.settings['RESPOND_ON_POINT'] = True
         if self.settings['RESPOND_ON_POINT']:
@@ -149,7 +149,7 @@ class Velka:
     # Debug mode?
     @velkaset.command(pass_context=True, name="debug")
     async def _velkaset_debug(self, ctx):
-        """- Toggles debug mode - award yourself points with no limits"""
+        """Toggles debug mode - award yourself points with no limits"""
         if 'DEBUG' not in self.settings:
             self.settings['DEBUG'] = True
         if self.settings['DEBUG']:
@@ -163,7 +163,7 @@ class Velka:
     # Edit score types
     @velkaset.command(pass_context=True, name="scoreEditType")
     async def _velkaset_scoreEditType(self, ctx, scoreType : str):
-        """- Edit the categories of scores"""
+        """Edit the categories of scores"""
         await self.ScoreEditType(ctx, scoreType)
             
     # Edit score types
@@ -225,7 +225,7 @@ class Velka:
     # Cooldown between awarded points
     @velkaset.command(pass_context=True, name="cooldown")
     async def _velkaset_cooldown(self, ctx):
-        """- Set the cooldown timer between points awarded to one person."""
+        """Set the cooldown timer between points awarded to one person."""
         if 'COOLDOWN' not in self.settings:
             self.settings['COOLDOWN'] = 300
         cd = self.settings['COOLDOWN'];
@@ -244,7 +244,7 @@ class Velka:
     # Create a new score type
     @velkaset.command(pass_context=True, name="scoreAddType")
     async def _velkaset_scoreAddType(self, ctx, command : str):
-        """- Create a new score type to track"""
+        """Create a new score type to track"""
         if self.settings.get('SCORE_TYPE', 0) == 0:
             self.settings['SCORE_TYPE'] = {}
             self.saveSettings()
@@ -274,7 +274,7 @@ class Velka:
     # delete an existing score type
     @velkaset.command(pass_context=True, name="scoreDeleteType")
     async def _velkaset_scoreDeleteType(self, ctx, command : str):
-        """- Delete an existing score"""
+        """Delete an existing score type"""
         if command:
             if command in self.settings['SCORE_TYPE']:
                 await self.bot.say("Are you sure you want to permanently delete " + command + "?")
@@ -300,11 +300,11 @@ class Velka:
     # Edit a user score
     @velkaset.command(pass_context=True, name="editUserScore")
     async def _velkaset_editUserScore(self, ctx):
+        """Manage a user's scores"""
         await self.EditUserScore(ctx)
     
     # Edit a user score
     async def EditUserScore(self, ctx):
-        """- Manage a user's scores"""
         if len(ctx.message.mentions) != 1:
             await self.bot.say('Please mention a user after "editUserScore"')
             return
