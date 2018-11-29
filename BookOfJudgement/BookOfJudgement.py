@@ -99,7 +99,7 @@ class Velka:
             member_dict = self.scores[member.id]
             msg = "Judgement for " + member.name + ":"
             for st, s in self.settings["SCORE_TYPE"].items():
-                if member_dict[st] == 1:
+                if member_dict[st] == "1":
                     noun = s["noun_s"]
                 else:
                     noun = s["noun"]
