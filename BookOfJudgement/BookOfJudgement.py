@@ -139,7 +139,7 @@ class Velka:
             headers = [noun, "User"]
             body = sorted(zip(scores, names), key=lambda tup: tup[0], reverse=True)[:10]
             table = tabulate.tabulate(body, headers, tablefmt="psql")
-            await self.bot.say("Book of " + scoreType + noun + ":")
+            await self.bot.say("Book of " + scoreType +" "+ noun + ":")
             await self.bot.say(box(table))
         else:
             await self.bot.say("That leaderboard does not exist.")
