@@ -112,7 +112,7 @@ class Velka:
     # todo: Look at score type list
     # todo: separate out score types
     @commands.command(pass_context=True)
-    async def bookOfJudgement(self, ctx):
+    async def book(self, ctx):
         """leaderboard"""
         server = ctx.message.server
         splitted = ctx.message.content.split(" ")
