@@ -114,10 +114,11 @@ class Velka:
     @commands.command(pass_context=True)
     async def bookOfJudgement(self, ctx):
         """leaderboard"""
+        server = ctx.message.server
         splitted = ctx.message.content.split(" ")
         if len(splitted) >= 2:
             scoreType = splitted[1]
-            await self.Leaderboard(scoreType)
+            await self.Leaderboard(scoreType, server)
         else:
             msg = "Which leaderboard would you like to see?"
             for st in self.settings["SCORE_TYPE"]:
@@ -126,11 +127,10 @@ class Velka:
             msg = await self.bot.wait_for_message(author=ctx.message.author, timeout=60)
             if msg is None:
                 return
-            await self.Leaderboard(msg.content)
+            await self.Leaderboard(msg.content, server)
     
-    async def Leaderboard(self, scoreType):
+    async def Leaderboard(self, scoreType, server):
         if scoreType in self.settings['SCORE_TYPE']:
-            server = ctx.message.server
             member_ids = [m.id for m in server.members]
             karma_server_members = [key for key in self.scores.keys() if key in member_ids]
             names = list(map(lambda mid: discord.utils.get(server.members, id=mid), karma_server_members))
