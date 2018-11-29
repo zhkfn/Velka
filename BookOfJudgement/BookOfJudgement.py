@@ -51,13 +51,14 @@ class Velka:
     # Give out points to users
     # todo: Obey daily limit
     async def check_for_score(self, message):
+        
         user = message.author
         content = message.content
         mentions = message.mentions
         if message.author.id == self.bot.user.id:
             return
-        #if message.guild is None:
-        #    return
+        if message.channel.is_private:
+            return
         if len(mentions) < 1:
             return
         splitted = content.split(" ")
