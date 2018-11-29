@@ -300,6 +300,10 @@ class Velka:
     # Edit a user score
     @velkaset.command(pass_context=True, name="editUserScore")
     async def _velkaset_editUserScore(self, ctx):
+        await self.EditUserScore(ctx)
+    
+    # Edit a user score
+    async def EditUserScore(self, ctx):
         """- Manage a user's scores"""
         if len(ctx.message.mentions) != 1:
             await self.bot.say('Please mention a user after "editUserScore"')
@@ -326,7 +330,7 @@ class Velka:
                     return
                 msg = msg.content
                 if str.isdigit(msg):
-                    _process_scores(self, member, int(msg) - member_dict[scoreType], scoreType)
+                    self._process_scores(member, int(msg) - member_dict[scoreType], scoreType)
                     await self.bot.say(scoreType + " is now " + msg)
                 else:
                     await self.bot.say("Invalid value.")
@@ -340,8 +344,8 @@ class Velka:
                 return
             msg = msg.content
             if msg.lower() == "yes" or msg.lower() == "y":
-                _process_scores(self, member, 0, list(self.settings["SCORE_TYPE"].keys())[0])
-                _velkaset_editUserScore(self, ctx)
+                self._process_scores(member, 0, list(self.settings["SCORE_TYPE"].keys())[0])
+                self.editUserScore(ctx)
     # Helper functions
     
     def saveSettings(self):
