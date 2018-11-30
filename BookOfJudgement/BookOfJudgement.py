@@ -91,6 +91,12 @@ class Velka:
 
     # Check user score
     @commands.command(pass_context=True)
+    async def credit(self, ctx):
+        """Credit for bot"""  
+        await self.bot.say("Art: https://www.deviantart.com/thequietsoul21\nCoding: https://github.com/zhkfn/Velka") 
+                    
+    # Check user score
+    @commands.command(pass_context=True)
     async def judgement(self, ctx):
         """Checks a user's judgement points"""
         member = ctx.message.author
