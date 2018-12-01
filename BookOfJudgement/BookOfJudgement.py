@@ -26,7 +26,7 @@ class Velka:
         self.settings = fileIO(self.settingsLoc, 'load')
         
     # Method for storing and adding points
-    def _process_scores(self, member, server, score_to_add, judgement_type):
+    async def _process_scores(self, member, server, score_to_add, judgement_type):
         member_id = member.id
         if member_id in self.scores:
             if judgement_type in self.scores.get(member_id, {}):
@@ -102,7 +102,7 @@ class Velka:
                 await self.bot.send_message(message.channel, "Thou canst not judge thyself.")
             else:
                 # Add cooldown and daily limit
-                self._process_scores(member, message.server, 1, scoreType)
+                await self._process_scores(member, message.server, 1, scoreType)
                 if self.settings['RESPOND_ON_POINT']:
                     if str(self.scores[member.id][scoreType]) == "1":
                         noun = self.settings['SCORE_TYPE'][scoreType]["noun_s"]
@@ -395,7 +395,7 @@ class Velka:
                     return
                 msg = msg.content
                 if str.isdigit(msg):
-                    self._process_scores(member, ctx.message.server, int(msg) - member_dict[scoreType], scoreType)
+                    await self._process_scores(member, ctx.message.server, int(msg) - member_dict[scoreType], scoreType)
                     await self.bot.say(scoreType + " is now " + msg)
                 else:
                     await self.bot.say("Invalid value.")
@@ -409,8 +409,8 @@ class Velka:
                 return
             msg = msg.content
             if msg.lower() == "yes" or msg.lower() == "y":
-                self._process_scores(member, ctx.message.server, 0, list(self.settings["SCORE_TYPE"].keys())[0])
-                self.editUserScore(ctx)
+                await self._process_scores(member, ctx.message.server, 0, list(self.settings["SCORE_TYPE"].keys())[0])
+                await self.editUserScore(ctx)
     # Helper functions
     
     def saveSettings(self):
