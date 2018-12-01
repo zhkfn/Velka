@@ -26,7 +26,7 @@ class Velka:
         self.settings = fileIO(self.settingsLoc, 'load')
         
     # Method for storing and adding points
-    def _process_scores(self, member, score_to_add, judgement_type):
+    def _process_scores(self, member, server score_to_add, judgement_type):
         member_id = member.id
         if member_id in self.scores:
             if judgement_type in self.scores.get(member_id, {}):
@@ -46,6 +46,15 @@ class Velka:
             for st in self.settings["SCORE_TYPE"]:
                 self.scores[member_id][st] = 0
             self.scores[member_id][judgement_type] = score_to_add
+        role = self.settings['SCORE_TYPE'][judgement_type]['role']
+        roleCost = self.settings['SCORE_TYPE'][judgement_type]['roleCost']
+        if role != "" and roleCost > 0:
+            if self.scores[member_id][judgement_type] >= roleCost:
+                if role not in [y.name for y in member.roles]:
+                    await self.addRole(server, member, role)
+            else:
+                if role in [y.name for y in member.roles]:
+                    await self.remRole(server, member, role)
         self.saveScores()
         
     # Method for adding roles
@@ -93,7 +102,7 @@ class Velka:
                 await self.bot.send_message(message.channel, "Thou canst not judge thyself.")
             else:
                 # Add cooldown and daily limit
-                self._process_scores(member, 1, scoreType)
+                self._process_scores(member, message.server, 1, scoreType)
                 if self.settings['RESPOND_ON_POINT']:
                     if str(self.scores[member.id][scoreType]) == "1":
                         noun = self.settings['SCORE_TYPE'][scoreType]["noun_s"]
@@ -104,7 +113,7 @@ class Velka:
                         self.scores[member.id][scoreType], noun)
                     await self.bot.send_message(message.channel, msg)
 
-    # Check user score
+    # Credit
     @commands.command(pass_context=True)
     async def credit(self, ctx):
         """Credit for bot"""  
@@ -386,7 +395,7 @@ class Velka:
                     return
                 msg = msg.content
                 if str.isdigit(msg):
-                    self._process_scores(member, int(msg) - member_dict[scoreType], scoreType)
+                    self._process_scores(member, ctx.message.server, int(msg) - member_dict[scoreType], scoreType)
                     await self.bot.say(scoreType + " is now " + msg)
                 else:
                     await self.bot.say("Invalid value.")
@@ -400,7 +409,7 @@ class Velka:
                 return
             msg = msg.content
             if msg.lower() == "yes" or msg.lower() == "y":
-                self._process_scores(member, 0, list(self.settings["SCORE_TYPE"].keys())[0])
+                self._process_scores(member, ctx.message.server, 0, list(self.settings["SCORE_TYPE"].keys())[0])
                 self.editUserScore(ctx)
     # Helper functions
     
