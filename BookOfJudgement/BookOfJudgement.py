@@ -50,11 +50,11 @@ class Velka:
         roleCost = self.settings['SCORE_TYPE'][judgement_type]['roleCost']
         if role != "" and roleCost > 0:
             if self.scores[member_id][judgement_type] >= roleCost:
-                if role not in [y.name for y in member.roles]:
-                    await self.addRole(server, member, role)
+                #if role not in [y.name for y in member.roles]:
+                await self.addRole(server, member, role)
             else:
-                if role in [y.name for y in member.roles]:
-                    await self.remRole(server, member, role)
+                #if role in [y.name for y in member.roles]:
+                await self.remRole(server, member, role)
         self.saveScores()
         
     # Method for adding roles
