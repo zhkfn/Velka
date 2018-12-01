@@ -47,11 +47,26 @@ class Velka:
                 self.scores[member_id][st] = 0
             self.scores[member_id][judgement_type] = score_to_add
         self.saveScores()
+        
+    # Method for adding roles
+    async def addRole(self, server, user, role : str):
+        role_obj = discord.utils.get(server.roles, name=role)
+        if role_obj is None:
+            return false
+        await self.bot.add_roles(user, role_obj) 
+        return true
+    
+    # Method for removing roles
+    async def remRole(self, server, user, role : str):
+        role_obj = discord.utils.get(server.roles, name=role)
+        if role_obj is None:
+            return false
+        await self.bot.remove_roles(user, role_obj) 
+        return true
 
     # Give out points to users
     # todo: Obey daily limit
     async def check_for_score(self, message):
-        
         user = message.author
         content = message.content
         mentions = message.mentions
