@@ -26,7 +26,7 @@ class Velka:
         self.settings = fileIO(self.settingsLoc, 'load')
         
     # Method for storing and adding points
-    def _process_scores(self, member, server score_to_add, judgement_type):
+    def _process_scores(self, member, server, score_to_add, judgement_type):
         member_id = member.id
         if member_id in self.scores:
             if judgement_type in self.scores.get(member_id, {}):
