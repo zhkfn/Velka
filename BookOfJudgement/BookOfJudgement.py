@@ -61,17 +61,17 @@ class Velka:
     async def addRole(self, server, user, role : str):
         role_obj = discord.utils.get(server.roles, name=role)
         if role_obj is None:
-            return false
+            return False
         await self.bot.add_roles(user, role_obj) 
-        return true
+        return True
     
     # Method for removing roles
     async def remRole(self, server, user, role : str):
         role_obj = discord.utils.get(server.roles, name=role)
         if role_obj is None:
-            return false
+            return False
         await self.bot.remove_roles(user, role_obj) 
-        return true
+        return True
 
     # Give out points to users
     # todo: Obey daily limit
