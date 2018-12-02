@@ -241,15 +241,16 @@ class Velka:
     
     
     async def loop(self):
-        self.cooldownLoop()
-        if datetime.datetime.today().weekday() != self.timeout["DAY"]:
-            self.dailyLimitReset()
-            if datetime.datetime.today().weekday() < self.timeout["DAY"]:
-                server = self.bot.get_server(self.settings["SERVER"])
-                await self.weeklyDecay(server)
-            self.timeout["DAY"] = datetime.datetime.today().weekday()
-            self.saveTimeout()
-        await asyncio.sleep(60)
+        while self is self.bot.get_cog("Velka"):
+            self.cooldownLoop()
+            if datetime.datetime.today().weekday() != self.timeout["DAY"]:
+                self.dailyLimitReset()
+                if datetime.datetime.today().weekday() < self.timeout["DAY"]:
+                    server = self.bot.get_server(self.settings["SERVER"])
+                    await self.weeklyDecay(server)
+                self.timeout["DAY"] = datetime.datetime.today().weekday()
+                self.saveTimeout()
+            await asyncio.sleep(60)
 
     # Settings
     @commands.group(pass_context=True)
@@ -441,11 +442,11 @@ class Velka:
         else:
             await self.bot.say('Please type an existing score type command after "scoreDeleteType".')
             
-    # delete an existing score type
+    # Reset the daily limit
     @velkaset.command(pass_context=True, name="resetDailyLimit")
     async def _velkaset_scoreDeleteType(self, ctx, command : str):
         """Reset today's daily limits"""
-        
+        self.dailyLimitReset()
     
     # Edit a user score
     @velkaset.command(pass_context=True, name="editUserScore")
