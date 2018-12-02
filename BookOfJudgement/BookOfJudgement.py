@@ -23,7 +23,7 @@ class Velka:
     def __init__(self, bot):
         self.bot = bot
         self.scores = fileIO("data/judgement/scores.json", "load")
-        self.timeout = fileID("data/judgement/timeout.json", "load")
+        self.timeout = fileIO("data/judgement/timeout.json", "load")
         self.settingsLoc = ("data/judgement/settings.json")
         self.settings = fileIO(self.settingsLoc, 'load')
         
