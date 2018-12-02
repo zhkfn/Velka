@@ -119,7 +119,7 @@ class Velka:
         """Credits for Velka"""  
         await self.bot.say("Art: https://www.deviantart.com/thequietsoul21\nCoding: https://github.com/zhkfn/Velka") 
         
-   @commands.command(pass_context=True)
+    @commands.command(pass_context=True)
     async def velkaHelp(self, ctx):
         """More help with using Velka"""
         msg = "Velka can award points to other users and keep track of scores with a leaderboard. "
