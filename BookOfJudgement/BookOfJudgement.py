@@ -22,6 +22,7 @@ class Velka:
     def __init__(self, bot):
         self.bot = bot
         self.scores = fileIO("data/judgement/scores.json", "load")
+        self.timeout = fileID("data/judgement/timeout.json", "load")
         self.settingsLoc = ("data/judgement/settings.json")
         self.settings = fileIO(self.settingsLoc, 'load')
         
@@ -50,10 +51,8 @@ class Velka:
         roleCost = self.settings['SCORE_TYPE'][judgement_type]['roleCost']
         if role != "" and roleCost > 0:
             if self.scores[member_id][judgement_type] >= roleCost:
-                #if role not in [y.name for y in member.roles]:
                 await self.addRole(server, member, role)
             else:
-                #if role in [y.name for y in member.roles]:
                 await self.remRole(server, member, role)
         self.saveScores()
         
@@ -74,7 +73,6 @@ class Velka:
         return True
 
     # Give out points to users
-    # todo: Obey daily limit
     async def check_for_score(self, message):
         user = message.author
         content = message.content
@@ -101,8 +99,29 @@ class Velka:
             if member == user and self.settings['DEBUG'] == False:
                 await self.bot.send_message(message.channel, "Thou canst not judge thyself.")
             else:
-                # Add cooldown and daily limit
+                if self.settings['DEBUG'] == False:
+                    if member.id in self.timeout["COOLDOWN"]:
+                        await self.bot.send_message(message.channel, member.name + " has been judged recently. Please wait a while longer.")
+                        return
+                    if scoreType in self.timeout["DAILY_LIMIT"]:
+                        if member.id in self.timeout["DAILY_LIMIT"][scoreType]:
+                            limit = self.settings["SCORE_TYPE"][scoreType]["dailyLimit"]
+                            amt = self.timeout["DAILY_LIMIT"][scoreType][member.id]
+                            if amt >= limit:
+                                msg = member.name " has already recieved the maximum "
+                                msg += self.settings['SCORE_TYPE'][scoreType]["noun"] + " for " + scoreType
+                                msg += " today."
+                                await self.bot.send_message(message.channel, msg)
+                            else:
+                                self.timeout["DAILY_LIMIT"][scoreType][member.id] = amt + 1
+                        else:
+                            self.timeout["DAILY_LIMIT"][scoreType][member.id] = 1
+                    else:
+                        self.timeout["DAILY_LIMIT"][scoreType] = {}
+                        self.timeout["DAILY_LIMIT"][scoreType][member.id] = 1
+                    self.saveTimeout()
                 await self._process_scores(member, message.server, 1, scoreType)
+                self.timeout["COOLDOWN"][member.id] = int(time.time())
                 if self.settings['RESPOND_ON_POINT']:
                     if str(self.scores[member.id][scoreType]) == "1":
                         noun = self.settings['SCORE_TYPE'][scoreType]["noun_s"]
@@ -160,8 +179,6 @@ class Velka:
     @commands.command(pass_context=True, no_pm=True)
     async def book(self, ctx):
         """leaderboard"""
-        #if ctx.message.guild is None:
-        #    return
         server = ctx.message.server
         splitted = ctx.message.content.split(" ")
         if len(splitted) >= 2:
@@ -191,10 +208,42 @@ class Velka:
             await self.bot.say(box(table))
         else:
             await self.bot.say("That leaderboard does not exist.")
-        
-    # Decay scores weekly. Delete any users with no score.
-    # Take away roles when score too low
-    # Assign role based on points
+    
+    async def weeklyDecay(self, server):
+        for st, s in self.settings["SCORE_TYPE"].items():
+            for mid in self.scores:
+                member = discord.utils.get(server.members, id=mid)
+                if member is None:
+                    self.scores.pop(mid)
+                else:
+                    await self._process_scores(member, server, s["decayRate"], st)\
+        self.saveScores()
+                    
+    def dailyLimitReset(self):
+        for st in self.timeout["DAILY_LIMIT"]:
+            self.timeout["DAILY_LIMIT"].pop(st)
+        self.saveTimeout()
+            
+    def cooldownLoop(self):
+        curTime = int(time.time());
+        if "COOLDOWN" not in self.timeout:
+            self.timeout["COOLDOWN"] = {}
+        else:
+            for mid, t in self.timeout["COOLDOWN"]:
+                if curTime - t > self.settings["COOLDOWN"]:
+                    self.timeout["COOLDOWN"].pop(mid)
+        self.saveTimeout()
+    
+    
+    async def loop(self):
+        self.cooldownLoop()
+        if datetime.datetime.today().weekday() != self.timeout["DAY"]:
+            self.dailyLimitReset()
+            if(datetime.datetime.today().weekday() < self.timeout["DAY"]:
+                server = self.bot.get_server(self.settings["SERVER"])
+                await self.weeklyDecay(server)
+            self.timeout["DAY"] = datetime.datetime.today().weekday()
+            self.saveTimeout()
 
     # Settings
     @commands.group(pass_context=True)
@@ -233,6 +282,14 @@ class Velka:
         self.settings['DEBUG'] = \
             not self.settings['DEBUG']
         self.saveSettings()
+        
+    # Set the server?
+    @velkaset.command(pass_context=True, name="server", no_pm=True)
+    async def _velkaset_server(self, ctx):
+        """Sets the server Velka will use"""
+        self.settings["SERVER"] = ctx.message.server.id;
+        self.saveSettings()
+        await self.bot.say("Active server set to " + ctx.message.server.name)
     
     # Edit score types
     @velkaset.command(pass_context=True, name="scoreEditType")
@@ -377,6 +434,12 @@ class Velka:
                 await self.bot.say('That score type does not exist.')
         else:
             await self.bot.say('Please type an existing score type command after "scoreDeleteType".')
+            
+    # delete an existing score type
+    @velkaset.command(pass_context=True, name="resetDailyLimit")
+    async def _velkaset_scoreDeleteType(self, ctx, command : str):
+        """Reset today's daily limits"""
+        
     
     # Edit a user score
     @velkaset.command(pass_context=True, name="editUserScore")
@@ -434,6 +497,9 @@ class Velka:
         
     def saveScores(self):
         fileIO("data/judgement/scores.json", "save", self.scores)
+    
+    def saveTimeout(self):
+        fileIO("data/judgement/timeout.json", "save", self.timeout)
         
     def emote(self, scoreType):
         if self.settings["SCORE_TYPE"][scoreType]["emoteID"] == "0":
@@ -448,17 +514,23 @@ def check_folder():
 
 def check_file():
     scores = {}
-    settings = {"RESPOND_ON_POINT": True}
+    settings = {"RESPOND_ON_POINT": True, "DEBUG": False, "COOLDOWN", 300}
+    timeout = {"DAY":datetime.datetime.today().weekday()}
 
     f = "data/judgement/scores.json"
     if not fileIO(f, "check"):
-        print("Creating default judgement's scores.json...")
+        print("Creating default scores.json...")
         fileIO(f, "save", scores)
-
+        
     f = "data/judgement/settings.json"
     if not fileIO(f, "check"):
-        print("Creating default judgement's scores.json...")
+        print("Creating default settings.json...")
         fileIO(f, "save", settings)
+
+    f = "data/judgement/timeout.json"
+    if not fileIO(f, "check"):
+        print("Creating default timeout.json...")
+        fileIO(f, "save", timeout)
 
 
 def setup(bot):
