@@ -442,6 +442,12 @@ class Velka:
             await self.bot.say('Please type an existing score type command after "scoreDeleteType".')
             
     # Redo weekly decay
+    @velkaset.command(pass_context=True, name="resetDailyLimits")
+    async def _velkaset_resetDailyLimits(self, ctx):
+        """[debugging] Reset todays limits for all users"""
+        self.weeklyDecay()        
+            
+    # Redo weekly decay
     @velkaset.command(pass_context=True, name="decayScores")
     async def _velkaset_decayScores(self, ctx):
         """[debugging] Decay all user scores by the weekly decay rate."""
