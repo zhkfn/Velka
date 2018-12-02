@@ -220,7 +220,7 @@ class Velka:
                 if member is None:
                     self.scores.pop(mid)
                 else:
-                    await self._process_scores(member, server, s["decayRate"], st)
+                    await self._process_scores(member, server, s["decayRate"] * -1, st)
         self.saveScores()
                     
     def dailyLimitReset(self):
@@ -240,7 +240,7 @@ class Velka:
     
     
     async def loop(self):
-        while self is self.bot.get_cog("Velka"):
+        while True:
             self.cooldownLoop()
             if datetime.datetime.today().weekday() != self.timeout["DAY"]:
                 self.dailyLimitReset()
@@ -249,7 +249,7 @@ class Velka:
                     await self.weeklyDecay(server)
                 self.timeout["DAY"] = datetime.datetime.today().weekday()
                 self.saveTimeout()
-            await asyncio.sleep(60)
+            await asyncio.sleep(10)
 
     # Settings
     @commands.group(pass_context=True)
