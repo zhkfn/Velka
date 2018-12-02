@@ -31,8 +31,6 @@ class Velka:
         
     # Method for storing and adding points
     async def _process_scores(self, member, server, score_to_add, judgement_type):
-        if not str.isdigit(str(score_to_add)):
-            return
         member_id = member.id
         score = 0
         if member_id in self.scores:
@@ -230,7 +228,7 @@ class Velka:
                 else:
                     decay = s["decayRate"]
                     decay *= -1
-                    await self._process_scores(member, server, decay, st)
+                    await self._process_scores(member, server, s["decayRate"], st)
         self.saveScores()
                     
     def dailyLimitReset(self):
