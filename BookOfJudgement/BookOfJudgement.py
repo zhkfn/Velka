@@ -219,7 +219,7 @@ class Velka:
     
     async def weeklyDecay(self, server):
         for st, s in self.settings["SCORE_TYPE"].items():
-            for mid in self.scores.keys():
+            for mid in list(self.scores.keys()):
                 member = discord.utils.get(server.members, id=mid)
                 if member is None:
                     self.scores.pop(mid)
@@ -228,7 +228,7 @@ class Velka:
         self.saveScores()
                     
     def dailyLimitReset(self):
-        for st in self.timeout["DAILY_LIMIT"].keys():
+        for st in list(self.timeout["DAILY_LIMIT"].keys()):
             self.timeout["DAILY_LIMIT"].pop(st)
         self.saveTimeout()
             
@@ -237,7 +237,7 @@ class Velka:
         if "COOLDOWN" not in self.timeout:
             self.timeout["COOLDOWN"] = {}
         else:
-            for mid in self.timeout["COOLDOWN"].keys():
+            for mid in list(self.timeout["COOLDOWN"].keys()):
                 if curTime - self.timeout["COOLDOWN"][mid] > self.settings["COOLDOWN"]:
                     self.timeout["COOLDOWN"].pop(mid)
         self.saveTimeout()
