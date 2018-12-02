@@ -108,7 +108,7 @@ class Velka:
                             limit = self.settings["SCORE_TYPE"][scoreType]["dailyLimit"]
                             amt = self.timeout["DAILY_LIMIT"][scoreType][member.id]
                             if amt >= limit:
-                                msg = member.name " has already recieved the maximum "
+                                msg = member.name + " has already recieved the maximum "
                                 msg += self.settings['SCORE_TYPE'][scoreType]["noun"] + " for " + scoreType
                                 msg += " today."
                                 await self.bot.send_message(message.channel, msg)
