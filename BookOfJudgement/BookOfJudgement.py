@@ -32,6 +32,7 @@ class Velka:
     # Method for storing and adding points
     async def _process_scores(self, member, server, score_to_add, judgement_type):
         member_id = member.id
+        score = 0
         if member_id in self.scores:
             if judgement_type in self.scores.get(member_id, {}):
                 if self.scores[member_id][judgement_type] + score_to_add <= 0:
@@ -43,17 +44,20 @@ class Velka:
                         self.scores.pop(member_id)
                 else:
                     self.scores[member_id][judgement_type] += score_to_add
+                    score = self.scores[member_id][judgement_type]
             else:
                 self.scores[member_id][judgement_type] = score_to_add
+                score = self.scores[member_id][judgement_type]
         else:
             self.scores[member_id] = {}
             for st in self.settings["SCORE_TYPE"]:
                 self.scores[member_id][st] = 0
             self.scores[member_id][judgement_type] = score_to_add
+            score = self.scores[member_id][judgement_type]
         role = self.settings['SCORE_TYPE'][judgement_type]['role']
         roleCost = self.settings['SCORE_TYPE'][judgement_type]['roleCost']
         if role != "" and roleCost > 0:
-            if self.scores[member_id][judgement_type] >= roleCost:
+            if score >= roleCost:
                 await self.addRole(server, member, role)
             else:
                 await self.remRole(server, member, role)
@@ -233,8 +237,8 @@ class Velka:
         if "COOLDOWN" not in self.timeout:
             self.timeout["COOLDOWN"] = {}
         else:
-            for mid, t in self.timeout["COOLDOWN"].items():
-                if curTime - t > self.settings["COOLDOWN"]:
+            for mid self.timeout["COOLDOWN"].keys():
+                if curTime - self.timeout["COOLDOWN"][mid] > self.settings["COOLDOWN"]:
                     self.timeout["COOLDOWN"].pop(mid)
         self.saveTimeout()
     
