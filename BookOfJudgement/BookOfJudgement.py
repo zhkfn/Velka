@@ -35,6 +35,8 @@ class Velka:
         score = 0
         if member_id in self.scores:
             if judgement_type in self.scores.get(member_id, {}):
+                if not str.isdigit(str(self.scores[member_id][judgement_type])): 
+                    self.scores[member_id][judgement_type] = 0
                 if self.scores[member_id][judgement_type] + score_to_add <= 0:
                     self.scores[member_id][judgement_type] = 0
                     total = 0
