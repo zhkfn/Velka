@@ -441,17 +441,26 @@ class Velka:
         else:
             await self.bot.say('Please type an existing score type command after "scoreDeleteType".')
             
-    # Reset the daily limit
-    @velkaset.command(pass_context=True, name="resetDailyLimit")
-    async def _velkaset_resetDailyLimit(self, ctx):
-        """[debugging] Reset today's daily limits"""
-        self.dailyLimitReset()
+            
+            # Debug mode?
+    @velkaset.command(pass_context=True, name="debug")
+    async def _velkaset_debug(self, ctx):
+        """Toggles debug mode - award yourself points with no limits"""
+        if 'DEBUG' not in self.settings:
+            self.settings['DEBUG'] = True
+        if self.settings['DEBUG']:
+            await self.bot.say("Debug mode disabled.")
+        else:
+            await self.bot.say('Debug mode enabled.')
+        self.settings['DEBUG'] = \
+            not self.settings['DEBUG']
+        self.saveSettings()
     
     # Redo weekly decay
     @velkaset.command(pass_context=True, name="decayScores")
-    async def _velkaset_resetDailyLimit(self, ctx):
+    async def _velkaset_decayScores(self, ctx):
         """[debugging] Decay all user scores by the weekly decay rate."""
-        self.weeklyDecay(ctx.message.server)
+        await self.weeklyDecay(ctx.message.server)
        
     
     # Edit a user score
