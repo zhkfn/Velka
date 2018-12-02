@@ -115,6 +115,7 @@ class Velka:
                                 msg += self.settings['SCORE_TYPE'][scoreType]["noun"] + " for " + scoreType
                                 msg += " today."
                                 await self.bot.send_message(message.channel, msg)
+                                return
                             else:
                                 self.timeout["DAILY_LIMIT"][scoreType][member.id] = amt + 1
                         else:
