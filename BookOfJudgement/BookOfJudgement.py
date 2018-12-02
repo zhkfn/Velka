@@ -234,7 +234,6 @@ class Velka:
             self.timeout["COOLDOWN"] = {}
         else:
             for mid, t in self.timeout["COOLDOWN"]:
-                print(mid + ": " + str(curTime - t))
                 if curTime - t > self.settings["COOLDOWN"]:
                     self.timeout["COOLDOWN"].pop(mid)
         self.saveTimeout()
@@ -444,9 +443,16 @@ class Velka:
             
     # Reset the daily limit
     @velkaset.command(pass_context=True, name="resetDailyLimit")
-    async def _velkaset_scoreDeleteType(self, ctx, command : str):
-        """Reset today's daily limits"""
+    async def _velkaset_resetDailyLimit(self, ctx):
+        """[debugging] Reset today's daily limits"""
         self.dailyLimitReset()
+    
+    # Redo weekly decay
+    @velkaset.command(pass_context=True, name="decayScores")
+    async def _velkaset_resetDailyLimit(self, ctx):
+        """[debugging] Decay all user scores by the weekly decay rate."""
+        self.weeklyDecay(ctx.message.server)
+       
     
     # Edit a user score
     @velkaset.command(pass_context=True, name="editUserScore")
