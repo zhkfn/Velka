@@ -26,6 +26,8 @@ class Velka:
         self.timeout = fileIO("data/judgement/timeout.json", "load")
         self.settingsLoc = ("data/judgement/settings.json")
         self.settings = fileIO(self.settingsLoc, 'load')
+        if "DAILY_LIMIT" not in self.timeout:
+            self.timeout["DAILY_LIMIT"] = {}
         
     # Method for storing and adding points
     async def _process_scores(self, member, server, score_to_add, judgement_type):
