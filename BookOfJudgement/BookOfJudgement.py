@@ -61,8 +61,6 @@ class Velka:
         role = self.settings['SCORE_TYPE'][judgement_type]['role']
         roleCost = self.settings['SCORE_TYPE'][judgement_type]['roleCost']
         if role != "" and roleCost > 0:
-            roleCost = int(roleCost)
-            score = int(score)
             if int(score) >= int(roleCost):
                 await self.addRole(server, member, role)
             else:
@@ -230,7 +228,7 @@ class Velka:
                 if member is None:
                     self.scores.pop(mid)
                 else:
-                    await self._process_scores(member, server, s["decayRate"] * -1, st)
+                    await self._process_scores(member, server, int(s["decayRate"] * -1), st)
         self.saveScores()
                     
     def dailyLimitReset(self):
@@ -451,17 +449,19 @@ class Velka:
         else:
             await self.bot.say('Please type an existing score type command after "scoreDeleteType".')
             
-    # Redo weekly decay
+    # Reset daily limits
     @velkaset.command(pass_context=True, name="resetDailyLimits")
     async def _velkaset_resetDailyLimits(self, ctx):
         """[debugging] Reset todays limits for all users"""
-        self.dailyLimitReset()        
+        self.dailyLimitReset()   
+        await self.bot.say("Daily limits reset.")
             
     # Redo weekly decay
     @velkaset.command(pass_context=True, name="decayScores")
     async def _velkaset_decayScores(self, ctx):
         """[debugging] Decay all user scores by the weekly decay rate."""
         await self.weeklyDecay(ctx.message.server)
+        await self.bot.say("Scores have been decayed.")
        
     
     # Edit a user score
