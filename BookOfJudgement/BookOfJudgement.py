@@ -245,6 +245,7 @@ class Velka:
                 await self.weeklyDecay(server)
             self.timeout["DAY"] = datetime.datetime.today().weekday()
             self.saveTimeout()
+        asyncio.sleep(60)
 
     # Settings
     @commands.group(pass_context=True)
@@ -541,4 +542,6 @@ def setup(bot):
     check_file()
     n = Velka(bot)
     bot.add_listener(n.check_for_score, "on_message")
+    loop = asyncio.get_event_loop()
+    loop.create_task(n.loop())
     bot.add_cog(n)
