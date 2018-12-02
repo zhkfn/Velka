@@ -116,8 +116,23 @@ class Velka:
     # Credit
     @commands.command(pass_context=True)
     async def credit(self, ctx):
-        """Credit for bot"""  
+        """Credits for Velka"""  
         await self.bot.say("Art: https://www.deviantart.com/thequietsoul21\nCoding: https://github.com/zhkfn/Velka") 
+        
+   @commands.command(pass_context=True)
+    async def velkaHelp(self, ctx):
+        """More help with using Velka"""
+        msg = "Velka can award points to other users and keep track of scores with a leaderboard. "
+        msg += "Points decay weekly to encourage continuous participation. "
+        msg += "Achieving certain point thresholds can award you special roles.\nCommands:\n"
+        msg += "`!judgement <@user>` Check how many points you have. If another user is \n"
+        msg += "                   mentioned, it will show their score instead.\n"
+        msg += "`!book` Show leaderboards.\n"
+        for st in self.settings["SCORE_TYPE"]:
+            msg += "`!" + st + "<@user>` Award " + st + " point."
+        msg += "`!credits` Display Velka's credits."
+        msg += "`!velkaset` Change Velka's settings (mods only)."
+        
                     
     # Check user score
     @commands.command(pass_context=True)
