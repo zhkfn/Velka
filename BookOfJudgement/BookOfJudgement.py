@@ -61,6 +61,8 @@ class Velka:
         role = self.settings['SCORE_TYPE'][judgement_type]['role']
         roleCost = self.settings['SCORE_TYPE'][judgement_type]['roleCost']
         if role != "" and roleCost > 0:
+            roleCost = int(roleCost)
+            score = int(score)
             if int(score) >= int(roleCost):
                 await self.addRole(server, member, role)
             else:
