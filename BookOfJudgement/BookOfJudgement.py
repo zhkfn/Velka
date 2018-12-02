@@ -129,9 +129,10 @@ class Velka:
         msg += "                   mentioned, it will show their score instead.\n"
         msg += "`!book` Show leaderboards.\n"
         for st in self.settings["SCORE_TYPE"]:
-            msg += "`!" + st + "<@user>` Award " + st + " point."
-        msg += "`!credits` Display Velka's credits."
+            msg += "`!" + st + "<@user>` Award " + st + " point.\n"
+        msg += "`!credits` Display Velka's credits.\n"
         msg += "`!velkaset` Change Velka's settings (mods only)."
+        await self.bot.say(msg)
         
                     
     # Check user score
