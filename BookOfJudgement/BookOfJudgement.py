@@ -239,7 +239,7 @@ class Velka:
         self.cooldownLoop()
         if datetime.datetime.today().weekday() != self.timeout["DAY"]:
             self.dailyLimitReset()
-            if(datetime.datetime.today().weekday() < self.timeout["DAY"]:
+            if datetime.datetime.today().weekday() < self.timeout["DAY"]:
                 server = self.bot.get_server(self.settings["SERVER"])
                 await self.weeklyDecay(server)
             self.timeout["DAY"] = datetime.datetime.today().weekday()
