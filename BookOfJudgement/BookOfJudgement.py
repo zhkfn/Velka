@@ -32,7 +32,7 @@ class Velka:
     # Method for storing and adding points
     async def _process_scores(self, member, server, score_to_add, judgement_type):
         member_id = member.id
-        score = 0
+        finalscore = 0
         if member_id in self.scores:
             if judgement_type in self.scores.get(member_id, {}):
                 if not str.isdigit(str(self.scores[member_id][judgement_type])): 
@@ -46,22 +46,20 @@ class Velka:
                         self.scores.pop(member_id)
                 else:
                     self.scores[member_id][judgement_type] += score_to_add
-                    score = self.scores[member_id][judgement_type]
+                    finalscore = self.scores[member_id][judgement_type]
             else:
                 self.scores[member_id][judgement_type] = score_to_add
-                score = self.scores[member_id][judgement_type]
+                finalscore = self.scores[member_id][judgement_type]
         else:
             self.scores[member_id] = {}
             for st in self.settings["SCORE_TYPE"]:
                 self.scores[member_id][st] = 0
             self.scores[member_id][judgement_type] = score_to_add
-            score = self.scores[member_id][judgement_type]
+            finalscore = self.scores[member_id][judgement_type]
         role = self.settings['SCORE_TYPE'][judgement_type]['role']
         roleCost = self.settings['SCORE_TYPE'][judgement_type]['roleCost']
         if role != "" and roleCost > 0:
-            if score < 0:
-                test = 0
-            if score >= roleCost:
+            if finalscore >= roleCost:
                 await self.addRole(server, member, role)
             else:
                 await self.remRole(server, member, role)
