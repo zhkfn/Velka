@@ -233,6 +233,7 @@ class Velka:
             self.timeout["COOLDOWN"] = {}
         else:
             for mid, t in self.timeout["COOLDOWN"]:
+                Print mid + ": " + str(curTime - t)
                 if curTime - t > self.settings["COOLDOWN"]:
                     self.timeout["COOLDOWN"].pop(mid)
         self.saveTimeout()
