@@ -124,12 +124,12 @@ class Velka:
         """More help with using Velka"""
         msg = "Velka can award points to other users and keep track of scores with a leaderboard. "
         msg += "Points decay weekly to encourage continuous participation. "
-        msg += "Achieving certain point thresholds can award you special roles.\nCommands:\n"
-        msg += "`!judgement <@user>` Check how many points you have. If another user is \n"
-        msg += "                   mentioned, it will show their score instead.\n"
+        msg += "Achieving certain point thresholds can award you special roles.\n\nCommands:\n"
+        msg += "`!judgement <@user>` Check how many points you have. If another user is "
+        msg += "mentioned, it will show their score instead.\n"
         msg += "`!book` Show leaderboards.\n"
         for st in self.settings["SCORE_TYPE"]:
-            msg += "`!" + st + "<@user>` Award " + st + " point.\n"
+            msg += "`!" + st + " <@user>` Award " + st + " point.\n"
         msg += "`!credits` Display Velka's credits.\n"
         msg += "`!velkaset` Change Velka's settings (mods only)."
         await self.bot.say(msg)
