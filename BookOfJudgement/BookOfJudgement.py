@@ -208,7 +208,7 @@ class Velka:
         if scoreType in self.settings['SCORE_TYPE']:
             member_ids = [m.id for m in server.members]
             karma_server_members = [key for key in self.scores.keys() if key in member_ids and self.scores[key][scoreType] > 0]
-            names = list(map(lambda mid: discord.utils.get(server.members, id=mid).name, karma_server_members))
+            names = list(map(lambda mid: discord.utils.get(server.members, id=mid).name[:8], karma_server_members))
             scores = list(map(lambda mid: self.scores[mid][scoreType],karma_server_members))
             noun = self.settings['SCORE_TYPE'][scoreType]["noun"]
             headers = [noun, "User"]
