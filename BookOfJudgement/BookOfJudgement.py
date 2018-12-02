@@ -445,7 +445,7 @@ class Velka:
     @velkaset.command(pass_context=True, name="resetDailyLimits")
     async def _velkaset_resetDailyLimits(self, ctx):
         """[debugging] Reset todays limits for all users"""
-        self.weeklyDecay()        
+        self.dailyLimitReset()        
             
     # Redo weekly decay
     @velkaset.command(pass_context=True, name="decayScores")
