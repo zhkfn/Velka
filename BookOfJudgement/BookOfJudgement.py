@@ -216,7 +216,7 @@ class Velka:
                 if member is None:
                     self.scores.pop(mid)
                 else:
-                    await self._process_scores(member, server, s["decayRate"], st)\
+                    await self._process_scores(member, server, s["decayRate"], st)
         self.saveScores()
                     
     def dailyLimitReset(self):
