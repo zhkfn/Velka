@@ -514,7 +514,7 @@ def check_folder():
 
 def check_file():
     scores = {}
-    settings = {"RESPOND_ON_POINT": True, "DEBUG": False, "COOLDOWN", 300}
+    settings = {"RESPOND_ON_POINT": True, "DEBUG": False, "COOLDOWN":300}
     timeout = {"DAY":datetime.datetime.today().weekday()}
 
     f = "data/judgement/scores.json"
