@@ -113,22 +113,22 @@ class Velka:
                         await self.bot.send_message(message.channel, member.name + " has been judged recently. Please wait a while longer.")
                         return
                     if scoreType in self.timeout["DAILY_LIMIT"]:
-                        if member.id in self.timeout["DAILY_LIMIT"][scoreType]:
+                        if user.id in self.timeout["DAILY_LIMIT"][scoreType]:
                             limit = self.settings["SCORE_TYPE"][scoreType]["dailyLimit"]
-                            amt = self.timeout["DAILY_LIMIT"][scoreType][member.id]
+                            amt = self.timeout["DAILY_LIMIT"][scoreType][user.id]
                             if amt >= limit:
-                                msg = member.name + " has already recieved the maximum "
+                                msg = user.name + " has already given the maximum "
                                 msg += self.settings['SCORE_TYPE'][scoreType]["noun"] + " for " + scoreType
                                 msg += " today."
                                 await self.bot.send_message(message.channel, msg)
                                 return
                             else:
-                                self.timeout["DAILY_LIMIT"][scoreType][member.id] = amt + 1
+                                self.timeout["DAILY_LIMIT"][scoreType][user.id] = amt + 1
                         else:
-                            self.timeout["DAILY_LIMIT"][scoreType][member.id] = 1
+                            self.timeout["DAILY_LIMIT"][scoreType][user.id] = 1
                     else:
                         self.timeout["DAILY_LIMIT"][scoreType] = {}
-                        self.timeout["DAILY_LIMIT"][scoreType][member.id] = 1
+                        self.timeout["DAILY_LIMIT"][scoreType][user.id] = 1
                     self.saveTimeout()
                 await self._process_scores(member, message.server, 1, scoreType)
                 self.timeout["COOLDOWN"][member.id] = int(time.time())
