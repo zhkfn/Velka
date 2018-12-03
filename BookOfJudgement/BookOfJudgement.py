@@ -141,7 +141,7 @@ class Velka:
                         self.emote(scoreType), member.name,
                         self.scores[member.id][scoreType], noun)
                     await self.bot.send_message(message.channel, msg)
-                    log = message.author.name + " awarded " + member.name " a " + scoreType + " " + self.settings['SCORE_TYPE'][scoreType]["noun_s"] + " in " + message.channel.name
+                    log = message.author.name + " awarded " + member.name +" a " + scoreType + " " + self.settings['SCORE_TYPE'][scoreType]["noun_s"] + " in " + message.channel.name
                     await self.bot.send_message(discord.utils.get(message.server.channels, name="velka-log"), log) 
 
     # Credit
