@@ -198,7 +198,7 @@ class Velka:
         splitted = ctx.message.content.split(" ")
         if len(splitted) >= 2:
             scoreType = splitted[1]
-            await self.Leaderboard(scoreType, server)
+            await self.Leaderboard(scoreType, server, ctx.message.channel)
         else:
             msg = "Which leaderboard would you like to see?"
             for st in self.settings["SCORE_TYPE"]:
