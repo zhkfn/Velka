@@ -528,7 +528,7 @@ class Velka:
             msg = msg.content
             if msg.lower() == "yes" or msg.lower() == "y":
                 await self._process_scores(member, ctx.message.server, 0, list(self.settings["SCORE_TYPE"].keys())[0])
-                await self.editUserScore(ctx)
+                await self.EditUserScore(ctx)
     # Helper functions
     
     def saveSettings(self):
