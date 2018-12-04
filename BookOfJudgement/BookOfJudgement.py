@@ -155,6 +155,8 @@ class Velka:
         await self.bot.say(embed=embed)
         embed=discord.Embed(title="Coding", description="Velka's Inner Workings", url="https://github.com/zhkfn/Velka") 
         await self.bot.say(embed=embed)
+        embed=discord.Embed(title="Credits", description="[Art](https://www.deviantart.com/thequietsoul21) \n[Coding](https://github.com/zhkfn/Velka)")
+        await self.bot.say(embed=embed)
         
     @commands.command(pass_context=True)
     async def velkaHelp(self, ctx):
@@ -162,8 +164,8 @@ class Velka:
         msg = "Velka can award points to other users and keep track of scores with a leaderboard. "
         msg += "Points decay weekly to encourage continuous participation. "
         msg += "Achieving certain point thresholds can award you special roles.\n\nCommands:\n"
-        msg += "`!judgement <@user>` Check how many points you have. If another user is "
-        msg += "mentioned, it will show their score instead. Leave blank for your own score\n"
+        msg += "`!judgement <@user>` Check how many points a user has. "
+        msg += "Leave `@user` blank for your own score\n"
         msg += "`!book` Show leaderboards.\n"
         for st in self.settings["SCORE_TYPE"]:
             msg += "`!" + st + " <@user>` Award " + st + " point.\n"
