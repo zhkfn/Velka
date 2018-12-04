@@ -482,7 +482,7 @@ class Velka:
         
     # Test Weekly loop
     @velkaset.command(pass_context=True, name="testWeek")
-    async def _velkaset_decayScores(self, ctx):
+    async def _velkaset_testWeek(self, ctx):
         """[debugging] Test weekly decay and logging."""
         self.timeout["DAY"] = 8
         self.saveTimeout()
