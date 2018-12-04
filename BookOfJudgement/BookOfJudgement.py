@@ -266,7 +266,8 @@ class Velka:
                 channel = discord.utils.get(server.channels, name="velka-log")
                 for st in self.settings["SCORE_TYPE"]:
                     await self.Leaderboard(st, server, channel)
-                await self.leader
+                await self.bot.send_message(channel, "Daily Backup:") 
+                await self.backup(channel) 
                 await self.bot.send_message(channel, "Resetting Daily Limits") 
                 self.dailyLimitReset()
                 if datetime.datetime.today().weekday() < self.timeout["DAY"]:
