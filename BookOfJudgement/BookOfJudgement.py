@@ -141,7 +141,10 @@ class Velka:
                         self.emote(scoreType), member.name,
                         self.scores[member.id][scoreType], noun)
                     await self.bot.send_message(message.channel, msg)
-                    log = message.author.name + " awarded " + member.name +" a " + scoreType + " " + self.settings['SCORE_TYPE'][scoreType]["noun_s"] + " in " + message.channel.name
+                    log = "{} awarded {} a {} {} in {}".format(
+                        message.author.mention, member.mention, scoreType
+                        self.settings['SCORE_TYPE'][scoreType]["noun_s"], 
+                        message.channel.mention)
                     await self.bot.send_message(discord.utils.get(message.server.channels, name="velka-log"), log) 
 
     # Credit
@@ -204,9 +207,9 @@ class Velka:
             msg = await self.bot.wait_for_message(author=ctx.message.author, timeout=60)
             if msg is None:
                 return
-            await self.Leaderboard(msg.content, server)
+            await self.Leaderboard(msg.content, server, ctx.message.channel)
     
-    async def Leaderboard(self, scoreType, server):
+    async def Leaderboard(self, scoreType, server, channel):
         if scoreType in self.settings['SCORE_TYPE']:
             member_ids = [m.id for m in server.members]
             karma_server_members = [key for key in self.scores.keys() if key in member_ids and self.scores[key][scoreType] > 0]
@@ -216,8 +219,8 @@ class Velka:
             headers = ['Pts', "User"]
             body = sorted(zip(scores, names), key=lambda tup: tup[0], reverse=True)[:10]
             table = tabulate.tabulate(body, headers, tablefmt="psql")
-            await self.bot.say("Book of " + scoreType +" "+ noun + ":")
-            await self.bot.say(box(table))
+            await self.bot.send_message(channel, "Book of " + scoreType +" "+ noun + ":")
+            await self.bot.send_message(channel, box(table))
         else:
             await self.bot.say("That leaderboard does not exist.")
     
@@ -232,6 +235,7 @@ class Velka:
                     decay *= -1
                     await self._process_scores(member, server, decay, st)
         self.saveScores()
+        await self.bot.send_message(discord.utils.get(message.server.channels, name="velka-log"), "Scores have been decayed!") 
                     
     def dailyLimitReset(self):
         for st in list(self.timeout["DAILY_LIMIT"].keys()):
@@ -253,9 +257,14 @@ class Velka:
         while True:
             self.cooldownLoop()
             if datetime.datetime.today().weekday() != self.timeout["DAY"]:
+                server = self.bot.get_server(self.settings["SERVER"])
+                channel = discord.utils.get(server.channels, name="velka-log")
+                for st in self.settings["SCORE_TYPE"]:
+                    await self.Leaderboard(st, server, channel)
+                await self.leader
+                await self.bot.send_message(, "Resetting Daily Limits") 
                 self.dailyLimitReset()
                 if datetime.datetime.today().weekday() < self.timeout["DAY"]:
-                    server = self.bot.get_server(self.settings["SERVER"])
                     await self.weeklyDecay(server)
                 self.timeout["DAY"] = datetime.datetime.today().weekday()
                 self.saveTimeout()
