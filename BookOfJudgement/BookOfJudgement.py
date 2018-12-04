@@ -161,7 +161,7 @@ class Velka:
         msg += "Points decay weekly to encourage continuous participation. "
         msg += "Achieving certain point thresholds can award you special roles.\n\nCommands:\n"
         msg += "`!judgement <@user>` Check how many points a user has. "
-        msg += "Leave `@user` blank for your own score\n"
+        msg += "Leave `<@user>` blank for your own score.\n"
         msg += "`!book` Show leaderboards.\n"
         for st in self.settings["SCORE_TYPE"]:
             msg += "`!" + st + " <@user>` Award " + st + " point.\n"
