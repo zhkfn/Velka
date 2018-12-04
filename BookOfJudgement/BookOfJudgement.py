@@ -142,7 +142,7 @@ class Velka:
                         self.scores[member.id][scoreType], noun)
                     await self.bot.send_message(message.channel, msg)
                     log = "{} awarded {} a {} {} in {}".format(
-                        message.author.mention, member.mention, scoreType
+                        message.author.mention, member.mention, scoreType,
                         self.settings['SCORE_TYPE'][scoreType]["noun_s"], 
                         message.channel.mention)
                     await self.bot.send_message(discord.utils.get(message.server.channels, name="velka-log"), log) 
