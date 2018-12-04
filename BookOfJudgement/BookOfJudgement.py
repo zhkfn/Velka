@@ -481,10 +481,14 @@ class Velka:
        
     # Backup
     @velkaset.command(pass_context=True, name="backup")
-    async def _velkaset_decayScores(self, ctx):
+    async def _velkaset_backup(self, ctx):
         """Back up scores and settings"""
-        await self.bot.send_file(ctx.message.channel,"data/judgement/scores.json") 
-       
+         await self.backup(ctx.message.channel)
+    
+    async def backup(self, channel):
+        await self.bot.send_file(channel,"data/judgement/scores.json")
+        await self.bot.send_file(channel,"data/judgement/settings.json")
+        await self.bot.send_file(channel,"data/judgement/timeout.json")
     
     # Edit a user score
     @velkaset.command(pass_context=True, name="editUserScore")
