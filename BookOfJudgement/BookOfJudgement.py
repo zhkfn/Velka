@@ -262,7 +262,7 @@ class Velka:
                 for st in self.settings["SCORE_TYPE"]:
                     await self.Leaderboard(st, server, channel)
                 await self.leader
-                await self.bot.send_message(, "Resetting Daily Limits") 
+                await self.bot.send_message(channel, "Resetting Daily Limits") 
                 self.dailyLimitReset()
                 if datetime.datetime.today().weekday() < self.timeout["DAY"]:
                     await self.weeklyDecay(server)
