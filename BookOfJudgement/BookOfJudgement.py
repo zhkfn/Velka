@@ -151,7 +151,7 @@ class Velka:
     @commands.command(pass_context=True)
     async def credits(self, ctx):
         """Credits for Velka"""
-        embed=discord.Embed(title="Credits:", description="----------------\n \n**[Art](https://www.deviantart.com/thequietsoul21) \n\n[Coding](https://github.com/zhkfn/Velka)**", color=7435993) 
+        embed=discord.Embed(description="__**Credits:**__\n\n**[Art](https://www.deviantart.com/thequietsoul21) \n\n[Coding](https://github.com/zhkfn/Velka)**", color=7435993) 
         await self.bot.say(embed=embed)
         
     @commands.command(pass_context=True)
