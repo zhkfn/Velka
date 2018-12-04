@@ -187,7 +187,7 @@ class Velka:
                     noun = s["noun_s"]
                 else:
                     noun = s["noun"]
-                msg += "\n" + self.emote(st) + str(member_dict[st]) + " " + noun + "."
+                msg += "\n" + self.emote(st) +" " +str(member_dict[st]) + " " + noun + "."
             await self.bot.say(msg)
         else:
             await self.bot.say(member.name + " has not yet been judged.")
