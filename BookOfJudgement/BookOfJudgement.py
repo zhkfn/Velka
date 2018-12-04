@@ -151,19 +151,20 @@ class Velka:
     @commands.command(pass_context=True)
     async def credits(self, ctx):
         """Credits for Velka"""  
-        await self.bot.say("Art: https://www.deviantart.com/thequietsoul21\nCoding: https://github.com/zhkfn/Velka") 
+        await self.bot.say("[Art](https://www.deviantart.com/thequietsoul21)\n[Coding](https://github.com/zhkfn/Velka)") 
         
     @commands.command(pass_context=True)
     async def velkaHelp(self, ctx):
-        """More help with using Velka"""
+        """More help with using Velka""
         msg = "Velka can award points to other users and keep track of scores with a leaderboard. "
         msg += "Points decay weekly to encourage continuous participation. "
         msg += "Achieving certain point thresholds can award you special roles.\n\nCommands:\n"
         msg += "`!judgement <@user>` Check how many points you have. If another user is "
-        msg += "mentioned, it will show their score instead.\n"
+        msg += "mentioned, it will show their score instead. Leave blank for your own score"
         msg += "`!book` Show leaderboards.\n"
         for st in self.settings["SCORE_TYPE"]:
             msg += "`!" + st + " <@user>` Award " + st + " point.\n"
+        msg += "*Note: You can mention multiple users to award several points at once!*\n" 
         msg += "`!credits` Display Velka's credits.\n"
         msg += "`!velkaset` Change Velka's settings (mods only)."
         await self.bot.say(msg)
@@ -219,7 +220,7 @@ class Velka:
             headers = ['Pts', "User"]
             body = sorted(zip(scores, names), key=lambda tup: tup[0], reverse=True)[:10]
             table = tabulate.tabulate(body, headers, tablefmt="psql")
-            msg = "{} Book of {} {}".format(
+            msg = "{} **[Book of {}]** {}".format(
                         self.emote(scoreType), noun.capitalize(),
                         self.emote(scoreType))
             await self.bot.send_message(channel, msg)
