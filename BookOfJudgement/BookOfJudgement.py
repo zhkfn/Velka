@@ -479,6 +479,12 @@ class Velka:
         await self.weeklyDecay(ctx.message.server)
         await self.bot.say("Scores have been decayed.")
        
+    # Backup
+    @velkaset.command(pass_context=True, name="backup")
+    async def _velkaset_decayScores(self, ctx):
+        """Back up scores and settings"""
+        await self.bot.send_file(ctx.message.channel,"data/judgement/scores.json") 
+       
     
     # Edit a user score
     @velkaset.command(pass_context=True, name="editUserScore")
