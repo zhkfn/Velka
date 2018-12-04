@@ -151,7 +151,10 @@ class Velka:
     @commands.command(pass_context=True)
     async def credits(self, ctx):
         """Credits for Velka"""  
-        await self.bot.say("[Art](https://www.deviantart.com/thequietsoul21)\n[Coding](https://github.com/zhkfn/Velka)") 
+        embed=discord.Embed(title="Art", description="Velka's Avatar", url="https://www.deviantart.com/thequietsoul21")
+        await self.bot.say(embed=embed)
+        embed=discord.Embed(title="Coding", description="Velka's Inner Workings", url="https://github.com/zhkfn/Velka") 
+        await self.bot.say(embed=embed)
         
     @commands.command(pass_context=True)
     async def velkaHelp(self, ctx):
@@ -160,7 +163,7 @@ class Velka:
         msg += "Points decay weekly to encourage continuous participation. "
         msg += "Achieving certain point thresholds can award you special roles.\n\nCommands:\n"
         msg += "`!judgement <@user>` Check how many points you have. If another user is "
-        msg += "mentioned, it will show their score instead. Leave blank for your own score"
+        msg += "mentioned, it will show their score instead. Leave blank for your own score\n"
         msg += "`!book` Show leaderboards.\n"
         for st in self.settings["SCORE_TYPE"]:
             msg += "`!" + st + " <@user>` Award " + st + " point.\n"
