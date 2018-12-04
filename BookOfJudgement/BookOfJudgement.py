@@ -240,7 +240,7 @@ class Velka:
                     decay *= -1
                     await self._process_scores(member, server, decay, st)
         self.saveScores()
-        await self.bot.send_message(discord.utils.get(message.server.channels, name="velka-log"), "Scores have been decayed!") 
+        await self.bot.send_message(discord.utils.get(server.channels, name="velka-log"), "Scores have been decayed!") 
                     
     def dailyLimitReset(self):
         for st in list(self.timeout["DAILY_LIMIT"].keys()):
