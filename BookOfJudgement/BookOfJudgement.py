@@ -155,7 +155,7 @@ class Velka:
         
     @commands.command(pass_context=True)
     async def velkaHelp(self, ctx):
-        """More help with using Velka""
+        """More help with using Velka""" 
         msg = "Velka can award points to other users and keep track of scores with a leaderboard. "
         msg += "Points decay weekly to encourage continuous participation. "
         msg += "Achieving certain point thresholds can award you special roles.\n\nCommands:\n"
