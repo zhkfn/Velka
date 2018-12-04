@@ -137,7 +137,7 @@ class Velka:
                         noun = self.settings['SCORE_TYPE'][scoreType]["noun_s"]
                     else:
                         noun = self.settings['SCORE_TYPE'][scoreType]["noun"]
-                    msg = "{}{} now has {} {}.".format(
+                    msg = "{} {} now has {} {}.".format(
                         self.emote(scoreType), member.name,
                         self.scores[member.id][scoreType], noun)
                     await self.bot.send_message(message.channel, msg)
@@ -146,7 +146,7 @@ class Velka:
 
     # Credit
     @commands.command(pass_context=True)
-    async def credit(self, ctx):
+    async def credits(self, ctx):
         """Credits for Velka"""  
         await self.bot.say("Art: https://www.deviantart.com/thequietsoul21\nCoding: https://github.com/zhkfn/Velka") 
         
