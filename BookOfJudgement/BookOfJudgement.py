@@ -479,6 +479,13 @@ class Velka:
         """[debugging] Decay all user scores by the weekly decay rate."""
         await self.weeklyDecay(ctx.message.server)
         await self.bot.say("Scores have been decayed.")
+        
+    # Test Weekly loop
+    @velkaset.command(pass_context=True, name="testWeek")
+    async def _velkaset_decayScores(self, ctx):
+        """[debugging] Test weekly decay and logging."""
+        self.timeout["DAY"] = 8
+        self.saveTimeout()
        
     # Backup
     @velkaset.command(pass_context=True, name="backup")
