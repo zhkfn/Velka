@@ -173,12 +173,8 @@ class Velka:
         await self.bot.say(msg)
     
     async def help(self, channel):
-        emote1 = "" 
-        if len(self.settings["SCORE_TYPE"]) > 0:
-            emote1 = self.emote(list(self.settings["SCORE_TYPE"].keys())[0]) 
-        emote2 = emote1
-        if len(self.settings["SCORE_TYPE"]) > 1:
-            emote2 = self.emote(list(self.settings["SCORE_TYPE"].keys())[1]) 
+        emote1 = self.emote(list(self.settings["SCORE_TYPE"].keys())[0]) 
+        emote2 = self.emote(list(self.settings["SCORE_TYPE"].keys())[1]) 
         
         msg = emote1 + "To check thine sins and victories, speaketh:```!judgement```" 
         msg += emote2 + "To view the judgement of another, speaketh:```!judgement @<user>```" 
