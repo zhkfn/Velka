@@ -274,7 +274,7 @@ class Velka:
                     await self.weeklyDecay(server)
                 self.timeout["DAY"] = datetime.datetime.today().weekday()
                 self.saveTimeout()
-            await asyncio.sleep(10)
+            await asyncio.sleep(60)
 
     # Settings
     @commands.group(pass_context=True)
