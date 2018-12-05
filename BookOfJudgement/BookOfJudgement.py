@@ -316,13 +316,28 @@ class Velka:
             not self.settings['DEBUG']
         self.saveSettings()
         
-    # Set the server?
-    @velkaset.command(pass_context=True, name="server", no_pm=True)
-    async def _velkaset_server(self, ctx):
-        """Sets the server Velka will use"""
-        self.settings["SERVER"] = ctx.message.server.id;
-        self.saveSettings()
-        await self.bot.say("Active server set to " + ctx.message.server.name)
+    # Set up the Bot
+    @velkaset.command(pass_context=True, name="setup", no_pm=True)
+    async def _velkaset_setup(self, ctx):
+        """Sets up Velka"""
+        if self.settings["SERVER"] != ctx.message.server.id;
+            await self.bot.say("This is a new server. Do you want to set up Velka on this server?") 
+            msg = await self.bot.wait_for_message(author=ctx.message.author, timeout=60)
+            if msg is None:
+                await self.bot.say('Exiting Setup')
+                return
+            msg = msg.content
+            if msg.lower() == "yes" or msg.lower() == "y":
+                self.settings["SERVER"] != ctx.message.server.id;
+                self.saveSettings()
+                await self.bot.say("Active server set to "+ctx.message.server.name)
+            else:
+                await self.bot.say('Exiting Setup')
+        # Set logging channel
+        # Set bot spam channel
+        # Set channels for each score type
+                                   
+                                   
     
     # Edit score types
     @velkaset.command(pass_context=True, name="scoreEditType")
@@ -581,7 +596,7 @@ def check_folder():
 
 def check_file():
     scores = {}
-    settings = {"RESPOND_ON_POINT": True, "DEBUG": False, "COOLDOWN":300}
+    settings = {"RESPOND_ON_POINT": True, "DEBUG": False, "COOLDOWN":300, "SERVER":""}
     timeout = {"DAY":datetime.datetime.today().weekday()}
 
     f = "data/judgement/scores.json"
