@@ -275,6 +275,9 @@ class Velka:
         while True:
             self.cooldownLoop()
             if datetime.datetime.today().weekday() != self.timeout["DAY"]:
+                day = self.timeout["DAY"]
+                self.timeout["DAY"] = datetime.datetime.today().weekday()
+                self.saveTimeout()
                 server = self.bot.get_server(self.settings["SERVER"])
                 channel = discord.utils.get(server.channels, name="velka-log")
                 for st in self.settings["SCORE_TYPE"]:
@@ -283,13 +286,11 @@ class Velka:
                 await self.backup(channel) 
                 await self.bot.send_message(channel, "Resetting Daily Limits") 
                 self.dailyLimitReset()
-                if datetime.datetime.today().weekday() < self.timeout["DAY"]:
+                if datetime.datetime.today().weekday() < day:
                     await self.weeklyDecay(server)
-                self.timeout["DAY"] = datetime.datetime.today().weekday()
-                self.saveTimeout()
                 channel = discord.utils.get(server.channels, name="check-rank")
                 await self.help(channel)
-            await asyncio.sleep(60)
+            await asyncio.sleep(10)
 
     # Settings
     @commands.group(pass_context=True)
