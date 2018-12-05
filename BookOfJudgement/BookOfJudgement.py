@@ -171,7 +171,21 @@ class Velka:
         msg += "`!credits` Display Velka's credits.\n"
         msg += "`!velkaset` Change Velka's settings (mods only)."
         await self.bot.say(msg)
+    
+    async def help(self, channel):
+        emote1 = "" 
+        if len(self.settings["SCORE_TYPE"]) > 0:
+            emote1 = self.emote(list(self.settings["SCORE_TYPE"].keys())[0]) 
+        emote2 = emote1
+        if len(self.settings["SCORE_TYPE"]) > 1:
+            emote2 = self.emote(list(self.settings["SCORE_TYPE"].keys())[1]) 
         
+        msg = emote1 + "To check thine sins and victories, speaketh:```!judgement```" 
+        msg += emote2 + "To view the judgement of another, speaketh:```!judgement @<user>```" 
+        msg += emote1 + "To view the most victorious speaketh:```!book sunlight```" 
+        msg += emote2 + "To view the most wretched speaketh:```!book wraith```" 
+        
+        await self.bot.send_message(channel,msg) 
                     
     # Check user score
     @commands.command(pass_context=True)
@@ -193,6 +207,7 @@ class Velka:
             await self.bot.say(msg)
         else:
             await self.bot.say(member.name + " has not yet been judged.")
+            
 
     # Leaderboard
     @commands.command(pass_context=True, no_pm=True)
@@ -276,6 +291,8 @@ class Velka:
                     await self.weeklyDecay(server)
                 self.timeout["DAY"] = datetime.datetime.today().weekday()
                 self.saveTimeout()
+                channel = discord.utils.get(server.channels, name="check-rank")
+                await self.help(channel)
             await asyncio.sleep(60)
 
     # Settings
