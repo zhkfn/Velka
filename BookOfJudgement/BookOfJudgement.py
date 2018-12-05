@@ -337,7 +337,7 @@ class Velka:
     @velkaset.command(pass_context=True, name="setup", no_pm=True)
     async def _velkaset_setup(self, ctx):
         """Sets up Velka"""
-        if self.settings["SERVER"] != ctx.message.server.id;
+        if self.settings["SERVER"] != ctx.message.server.id:
             await self.bot.say("This is a new server. Do you want to set up Velka on this server?") 
             msg = await self.bot.wait_for_message(author=ctx.message.author, timeout=60)
             if msg is None:
