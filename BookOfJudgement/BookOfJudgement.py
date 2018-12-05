@@ -90,6 +90,8 @@ class Velka:
             return
         if message.channel.is_private:
             return
+        if not self.get_prefix(message):
+            return
         if len(mentions) < 1:
             return
         splitted = content.split(" ")
@@ -564,6 +566,12 @@ class Velka:
         if self.settings["SCORE_TYPE"][scoreType]["emoteID"] == "0":
             return ""
         return str(discord.utils.get(self.bot.get_all_emojis(), id=str(self.settings["SCORE_TYPE"][scoreType]["emoteID"])))
+    
+    def get_prefix(self, message):
+        for p in self.bot.settings.get_prefixes(message.server):
+            if message.content.startswith(p):
+                return p
+        return False
     
 def check_folder():
     if not os.path.exists("data/judgement"):
