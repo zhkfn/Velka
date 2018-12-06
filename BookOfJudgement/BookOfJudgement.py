@@ -170,16 +170,16 @@ class Velka:
         msg += "*Note: You can mention multiple users to award several points at once!*\n" 
         msg += "`!credits` Display Velka's credits.\n"
         msg += "`!velkaset` Change Velka's settings (mods only)."
-        await self.bot.say(msg)
+        await client.send_message(ctx.author, msg)
     
     async def help(self, channel):
         emote1 = self.emote(list(self.settings["SCORE_TYPE"].keys())[0]) 
         emote2 = self.emote(list(self.settings["SCORE_TYPE"].keys())[1]) 
         
-        msg = emote1 + "To check thine sins and victories, speaketh:```!judgement```" 
-        msg += emote2 + "To view the judgement of another, speaketh:```!judgement @<user>```" 
-        msg += emote1 + "To view the most victorious speaketh:```!book sunlight```" 
-        msg += emote2 + "To view the most wretched speaketh:```!book wraith```" 
+        msg = emote1 + "To check thine sins and victories, speaketh:```!judgement```\n" 
+        msg += emote2 + "To view the judgement of another, speaketh:```!judgement @<user>```\n" 
+        msg += emote1 + "To view the most victorious speaketh:\n```!book sunlight```\n" 
+        msg += emote2 + "To view the most wretched speaketh:\n```!book wraith```\n" 
         
         await self.bot.send_message(channel,msg) 
                     
@@ -234,11 +234,10 @@ class Velka:
             headers = ['Pts', "User"]
             body = sorted(zip(scores, names), key=lambda tup: tup[0], reverse=True)[:10]
             table = tabulate.tabulate(body, headers, tablefmt="psql")
-            msg = "{} **[Book of {}]** {}".format(
+            msg = "{} **[Book of {}]** {}\n".format(
                         self.emote(scoreType), noun.capitalize(),
                         self.emote(scoreType))
-            await self.bot.send_message(channel, msg)
-            await self.bot.send_message(channel, box(table))
+            await self.bot.send_message(channel, msg + box(table))
         else:
             await self.bot.say("That leaderboard does not exist.")
     
@@ -279,6 +278,8 @@ class Velka:
                 self.timeout["DAY"] = datetime.datetime.today().weekday()
                 self.saveTimeout()
                 server = self.bot.get_server(self.settings["SERVER"])
+                channel = discord.utils.get(server.channels, name="check-rank")
+                await self.help(channel)
                 channel = discord.utils.get(server.channels, name="velka-log")
                 for st in self.settings["SCORE_TYPE"]:
                     await self.Leaderboard(st, server, channel)
@@ -288,8 +289,6 @@ class Velka:
                 self.dailyLimitReset()
                 if datetime.datetime.today().weekday() < day:
                     await self.weeklyDecay(server)
-                channel = discord.utils.get(server.channels, name="check-rank")
-                await self.help(channel)
             await asyncio.sleep(30)
 
     # Settings
@@ -334,7 +333,8 @@ class Velka:
     @velkaset.command(pass_context=True, name="setup", no_pm=True)
     async def _velkaset_setup(self, ctx):
         """Sets up Velka"""
-        if self.settings["SERVER"] != ctx.message.server.id:
+        server = ctx.message.server
+        if self.settings["SERVER"] != server.id:
             await self.bot.say("This is a new server. Do you want to set up Velka on this server?") 
             msg = await self.bot.wait_for_message(author=ctx.message.author, timeout=60)
             if msg is None:
@@ -347,9 +347,91 @@ class Velka:
                 await self.bot.say("Active server set to "+ctx.message.server.name)
             else:
                 await self.bot.say('Exiting Setup')
-        # Set logging channel
-        # Set bot spam channel
-        # Set channels for each score type
+        msg = "__Channel Settings__\nWhich channel would you like to set up?"
+        msg += "\n  1. Logging Channel"
+        msg += "\n  2. Spam channel"
+        int ct = 3
+        for st in self.settings["SCORE_TYPE"]:
+            msg += "\n  {}. !{} channels".format(str(ct), st)
+            ct += 1
+        await self.bot.say(msg)
+        msg = await self.bot.wait_for_message(author=ctx.message.author, timeout=60)
+        if msg is None:
+            await self.bot.say('Exiting Setup')
+            return
+        msg = msg.content
+        if str.isdigit(msg) and int(msg) > 0 and int(msg) < ct:
+            if int(msg) == 1:
+                if "LOGGING" in self.settings:
+                    await self.bot.say("The logging channel is currently set to " 
+                                       + self.settings["LOGGING"] + ". What should it be set to?")
+                else:
+                    await self.bot.say("The logging channel has not yet been set up. What should it be set to?")
+                msg = await self.bot.wait_for_message(author=ctx.message.author, timeout=60)
+                if msg is None:
+                    await self.bot.say('Exiting Setup')
+                    return
+                msg = msg.content
+                ch = discord.utils.get(server.channels, name=msg)
+                if ch is None:
+                    await self.bot.say("That channel doesn't exist. Exiting setup.")
+                    return
+                self.settings["LOGGING"] = ch.id
+                self.saveSettings()
+                await self.bot.say("Logging channel set to "+ch.name)
+                await self._velkaset_setup(ctx)
+            elif int(msg) == 2:
+                if "SPAM" in self.settings:
+                    await self.bot.say("The bot spam channel is currently set to " 
+                                       + self.settings["SPAM"] + ". What should it be set to?")
+                else:
+                    await self.bot.say("The bot spam channel has not yet been set up. What should it be set to?")
+                msg = await self.bot.wait_for_message(author=ctx.message.author, timeout=60)
+                if msg is None:
+                    await self.bot.say('Exiting Setup')
+                    return
+                msg = msg.content
+                ch = discord.utils.get(server.channels, name=msg)
+                if ch is None:
+                    await self.bot.say("That channel doesn't exist. Exiting setup.")
+                    return
+                self.settings["SPAM"] = ch.id
+                self.saveSettings()
+                await self.bot.say("Bot spam channel set to "+ch.name)
+                await self._velkaset_setup(ctx)
+            else:
+                st = list(self.settings["SCORE_TYPE"].keys())[int(msg)-3]
+                if "CHANNELS" not in self.settings:
+                    self.settings["CHANNELS"] = {}
+                if st in self.settings["CHANNELS"]:
+                    msg = "Here are the channels where the !"+st+" command is allowed:"
+                    for ch in list(self.settings["CHANNELS"][st]):
+                        chn = discord.utils.get(server.channels, id=ch)
+                        if chn is None:
+                            self.settings["CHANNELS"][st].pop(ch)
+                        else:
+                            msg += "\n  " + chn.name
+                    msg += "Type an existing channel to remove it, type a new channel to add it."
+                    await self.bot.say(msg)
+                else:
+                    await self.bot.say("There are no channels set up for !" +st+". Type a channel name to add it.")
+                msg = await self.bot.wait_for_message(author=ctx.message.author, timeout=60)
+                if msg is None:
+                    await self.bot.say('Exiting Setup')
+                    return
+                msg = msg.content
+                ch = discord.utils.get(server.channels, name=msg)
+                if ch is None:
+                    await self.bot.say("That channel doesn't exist. Exiting setup.")
+                    return
+                if ch.id in self.settings["CHANNELS"][st]:
+                    self.settings["CHANNELS"][st].pop(ch.id)
+                else:
+                    self.settings["CHANNELS"][st].append(ch.id)
+                self.saveSettings()
+                    
+        else:
+            await self.bot.say('Invalid Selection. Exiting Setup.')
                                    
                                    
     
