@@ -365,8 +365,14 @@ class Velka:
         if str.isdigit(msg) and int(msg) > 0 and int(msg) < ct:
             if int(msg) == 1:
                 if "LOGGING" in self.settings:
-                    await self.bot.say("The logging channel is currently set to " 
-                                       + self.settings["LOGGING"] + ". What should it be set to?")
+                    chn = discord.utils.get(server.channels, id=self.settings["LOGGING"])
+                    if chn is None:
+                        self.settings.pop("LOGGING")
+                        self.saveSettings()
+                        await self.bot.say("The logging channel has not yet been set up. What should it be set to?")
+                    else:
+                        await self.bot.say("The logging channel is currently set to " 
+                                         + chn.name + ". What should it be set to?")
                 else:
                     await self.bot.say("The logging channel has not yet been set up. What should it be set to?")
                 msg = await self.bot.wait_for_message(author=author, timeout=60)
@@ -384,8 +390,14 @@ class Velka:
                 await self.setup(server, author)
             elif int(msg) == 2:
                 if "SPAM" in self.settings:
-                    await self.bot.say("The bot spam channel is currently set to " 
-                                       + self.settings["SPAM"] + ". What should it be set to?")
+                    chn = discord.utils.get(server.channels, id=self.settings["SPAM"])
+                    if chn is None:
+                        self.settings.pop("SPAM")
+                        self.saveSettings()
+                        await self.bot.say("The bot spam channel has not yet been set up. What should it be set to?")
+                    else:
+                        await self.bot.say("The bot spam channel is currently set to " 
+                                         + chn.name + ". What should it be set to?")
                 else:
                     await self.bot.say("The bot spam channel has not yet been set up. What should it be set to?")
                 msg = await self.bot.wait_for_message(author=author, timeout=60)
