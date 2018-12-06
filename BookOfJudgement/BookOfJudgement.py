@@ -426,7 +426,7 @@ class Velka:
                             self.settings["CHANNELS"][st].pop(ch)
                         else:
                             msg += "\n  " + chn.name
-                    msg += "Type an existing channel to remove it, type a new channel to add it."
+                    msg += "\nType an existing channel to remove it, type a new channel to add it."
                     await self.bot.say(msg)
                 else:
                     self.settings["CHANNELS"][st] = []
@@ -443,10 +443,12 @@ class Velka:
                     return
                 if ch.id in self.settings["CHANNELS"][st]:
                     self.settings["CHANNELS"][st].pop(ch.id)
+                    await self.bot.say(ch.name + " has been removed.")
                 else:
                     self.settings["CHANNELS"][st].append(ch.id)
+                    await self.bot.say(ch.name + " has been added.")
                 self.saveSettings()
-                    
+                self.setup(server, author)
         else:
             await self.bot.say('Invalid Selection. Exiting Setup.')
                                    
