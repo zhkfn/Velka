@@ -106,6 +106,15 @@ class Velka:
                 return
         else:
             return
+        if "CHANNELS" in self.settings and scoreType in self.settings["CHANNELS"]:
+            if len(self.settings["CHANNELS"][scoreType]) > 0:
+                goodChannel = False
+                for ch in self.settings["CHANNELS"][scoreType]:
+                    if message.channel.id == ch:
+                        goodChannel = True
+                if not goodChannel:
+                    await self.bot.send_message(message.channel, "That command is not allowed here.")
+                    return
         for member in mentions:
             if member == user and self.settings['DEBUG'] == False:
                 await self.bot.send_message(message.channel, "Thou canst not judge thyself.")
@@ -147,7 +156,7 @@ class Velka:
                         message.author.mention, member.mention, scoreType,
                         self.settings['SCORE_TYPE'][scoreType]["noun_s"], 
                         message.channel.mention)
-                    await self.bot.send_message(discord.utils.get(message.server.channels, name="velka-log"), log) 
+                    await self.bot.send_message(discord.utils.get(message.server.channels, id=self.settings["LOGGING"]), log) 
 
     # Credit
     @commands.command(pass_context=True)
@@ -252,7 +261,7 @@ class Velka:
                     decay *= -1
                     await self._process_scores(member, server, decay, st)
         self.saveScores()
-        await self.bot.send_message(discord.utils.get(server.channels, name="velka-log"), "Scores have been decayed!") 
+        await self.bot.send_message(discord.utils.get(server.channels, id=self.settings["LOGGING"]), "Scores have been decayed!") 
                     
     def dailyLimitReset(self):
         for st in list(self.timeout["DAILY_LIMIT"].keys()):
@@ -278,9 +287,9 @@ class Velka:
                 self.timeout["DAY"] = datetime.datetime.today().weekday()
                 self.saveTimeout()
                 server = self.bot.get_server(self.settings["SERVER"])
-                channel = discord.utils.get(server.channels, name="check-rank")
+                channel = discord.utils.get(server.channels, id=self.settings["SPAM"])
                 await self.help(channel)
-                channel = discord.utils.get(server.channels, name="velka-log")
+                channel = discord.utils.get(server.channels, id=self.settings["LOGGING"])
                 for st in self.settings["SCORE_TYPE"]:
                     await self.Leaderboard(st, server, channel)
                 await self.bot.send_message(channel, "Daily Backup:") 
