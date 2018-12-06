@@ -290,7 +290,7 @@ class Velka:
                     await self.weeklyDecay(server)
                 channel = discord.utils.get(server.channels, name="check-rank")
                 await self.help(channel)
-            await asyncio.sleep(10)
+            await asyncio.sleep(30)
 
     # Settings
     @commands.group(pass_context=True)
