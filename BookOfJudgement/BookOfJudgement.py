@@ -219,7 +219,7 @@ class Velka:
     async def book(self, ctx):
         """leaderboard"""
         if not ctx.message.channel.id == self.settings["SPAM"]:
-            chn = discord.utils.get(server.channels, id=self.settings["SPAM"])
+            chn = discord.utils.get(ctx.message.server.channels, id=self.settings["SPAM"])
             await self.bot.say("That command is not allowed here. Please use the " + chn.mention + " channel.")
         server = ctx.message.server
         splitted = ctx.message.content.split(" ")
