@@ -336,7 +336,7 @@ class Velka:
         server = ctx.message.server
         await self.setup(server)
         
-    async def setup(self, server)
+    async def setup(self, server):
         if self.settings["SERVER"] != server.id:
             await self.bot.say("This is a new server. Do you want to set up Velka on this server?") 
             msg = await self.bot.wait_for_message(author=ctx.message.author, timeout=60)
