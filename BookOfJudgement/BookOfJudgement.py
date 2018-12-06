@@ -221,6 +221,7 @@ class Velka:
         if not ctx.message.channel.id == self.settings["SPAM"]:
             chn = discord.utils.get(ctx.message.server.channels, id=self.settings["SPAM"])
             await self.bot.say("That command is not allowed here. Please use the " + chn.mention + " channel.")
+            return
         server = ctx.message.server
         splitted = ctx.message.content.split(" ")
         if len(splitted) >= 2:
