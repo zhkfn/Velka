@@ -442,7 +442,7 @@ class Velka:
                     await self.bot.say("That channel doesn't exist. Exiting setup.")
                     return
                 if ch.id in self.settings["CHANNELS"][st]:
-                    self.settings["CHANNELS"][st].pop(ch.id)
+                    self.settings["CHANNELS"][st].remove(ch.id)
                     await self.bot.say(ch.name + " has been removed.")
                 else:
                     self.settings["CHANNELS"][st].append(ch.id)
