@@ -350,7 +350,7 @@ class Velka:
         msg = "__Channel Settings__\nWhich channel would you like to set up?"
         msg += "\n  1. Logging Channel"
         msg += "\n  2. Spam channel"
-        int ct = 3
+        ct = 3
         for st in self.settings["SCORE_TYPE"]:
             msg += "\n  {}. !{} channels".format(str(ct), st)
             ct += 1
