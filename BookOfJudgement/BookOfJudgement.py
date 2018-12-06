@@ -417,7 +417,8 @@ class Velka:
                 st = list(self.settings["SCORE_TYPE"].keys())[int(msg)-3]
                 if "CHANNELS" not in self.settings:
                     self.settings["CHANNELS"] = {}
-                if st in self.settings["CHANNELS"]:
+                    self.saveSettings()
+                if st in self.settings["CHANNELS"] and len(self.settings["CHANNELS"][st])>0:
                     msg = "Here are the channels where the !"+st+" command is allowed:"
                     for ch in list(self.settings["CHANNELS"][st]):
                         chn = discord.utils.get(server.channels, id=ch)
@@ -428,7 +429,7 @@ class Velka:
                     msg += "Type an existing channel to remove it, type a new channel to add it."
                     await self.bot.say(msg)
                 else:
-                    self.settings["CHANNELS"][st] = {}
+                    self.settings["CHANNELS"][st] = []
                     self.saveSettings()
                     await self.bot.say("There are no channels set up for !" +st+". Type a channel name to add it.")
                 msg = await self.bot.wait_for_message(author=author, timeout=60)
