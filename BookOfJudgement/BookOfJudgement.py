@@ -448,7 +448,7 @@ class Velka:
                     self.settings["CHANNELS"][st].append(ch.id)
                     await self.bot.say(ch.name + " has been added.")
                 self.saveSettings()
-                self.setup(server, author)
+                await self.setup(server, author)
         else:
             await self.bot.say('Invalid Selection. Exiting Setup.')
                                    
