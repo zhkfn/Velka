@@ -333,21 +333,20 @@ class Velka:
     @velkaset.command(pass_context=True, name="setup", no_pm=True)
     async def _velkaset_setup(self, ctx):
         """Sets up Velka"""
-        server = ctx.message.server
-        await self.setup(server)
+        await self.setup(ctx.message.server, ctx.message.author)
         
-    async def setup(self, server):
+    async def setup(self, server, author):
         if self.settings["SERVER"] != server.id:
             await self.bot.say("This is a new server. Do you want to set up Velka on this server?") 
-            msg = await self.bot.wait_for_message(author=ctx.message.author, timeout=60)
+            msg = await self.bot.wait_for_message(author=author, timeout=60)
             if msg is None:
                 await self.bot.say('Exiting Setup')
                 return
             msg = msg.content
             if msg.lower() == "yes" or msg.lower() == "y":
-                self.settings["SERVER"] != ctx.message.server.id;
+                self.settings["SERVER"] != server.id;
                 self.saveSettings()
-                await self.bot.say("Active server set to "+ctx.message.server.name)
+                await self.bot.say("Active server set to "+server.name)
             else:
                 await self.bot.say('Exiting Setup')
         msg = "__Channel Settings__\nWhich channel would you like to set up?"
@@ -358,7 +357,7 @@ class Velka:
             msg += "\n  {}. !{} channels".format(str(ct), st)
             ct += 1
         await self.bot.say(msg)
-        msg = await self.bot.wait_for_message(author=ctx.message.author, timeout=60)
+        msg = await self.bot.wait_for_message(author=author, timeout=60)
         if msg is None:
             await self.bot.say('Exiting Setup')
             return
@@ -370,7 +369,7 @@ class Velka:
                                        + self.settings["LOGGING"] + ". What should it be set to?")
                 else:
                     await self.bot.say("The logging channel has not yet been set up. What should it be set to?")
-                msg = await self.bot.wait_for_message(author=ctx.message.author, timeout=60)
+                msg = await self.bot.wait_for_message(author=author, timeout=60)
                 if msg is None:
                     await self.bot.say('Exiting Setup')
                     return
@@ -382,14 +381,14 @@ class Velka:
                 self.settings["LOGGING"] = ch.id
                 self.saveSettings()
                 await self.bot.say("Logging channel set to "+ch.name)
-                await self._velkaset_setup(ctx)
+                await self.setup(server, author)
             elif int(msg) == 2:
                 if "SPAM" in self.settings:
                     await self.bot.say("The bot spam channel is currently set to " 
                                        + self.settings["SPAM"] + ". What should it be set to?")
                 else:
                     await self.bot.say("The bot spam channel has not yet been set up. What should it be set to?")
-                msg = await self.bot.wait_for_message(author=ctx.message.author, timeout=60)
+                msg = await self.bot.wait_for_message(author=author, timeout=60)
                 if msg is None:
                     await self.bot.say('Exiting Setup')
                     return
@@ -401,7 +400,7 @@ class Velka:
                 self.settings["SPAM"] = ch.id
                 self.saveSettings()
                 await self.bot.say("Bot spam channel set to "+ch.name)
-                await self._velkaset_setup(ctx)
+                await self.setup(server, author)
             else:
                 st = list(self.settings["SCORE_TYPE"].keys())[int(msg)-3]
                 if "CHANNELS" not in self.settings:
@@ -418,7 +417,7 @@ class Velka:
                     await self.bot.say(msg)
                 else:
                     await self.bot.say("There are no channels set up for !" +st+". Type a channel name to add it.")
-                msg = await self.bot.wait_for_message(author=ctx.message.author, timeout=60)
+                msg = await self.bot.wait_for_message(author=author, timeout=60)
                 if msg is None:
                     await self.bot.say('Exiting Setup')
                     return
