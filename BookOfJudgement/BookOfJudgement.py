@@ -428,6 +428,8 @@ class Velka:
                     msg += "Type an existing channel to remove it, type a new channel to add it."
                     await self.bot.say(msg)
                 else:
+                    self.settings["CHANNELS"][st] = {}
+                    self.saveSettings()
                     await self.bot.say("There are no channels set up for !" +st+". Type a channel name to add it.")
                 msg = await self.bot.wait_for_message(author=author, timeout=60)
                 if msg is None:
