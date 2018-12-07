@@ -212,13 +212,19 @@ class Velka:
         if self.scores.get(member.id, 0) != 0:
             member_dict = self.scores[member.id]
             msg = "Judgement for " + member.name + ":"
+            dlmt = "\n\n{} can still give away:".format(member.name)
             for st, s in self.settings["SCORE_TYPE"].items():
                 if str(member_dict[st]) == "1":
                     noun = s["noun_s"]
                 else:
                     noun = s["noun"]
-                msg += "\n   " + self.emote(st) +" " +str(member_dict[st]) + " " + noun + "."
-            await self.bot.say(msg)
+                msg += "\n   {} {} {}.".format(self.emote(st), str(member_dict[st]), noun)
+                limit = self.settings["SCORE_TYPE"][scoreType]["dailyLimit"]
+                amt = 0
+                if member.id in self.timeout["DAILY_LIMIT"][scoreType]:
+                    amt = self.timeout["DAILY_LIMIT"][scoreType][member.id]
+                dlmt += "\n  {} {} {}.".format(self.emote(st), str(limit-amt), noun)
+            await self.bot.say(msg + dlmt)
         else:
             await self.bot.say(member.name + " has not yet been judged.")
             
