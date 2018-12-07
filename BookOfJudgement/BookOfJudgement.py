@@ -221,7 +221,7 @@ class Velka:
         else:
             msg = member.name + " has not yet been judged."
         msg += "\n\n{} can still give away:".format(member.name)
-        for st in self.settings["SCORE_TYPE"]:
+        for st, s in self.settings["SCORE_TYPE"].items():
             limit = self.settings["SCORE_TYPE"][st]["dailyLimit"]
             amt = 0
             if st in self.timeout["DAILY_LIMIT"] and member.id in self.timeout["DAILY_LIMIT"][st]:
