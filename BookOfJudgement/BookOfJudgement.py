@@ -224,7 +224,7 @@ class Velka:
         for st in self.settings["SCORE_TYPE"]:
             limit = self.settings["SCORE_TYPE"][st]["dailyLimit"]
             amt = 0
-            if [st] in self.timeout["DAILY_LIMIT"] and member.id in self.timeout["DAILY_LIMIT"][st]:
+            if st in self.timeout["DAILY_LIMIT"] and member.id in self.timeout["DAILY_LIMIT"][st]:
                 amt = self.timeout["DAILY_LIMIT"][st][member.id]
             total = limit-amt
             if total == "1":
