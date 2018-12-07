@@ -224,8 +224,8 @@ class Velka:
         for st in self.settings["SCORE_TYPE"]:
             limit = self.settings["SCORE_TYPE"][st]["dailyLimit"]
             amt = 0
-            if member.id in self.timeout["DAILY_LIMIT"][scoreType]:
-                amt = self.timeout["DAILY_LIMIT"][scoreType][member.id]
+            if member.id in self.timeout["DAILY_LIMIT"][st]:
+                amt = self.timeout["DAILY_LIMIT"][st][member.id]
             total = limit-amt
             if total == "1":
                 noun = s["noun_s"]
