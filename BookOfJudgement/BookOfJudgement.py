@@ -162,8 +162,13 @@ class Velka:
     @commands.command(pass_context=True)
     async def credits(self, ctx):
         """Credits for Velka"""
-        embed=discord.Embed(description="__**Credits:**__\n\n**[Art](https://www.deviantart.com/thequietsoul21) \n\n[Coding](https://github.com/zhkfn/Velka)**", color=7435993) 
-        await self.bot.say(embed=embed)
+        if ctx.message.channel.is_private or ctx.message.channel.id == self.settings["SPAM"]:
+            embed=discord.Embed(description="__**Credits:**__\n\n**[Art](https://www.deviantart.com/thequietsoul21) \n\n[Coding](https://github.com/zhkfn/Velka)**", color=7435993) 
+            await self.bot.say(embed=embed)
+        else:
+            chn = discord.utils.get(ctx.message.server.channels, id=self.settings["SPAM"])
+            await self.bot.say("That command is not allowed here. Please use the " + chn.mention + " channel.")
+            return
         
     @commands.command(pass_context=True)
     async def velkaHelp(self, ctx):
@@ -196,6 +201,10 @@ class Velka:
     @commands.command(pass_context=True)
     async def judgement(self, ctx):
         """Checks a user's judgement points"""
+        if not ctx.message.channel.is_private and not ctx.message.channel.id == self.settings["SPAM"]:
+            chn = discord.utils.get(ctx.message.server.channels, id=self.settings["SPAM"])
+            await self.bot.say("That command is not allowed here. Please use the " + chn.mention + " channel.")
+            return
         member = ctx.message.author
         mentions = ctx.message.mentions
         if len(mentions) > 0:
