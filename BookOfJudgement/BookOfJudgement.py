@@ -330,7 +330,7 @@ class Velka:
                 self.dailyLimitReset()
                 if datetime.datetime.today().weekday() < day:
                     await self.weeklyDecay(server)
-                    await self.bot.send_message(spam, "**The week has ended. All scores have been decayed.**")
+                    await self.bot.send_message(spam, "\n\n**The week has ended. All scores have been decayed.**\n\n")
                     for st in self.settings["SCORE_TYPE"]:
                         await self.Leaderboard(st, server, spam)
             await asyncio.sleep(30)
