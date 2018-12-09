@@ -28,14 +28,14 @@ class Velka:
         self.settings = fileIO(self.settingsLoc, 'load')
         if "DAILY_LIMIT" not in self.timeout:
             self.timeout["DAILY_LIMIT"] = {}
-        
+
     # Method for storing and adding points
     async def _process_scores(self, member, server, score_to_add, judgement_type):
         member_id = member.id
         finalscore = 0
         if member_id in self.scores:
             if judgement_type in self.scores.get(member_id, {}):
-                if not str.isdigit(str(self.scores[member_id][judgement_type])): 
+                if not str.isdigit(str(self.scores[member_id][judgement_type])):
                     self.scores[member_id][judgement_type] = 0
                 if self.scores[member_id][judgement_type] + score_to_add <= 0:
                     self.scores[member_id][judgement_type] = 0
@@ -64,13 +64,13 @@ class Velka:
             else:
                 await self.remRole(server, member, role)
         self.saveScores()
-        
+
     # Method for adding roles
     async def addRole(self, server, user, role : str):
         role_obj = discord.utils.get(server.roles, name=role)
         if role_obj is None:
             return False
-        await self.bot.add_roles(user, role_obj) 
+        await self.bot.add_roles(user, role_obj)
         return True
     
     # Method for removing roles
@@ -78,10 +78,10 @@ class Velka:
         role_obj = discord.utils.get(server.roles, name=role)
         if role_obj is None:
             return False
-        await self.bot.remove_roles(user, role_obj) 
+        await self.bot.remove_roles(user, role_obj)
         return True
 
-    # Give out points to users
+    # Give out points to users and look for co-op
     async def check_for_score(self, message):
         user = message.author
         content = message.content
@@ -98,6 +98,7 @@ class Velka:
         if len(splitted) >= 1:
             command = splitted[0].lower()
             scoreType = ""
+            
             for st, s in self.settings['SCORE_TYPE'].items():
                 if "!"+st.lower() == splitted[0].lower():
                     scoreType = st
@@ -154,25 +155,32 @@ class Velka:
                     await self.bot.send_message(message.channel, msg)
                     log = "{} awarded {} a {} {} in {}".format(
                         message.author.mention, member.mention, scoreType,
-                        self.settings['SCORE_TYPE'][scoreType]["noun_s"], 
+                        self.settings['SCORE_TYPE'][scoreType]["noun_s"],
                         message.channel.mention)
-                    await self.bot.send_message(discord.utils.get(message.server.channels, id=self.settings["LOGGING"]), log) 
+                    await self.bot.send_message(discord.utils.get(message.server.channels, id=self.settings["LOGGING"]), log)
+
+    async def coop(self, message, command):
+        # Check which co-op channel to use
+        # Put a message in the current channel
+        # Put a message in the request channel (look for NG)
+        # save the request to timeout do auto-delete
+        return
 
     # Credit
     @commands.command(pass_context=True)
     async def credits(self, ctx):
         """Credits for Velka"""
         if ctx.message.channel.is_private or ctx.message.channel.id == self.settings["SPAM"]:
-            embed=discord.Embed(description="__**Credits:**__\n\n**[Art](https://www.deviantart.com/thequietsoul21) \n\n[Coding](https://github.com/zhkfn/Velka)**", color=7435993) 
+            embed=discord.Embed(description="__**Credits:**__\n\n**[Art](https://www.deviantart.com/thequietsoul21) \n\n[Coding](https://github.com/zhkfn/Velka)**", color=7435993)
             await self.bot.say(embed=embed)
         else:
             chn = discord.utils.get(ctx.message.server.channels, id=self.settings["SPAM"])
             await self.bot.say("That command is not allowed here. Please use the " + chn.mention + " channel.")
             return
-        
+
     @commands.command(pass_context=True)
     async def velkaHelp(self, ctx):
-        """More help with using Velka""" 
+        """More help with using Velka"""
         msg = "Velka can award points to other users and keep track of scores with a leaderboard. "
         msg += "Points decay weekly to encourage continuous participation. "
         msg += "Achieving certain point thresholds can award you special roles.\n\nCommands:\n"
@@ -181,22 +189,22 @@ class Velka:
         msg += "`!book` Show leaderboards.\n"
         for st in self.settings["SCORE_TYPE"]:
             msg += "`!" + st + " <@user>` Award " + st + " point.\n"
-        msg += "*Note: You can mention multiple users to award several points at once!*\n" 
+        msg += "*Note: You can mention multiple users to award several points at once!*\n"
         msg += "`!credits` Display Velka's credits.\n"
         msg += "`!velkaset` Change Velka's settings (mods only)."
         await client.send_message(ctx.author, msg)
     
     async def help(self, channel):
-        emote1 = self.emote(list(self.settings["SCORE_TYPE"].keys())[0]) 
-        emote2 = self.emote(list(self.settings["SCORE_TYPE"].keys())[1]) 
+        emote1 = self.emote(list(self.settings["SCORE_TYPE"].keys())[0])
+        emote2 = self.emote(list(self.settings["SCORE_TYPE"].keys())[1])
         
-        msg = emote1 + "To check thine sins and victories, speaketh:```!judgement```\n" 
-        msg += emote2 + "To view the judgement of another, speaketh:```!judgement @<user>```\n" 
-        msg += emote1 + "To view the most victorious speaketh:\n```!book sunlight```\n" 
-        msg += emote2 + "To view the most wretched speaketh:\n```!book wraith```\n" 
+        msg = emote1 + "To check thine sins and victories, speaketh:```!judgement```\n"
+        msg += emote2 + "To view the judgement of another, speaketh:```!judgement @<user>```\n"
+        msg += emote1 + "To view the most victorious speaketh:\n```!book sunlight```\n"
+        msg += emote2 + "To view the most wretched speaketh:\n```!book wraith```\n"
         
-        await self.bot.send_message(channel,msg) 
-                    
+        await self.bot.send_message(channel,msg)
+
     # Check user score
     @commands.command(pass_context=True)
     async def judgement(self, ctx):
@@ -234,7 +242,6 @@ class Velka:
             
             msg += "\n  {} {} {}.".format(self.emote(st), str(total), noun)
         await self.bot.say(msg)
-            
 
     # Leaderboard
     @commands.command(pass_context=True, no_pm=True)
@@ -287,13 +294,13 @@ class Velka:
                     decay *= -1
                     await self._process_scores(member, server, decay, st)
         self.saveScores()
-        await self.bot.send_message(discord.utils.get(server.channels, id=self.settings["LOGGING"]), "Scores have been decayed!") 
-                    
+        await self.bot.send_message(discord.utils.get(server.channels, id=self.settings["LOGGING"]), "Scores have been decayed!")
+
     def dailyLimitReset(self):
         for st in list(self.timeout["DAILY_LIMIT"].keys()):
             self.timeout["DAILY_LIMIT"].pop(st)
         self.saveTimeout()
-            
+
     def cooldownLoop(self):
         curTime = int(time.time());
         if "COOLDOWN" not in self.timeout:
@@ -304,7 +311,6 @@ class Velka:
                     self.timeout["COOLDOWN"].pop(mid)
         self.saveTimeout()
     
-    
     async def loop(self):
         while True:
             self.cooldownLoop()
@@ -313,17 +319,20 @@ class Velka:
                 self.timeout["DAY"] = datetime.datetime.today().weekday()
                 self.saveTimeout()
                 server = self.bot.get_server(self.settings["SERVER"])
-                channel = discord.utils.get(server.channels, id=self.settings["SPAM"])
-                await self.help(channel)
+                spam = discord.utils.get(server.channels, id=self.settings["SPAM"])
+                await self.help(spam)
                 channel = discord.utils.get(server.channels, id=self.settings["LOGGING"])
                 for st in self.settings["SCORE_TYPE"]:
                     await self.Leaderboard(st, server, channel)
-                await self.bot.send_message(channel, "Daily Backup:") 
-                await self.backup(channel) 
-                await self.bot.send_message(channel, "Resetting Daily Limits") 
+                await self.bot.send_message(channel, "Daily Backup:")
+                await self.backup(channel)
+                await self.bot.send_message(channel, "Resetting Daily Limits")
                 self.dailyLimitReset()
                 if datetime.datetime.today().weekday() < day:
                     await self.weeklyDecay(server)
+                    await self.bot.send_message(spam, "**The week has ended. All scores have been decayed.**")
+                    for st in self.settings["SCORE_TYPE"]:
+                        await self.Leaderboard(st, server, spam)
             await asyncio.sleep(30)
 
     # Settings
@@ -348,8 +357,7 @@ class Velka:
         self.settings['RESPOND_ON_POINT'] = \
             not self.settings['RESPOND_ON_POINT']
         self.saveSettings()
-        
-    
+
     # Debug mode?
     @velkaset.command(pass_context=True, name="debug")
     async def _velkaset_debug(self, ctx):
@@ -363,16 +371,16 @@ class Velka:
         self.settings['DEBUG'] = \
             not self.settings['DEBUG']
         self.saveSettings()
-        
+
     # Set up the Bot
     @velkaset.command(pass_context=True, name="setup", no_pm=True)
     async def _velkaset_setup(self, ctx):
         """Sets up Velka"""
         await self.setup(ctx.message.server, ctx.message.author)
-        
+  
     async def setup(self, server, author):
         if self.settings["SERVER"] != server.id:
-            await self.bot.say("This is a new server. Do you want to set up Velka on this server?") 
+            await self.bot.say("This is a new server. Do you want to set up Velka on this server?")
             msg = await self.bot.wait_for_message(author=author, timeout=60)
             if msg is None:
                 await self.bot.say('Exiting Setup')
@@ -406,7 +414,7 @@ class Velka:
                         self.saveSettings()
                         await self.bot.say("The logging channel has not yet been set up. What should it be set to?")
                     else:
-                        await self.bot.say("The logging channel is currently set to " 
+                        await self.bot.say("The logging channel is currently set to "
                                          + chn.name + ". What should it be set to?")
                 else:
                     await self.bot.say("The logging channel has not yet been set up. What should it be set to?")
@@ -431,7 +439,7 @@ class Velka:
                         self.saveSettings()
                         await self.bot.say("The bot spam channel has not yet been set up. What should it be set to?")
                     else:
-                        await self.bot.say("The bot spam channel is currently set to " 
+                        await self.bot.say("The bot spam channel is currently set to "
                                          + chn.name + ". What should it be set to?")
                 else:
                     await self.bot.say("The bot spam channel has not yet been set up. What should it be set to?")
@@ -486,15 +494,13 @@ class Velka:
                 await self.setup(server, author)
         else:
             await self.bot.say('Invalid Selection. Exiting Setup.')
-                                   
-                                   
     
     # Edit score types
     @velkaset.command(pass_context=True, name="scoreEditType")
     async def _velkaset_scoreEditType(self, ctx, scoreType : str):
         """Edit the categories of scores"""
         await self.ScoreEditType(ctx, scoreType)
-            
+
     # Edit score types
     async def ScoreEditType(self, ctx, scoreType : str):
         if scoreType:
@@ -637,7 +643,7 @@ class Velka:
     @velkaset.command(pass_context=True, name="resetDailyLimits")
     async def _velkaset_resetDailyLimits(self, ctx):
         """[debugging] Reset todays limits for all users"""
-        self.dailyLimitReset()   
+        self.dailyLimitReset()
         await self.bot.say("Daily limits reset.")
             
     # Redo weekly decay
@@ -743,7 +749,6 @@ def check_folder():
         print("Creating data/judgement folder...")
         os.makedirs("data/judgement")
 
-
 def check_file():
     scores = {}
     settings = {"RESPOND_ON_POINT": True, "DEBUG": False, "COOLDOWN":300, "SERVER":""}
@@ -763,7 +768,6 @@ def check_file():
     if not fileIO(f, "check"):
         print("Creating default timeout.json...")
         fileIO(f, "save", timeout)
-
 
 def setup(bot):
     if tabulate is None:
