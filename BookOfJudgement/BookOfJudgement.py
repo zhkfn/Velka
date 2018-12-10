@@ -804,7 +804,7 @@ def setup(bot):
     check_folder()
     check_file()
     n = Velka(bot)
-    bot.add_listener(n.check_for_score, "on_message")
+    bot.add_listener(n.parse_message, "on_message")
     loop = asyncio.get_event_loop()
     loop.create_task(n.loop())
     bot.add_cog(n)  
