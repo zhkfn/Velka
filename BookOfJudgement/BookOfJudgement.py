@@ -408,9 +408,9 @@ class Velka:
     @velkaset.command(pass_context=True, name="setup", no_pm=True)
     async def _velkaset_setup(self, ctx):
         """Sets up Velka"""
-        await self.setup(ctx.message.server, ctx.message.author)
+        await self.setup(ctx.message.server, ctx.message.channel, ctx.message.author)
   
-    async def setup(self, server, author):
+    async def setup(self, server, channel, author):
         if self.settings["SERVER"] != server.id:
             await self.bot.say("This is a new server. Do you want to set up Velka on this server?")
             msg = await self.bot.wait_for_message(author=author, timeout=60)
@@ -441,13 +441,13 @@ class Velka:
         msg = msg.content
         if str.isdigit(msg) and int(msg) > 0 and int(msg) < ct:
             if int(msg) == 1:
-                await self.setChannel(server, "LOGGING", "logging")
+                await self.setChannel(server,channel, "LOGGING", "logging")
             elif int(msg) == 2:
-                await self.setChannel(server, "SPAM", "bot spam")
+                await self.setChannel(server, channel, "SPAM", "bot spam")
             elif int(msg) == 3:
-                await self.setChannel(server, "REQUESTS", "co-op requests")
+                await self.setChannel(server, channel, "REQUESTS", "co-op requests")
             elif int(msg) == 4:
-                await self.setChannel(server, "COOP_CHAT", "co-op chat")
+                await self.setChannel(server, channel, "COOP_CHAT", "co-op chat")
             else:
                 st = list(self.settings["SCORE_TYPE"].keys())[int(msg)-5]
                 if "CHANNELS" not in self.settings:
@@ -483,7 +483,7 @@ class Velka:
                     self.settings["CHANNELS"][st].append(ch.id)
                     await self.bot.say(ch.name + " has been added.")
                 self.saveSettings()
-                await self.setup(server, author)
+                await self.setup(server, channel, author)
         else:
             await self.bot.say('Invalid Selection. Exiting Setup.')
             
