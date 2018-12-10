@@ -197,7 +197,7 @@ class Velka:
         # Put a message in the request channel (look for NG)
         ng = 0
         if len(command) > 5:
-            ng = command[5]
+            ng = int(command[5]) 
             
         ngText = ""
         if ng > 0:
