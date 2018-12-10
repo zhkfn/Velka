@@ -207,8 +207,16 @@ class Velka:
         reqMsg = await self.bot.send_message(requests, "{} requests co-op assistance in{} {}.".format(message.author.mention, ngText, chl.mention))
         if "COOP" not in self.timeout:
             self.timeout["COOP"] = {} 
-        #if message.author.id not in 
+        if message.author.id not in self.timeout["COOP"]:
+            self.timeout["COOP"][message.author.id] = {} 
+        else:
+            #find the old message and delete it
+            del = await self.bot.get_message(requests, self.timeout["COOP"][message.author.id]["MSG"])
+            await self.bot.delete_message(del)
         # save the request to timeout to auto-delete
+        self.timeout["COOP"][message.author.id]["MSG"] = reqMsg
+        self.timeout["COOP"][message.author.id]["TIME"] = int(time.time())
+        self.saveTimeout()
 
     # Credit
     @commands.command(pass_context=True)
