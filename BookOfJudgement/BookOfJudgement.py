@@ -176,7 +176,7 @@ class Velka:
         chl = message.channel
         if chl.id == self.settings["COOP_CHAT"]:
             if len(message.channel_mentions) < 1:
-                self.bot.send_message(message.channel, "Please mention the co-op area channel you need help in after `" + command + "`.") 
+                await self.bot.send_message(message.channel, "Please mention the co-op area channel you need help in after `" + command + "`.") 
                 return
             reqChannel = message.channel_mentions[0]
             if "CHANNELS" in self.settings and "sunlight" in self.settings["CHANNELS"]:
