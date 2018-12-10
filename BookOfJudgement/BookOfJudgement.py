@@ -81,17 +81,25 @@ class Velka:
         await self.bot.remove_roles(user, role_obj)
         return True
 
-    # Give out points to users and look for co-op
-    async def check_for_score(self, message):
-        user = message.author
-        content = message.content
-        mentions = message.mentions
+    async def parse_message(self, message):
         if message.author.id == self.bot.user.id:
             return
         if message.channel.is_private:
             return
         if not self.get_prefix(message):
             return
+        splitted = content.split(" ")
+        if len(splitted) < 1:
+            return
+        command = splitted[0].lower()
+        await self.check_for_score(message)
+        await self.coop(message, command) 
+    
+    # Give out points to users
+    async def check_for_score(self, message):
+        user = message.author
+        content = message.content
+        mentions = message.mentions
         if len(mentions) < 1:
             return
         splitted = content.split(" ")
@@ -160,6 +168,8 @@ class Velka:
                     await self.bot.send_message(discord.utils.get(message.server.channels, id=self.settings["LOGGING"]), log)
 
     async def coop(self, message, command):
+        if not command[0:5] == "!coop":
+            return
         # Check which co-op channel to use
         requests = discord.utils.get(server.channels, id=self.settings["REQUESTS"])
         chl = message.channel
