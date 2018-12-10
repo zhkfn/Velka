@@ -233,7 +233,7 @@ class Velka:
         msg += emote1 + "To view the most victorious speaketh:\n```!book sunlight```\n"
         msg += emote2 + "To view the most wretched speaketh:\n```!book wraith```\n"
         if decay:
-            msg += "\n\n" + emote1 + emote2 + " **__The week has ended.__** " + emote2 + emote1"
+            msg += "\n\n{}{} **__The week has ended.__** {}{}".format(emote1, emote2, emote2, emote1) 
             msg += "\nAll scores have been decayed.\n\n"
         await self.bot.send_message(channel,msg)
         if decay:
