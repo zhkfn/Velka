@@ -88,7 +88,7 @@ class Velka:
             return
         if not self.get_prefix(message):
             return
-        splitted = content.split(" ")
+        splitted = message.content.split(" ")
         if len(splitted) < 1:
             return
         command = splitted[0].lower()
