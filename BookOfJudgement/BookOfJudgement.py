@@ -171,7 +171,7 @@ class Velka:
         if not command[0:5] == "!coop":
             return
         # Check which co-op channel to use
-        server =message.channel
+        server = message.server
         requests = discord.utils.get(server.channels, id=self.settings["REQUESTS"])
         chl = message.channel
         if chl.id == self.settings["COOP_CHAT"]:
