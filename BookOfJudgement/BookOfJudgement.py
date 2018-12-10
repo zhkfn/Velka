@@ -488,7 +488,7 @@ class Velka:
             await self.bot.say('Invalid Selection. Exiting Setup.')
             
             
-    async def setChannel(self, server, channel, keyword, desc)
+    async def setChannel(self, server, channel, keyword, desc):
         if keyword in self.settings:
             chn = discord.utils.get(server.channels, id=self.settings[keyword])
             if chn is None:
