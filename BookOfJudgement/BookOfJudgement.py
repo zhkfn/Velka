@@ -204,7 +204,10 @@ class Velka:
             ngText = " NG+"
             if ng > 1:
                 ngText += str(ng)
-        await self.bot.send_message(requests, "{} requests co-op assistance in{} {}.".format(message.author.mention, ngText, chl.mention))
+        reqMsg = await self.bot.send_message(requests, "{} requests co-op assistance in{} {}.".format(message.author.mention, ngText, chl.mention))
+        if "COOP" not in self.timeout:
+            self.timeout["COOP"] = {} 
+        #if message.author.id not in 
         # save the request to timeout to auto-delete
 
     # Credit
