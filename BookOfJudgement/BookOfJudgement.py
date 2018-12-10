@@ -512,7 +512,7 @@ class Velka:
         self.settings[keyword] = ch.id
         self.saveSettings()
         await self.bot.send_message(channel, desc.capitalize() + " channel set to " + ch.name)
-        await self.setup(server, author)
+        await self.setup(server, channel, author)
     
     # Edit score types
     @velkaset.command(pass_context=True, name="scoreEditType")
