@@ -161,10 +161,40 @@ class Velka:
 
     async def coop(self, message, command):
         # Check which co-op channel to use
+        requests = discord.utils.get(server.channels, id=self.settings["REQUESTS"])
+        chl = message.channel
+        if chl.id == self.settings["COOP_CHAT"]:
+            if len(message.channel_mentions) < 1:
+                self.bot.send_message(message.channel, "Please mention the co-op area channel you need help in after `" + command + "`."
+                return
+            reqChannel = message.channel_mentions[0]
+            if "CHANNELS" in self.settings and "sunlight" in self.settings["CHANNELS"]:
+                if len(self.settings["CHANNELS"]["sunlight"]) > 0:
+                goodChannel = False
+                for ch in self.settings["CHANNELS"]["sunlight"]:
+                    if reqchannel.id == ch:
+                        goodChannel = True
+                if reqchannel.id = self.settings["COOP_CHAT"]:
+                    goodChannel = False
+                if not goodChannel:
+                    await self.bot.send_message(message.channel, "That is not a valid channel. Please choose a co-op area channel.")
+                    return
+                chl = message.channel_mentions[0]
+            await self.bot.send_message(message.channel, "A request was posted in {}. Please use {} to organize your co-op.".format(requests.mention, chl.mention))
         # Put a message in the current channel
+        await self.bot.send_message(chl, "A request for help was posted in {} for {}.".format(requests.mention, message.author.mention))
         # Put a message in the request channel (look for NG)
-        # save the request to timeout do auto-delete
-        return
+        ng = 0
+        if len(command) > 5:
+            ng = command[5]
+            
+        ngText = ""
+        if ng > 0:
+            ngText = " NG+"
+            if ngText > 1:
+                ngText += str(ng)
+        await self.bot.send_message(request, "{} requests co-op assistance in{} {}.".format(message.author.mention, ngText, chl.mention))
+        # save the request to timeout to auto-delete
 
     # Credit
     @commands.command(pass_context=True)
@@ -194,7 +224,7 @@ class Velka:
         msg += "`!velkaset` Change Velka's settings (mods only)."
         await client.send_message(ctx.author, msg)
     
-    async def help(self, channel):
+    async def help(self, server, channel, decay=False):
         emote1 = self.emote(list(self.settings["SCORE_TYPE"].keys())[0])
         emote2 = self.emote(list(self.settings["SCORE_TYPE"].keys())[1])
         
@@ -202,8 +232,13 @@ class Velka:
         msg += emote2 + "To view the judgement of another, speaketh:```!judgement @<user>```\n"
         msg += emote1 + "To view the most victorious speaketh:\n```!book sunlight```\n"
         msg += emote2 + "To view the most wretched speaketh:\n```!book wraith```\n"
-        
+        if decay:
+            msg += "\n\n" + emote1 + emote2 + " **__The week has ended.__** " + emote2 + emote1"
+            msg += "\nAll scores have been decayed.\n\n"
         await self.bot.send_message(channel,msg)
+        if decay:
+            for st in self.settings["SCORE_TYPE"]:
+                await self.Leaderboard(st, server, channel)
 
     # Check user score
     @commands.command(pass_context=True)
@@ -318,9 +353,11 @@ class Velka:
                 day = self.timeout["DAY"]
                 self.timeout["DAY"] = datetime.datetime.today().weekday()
                 self.saveTimeout()
+                if datetime.datetime.today().weekday() < day:
+                    await self.weeklyDecay(server)
                 server = self.bot.get_server(self.settings["SERVER"])
                 spam = discord.utils.get(server.channels, id=self.settings["SPAM"])
-                await self.help(spam)
+                await self.help(server, spam, datetime.datetime.today().weekday() < day)
                 channel = discord.utils.get(server.channels, id=self.settings["LOGGING"])
                 for st in self.settings["SCORE_TYPE"]:
                     await self.Leaderboard(st, server, channel)
@@ -328,11 +365,6 @@ class Velka:
                 await self.backup(channel)
                 await self.bot.send_message(channel, "Resetting Daily Limits")
                 self.dailyLimitReset()
-                if datetime.datetime.today().weekday() < day:
-                    await self.weeklyDecay(server)
-                    await self.bot.send_message(spam, "  \n\n**__The week has ended.__**\nAll scores have been decayed.\n\n  ")
-                    for st in self.settings["SCORE_TYPE"]:
-                        await self.Leaderboard(st, server, spam)
             await asyncio.sleep(30)
 
     # Settings
@@ -395,7 +427,9 @@ class Velka:
         msg = "__Channel Settings__\nWhich channel would you like to set up?"
         msg += "\n  1. Logging Channel"
         msg += "\n  2. Spam channel"
-        ct = 3
+        msg += "\n  3. Co-op Requests"
+        msg += "\n  4. Co-op Chat"
+        ct = 5
         for st in self.settings["SCORE_TYPE"]:
             msg += "\n  {}. !{} channels".format(str(ct), st)
             ct += 1
@@ -407,57 +441,15 @@ class Velka:
         msg = msg.content
         if str.isdigit(msg) and int(msg) > 0 and int(msg) < ct:
             if int(msg) == 1:
-                if "LOGGING" in self.settings:
-                    chn = discord.utils.get(server.channels, id=self.settings["LOGGING"])
-                    if chn is None:
-                        self.settings.pop("LOGGING")
-                        self.saveSettings()
-                        await self.bot.say("The logging channel has not yet been set up. What should it be set to?")
-                    else:
-                        await self.bot.say("The logging channel is currently set to "
-                                         + chn.name + ". What should it be set to?")
-                else:
-                    await self.bot.say("The logging channel has not yet been set up. What should it be set to?")
-                msg = await self.bot.wait_for_message(author=author, timeout=60)
-                if msg is None:
-                    await self.bot.say('Exiting Setup')
-                    return
-                msg = msg.content
-                ch = discord.utils.get(server.channels, name=msg)
-                if ch is None:
-                    await self.bot.say("That channel doesn't exist. Exiting setup.")
-                    return
-                self.settings["LOGGING"] = ch.id
-                self.saveSettings()
-                await self.bot.say("Logging channel set to "+ch.name)
-                await self.setup(server, author)
+                await self.setChannel(server, "LOGGING", "logging")
             elif int(msg) == 2:
-                if "SPAM" in self.settings:
-                    chn = discord.utils.get(server.channels, id=self.settings["SPAM"])
-                    if chn is None:
-                        self.settings.pop("SPAM")
-                        self.saveSettings()
-                        await self.bot.say("The bot spam channel has not yet been set up. What should it be set to?")
-                    else:
-                        await self.bot.say("The bot spam channel is currently set to "
-                                         + chn.name + ". What should it be set to?")
-                else:
-                    await self.bot.say("The bot spam channel has not yet been set up. What should it be set to?")
-                msg = await self.bot.wait_for_message(author=author, timeout=60)
-                if msg is None:
-                    await self.bot.say('Exiting Setup')
-                    return
-                msg = msg.content
-                ch = discord.utils.get(server.channels, name=msg)
-                if ch is None:
-                    await self.bot.say("That channel doesn't exist. Exiting setup.")
-                    return
-                self.settings["SPAM"] = ch.id
-                self.saveSettings()
-                await self.bot.say("Bot spam channel set to "+ch.name)
-                await self.setup(server, author)
+                await self.setChannel(server, "SPAM", "bot spam")
+            elif int(msg) == 3:
+                await self.setChannel(server, "REQUESTS", "co-op requests")
+            elif int(msg) == 4:
+                await self.setChannel(server, "COOP_CHAT", "co-op chat")
             else:
-                st = list(self.settings["SCORE_TYPE"].keys())[int(msg)-3]
+                st = list(self.settings["SCORE_TYPE"].keys())[int(msg)-5]
                 if "CHANNELS" not in self.settings:
                     self.settings["CHANNELS"] = {}
                     self.saveSettings()
@@ -494,6 +486,33 @@ class Velka:
                 await self.setup(server, author)
         else:
             await self.bot.say('Invalid Selection. Exiting Setup.')
+            
+            
+    async def setChannel(self, server, channel, keyword, desc)
+        if keyword in self.settings:
+            chn = discord.utils.get(server.channels, id=self.settings[keyword])
+            if chn is None:
+                self.settings.pop(keyword)
+                self.saveSettings()
+                await self.bot.send_message(channel, "The " + desc + " channel has not yet been set up. What should it be set to?")
+            else:
+                await self.bot.send_message(channel, "The " + desc + " channel is currently set to "
+                                 + chn.name + ". What should it be set to?")
+        else:
+            await self.bot.send_message(channel, "The " + desc + " channel has not yet been set up. What should it be set to?")
+        msg = await self.bot.wait_for_message(author=author, timeout=60)
+        if msg is None:
+            await self.bot.send_message(channel, 'Exiting Setup')
+            return
+        msg = msg.content
+        ch = discord.utils.get(server.channels, name=msg)
+        if ch is None:
+            await self.bot.send_message(channel, "That channel doesn't exist. Exiting setup.")
+            return
+        self.settings[keyword] = ch.id
+        self.saveSettings()
+        await self.bot.send_message(channel, desc.capitalize() + " channel set to " + ch.name)
+        await self.setup(server, author)
     
     # Edit score types
     @velkaset.command(pass_context=True, name="scoreEditType")
@@ -778,4 +797,4 @@ def setup(bot):
     bot.add_listener(n.check_for_score, "on_message")
     loop = asyncio.get_event_loop()
     loop.create_task(n.loop())
-    bot.add_cog(n)
+    bot.add_cog(n)  
