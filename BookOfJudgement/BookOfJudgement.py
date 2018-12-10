@@ -170,7 +170,7 @@ class Velka:
             reqChannel = message.channel_mentions[0]
             if "CHANNELS" in self.settings and "sunlight" in self.settings["CHANNELS"]:
                 if len(self.settings["CHANNELS"]["sunlight"]) > 0:
-                goodChannel = False
+                    goodChannel = False
                 for ch in self.settings["CHANNELS"]["sunlight"]:
                     if reqchannel.id == ch:
                         goodChannel = True
