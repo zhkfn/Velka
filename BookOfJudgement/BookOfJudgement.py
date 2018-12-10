@@ -183,7 +183,7 @@ class Velka:
                 if len(self.settings["CHANNELS"]["sunlight"]) > 0:
                     goodChannel = False
                 for ch in self.settings["CHANNELS"]["sunlight"]:
-                    if reqchannel.id == ch:
+                    if reqChannel.id == ch:
                         goodChannel = True
                 if reqChannel.id == self.settings["COOP_CHAT"]:
                     goodChannel = False
