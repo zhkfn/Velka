@@ -185,7 +185,7 @@ class Velka:
                 for ch in self.settings["CHANNELS"]["sunlight"]:
                     if reqchannel.id == ch:
                         goodChannel = True
-                if reqchannel.id == self.settings["COOP_CHAT"]:
+                if reqChannel.id == self.settings["COOP_CHAT"]:
                     goodChannel = False
                 if not goodChannel:
                     await self.bot.send_message(message.channel, "That is not a valid channel. Please choose a co-op area channel.")
