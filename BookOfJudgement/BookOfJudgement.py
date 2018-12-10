@@ -222,7 +222,7 @@ class Velka:
         msg += "*Note: You can mention multiple users to award several points at once!*\n"
         msg += "`!credits` Display Velka's credits.\n"
         msg += "`!velkaset` Change Velka's settings (mods only)."
-        await client.send_message(ctx.author, msg)
+        await self.bot.send_message(ctx.author, msg)
     
     async def help(self, server, channel, decay=False):
         emote1 = self.emote(list(self.settings["SCORE_TYPE"].keys())[0])
