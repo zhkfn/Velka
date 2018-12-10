@@ -441,13 +441,13 @@ class Velka:
         msg = msg.content
         if str.isdigit(msg) and int(msg) > 0 and int(msg) < ct:
             if int(msg) == 1:
-                await self.setChannel(server,channel, "LOGGING", "logging")
+                await self.setChannel(server,channel, author, "LOGGING", "logging")
             elif int(msg) == 2:
-                await self.setChannel(server, channel, "SPAM", "bot spam")
+                await self.setChannel(server, channel, author, "SPAM", "bot spam")
             elif int(msg) == 3:
-                await self.setChannel(server, channel, "REQUESTS", "co-op requests")
+                await self.setChannel(server, channel, author, "REQUESTS", "co-op requests")
             elif int(msg) == 4:
-                await self.setChannel(server, channel, "COOP_CHAT", "co-op chat")
+                await self.setChannel(server, channel, author, "COOP_CHAT", "co-op chat")
             else:
                 st = list(self.settings["SCORE_TYPE"].keys())[int(msg)-5]
                 if "CHANNELS" not in self.settings:
@@ -488,7 +488,7 @@ class Velka:
             await self.bot.say('Invalid Selection. Exiting Setup.')
             
             
-    async def setChannel(self, server, channel, keyword, desc):
+    async def setChannel(self, server, channel, author, keyword, desc):
         if keyword in self.settings:
             chn = discord.utils.get(server.channels, id=self.settings[keyword])
             if chn is None:
