@@ -202,7 +202,7 @@ class Velka:
         ngText = ""
         if ng > 0:
             ngText = " NG+"
-            if ngText > 1:
+            if ng > 1:
                 ngText += str(ng)
         await self.bot.send_message(reqChannel, "{} requests co-op assistance in{} {}.".format(message.author.mention, ngText, chl.mention))
         # save the request to timeout to auto-delete
