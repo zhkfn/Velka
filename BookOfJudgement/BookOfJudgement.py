@@ -192,6 +192,11 @@ class Velka:
                     return
                 chl = message.channel_mentions[0]
             await self.bot.send_message(message.channel, "A request was posted in {}. Please use {} to organize your co-op.".format(requests.mention, chl.mention))
+        # check if channel is allowed
+        if chl.id not in self.settings["CHANNELS"]["sunlight"]:
+            await self.bot.send_message(message.channel, "That command is not allowed here. Please use a designated co-op channel.") 
+            return
+                                        
         # Put a message in the current channel
         await self.bot.send_message(chl, "A request for help was posted in {} for {}.".format(requests.mention, message.author.mention))
         # Put a message in the request channel (look for NG)
@@ -211,7 +216,10 @@ class Velka:
             self.timeout["COOP"][message.author.id] = {} 
         else:
             #find the old message and delete it
-            await self.bot.http.delete_message(requests.id, self.timeout["COOP"][message.author.id]["MSG"])
+            try:
+                await self.bot.http.delete_message(requests.id, self.timeout["COOP"][message.author.id]["MSG"])
+            except:
+                pass
         # save the request to timeout to auto-delete
         self.timeout["COOP"][message.author.id]["MSG"] = reqMsg.id
         self.timeout["COOP"][message.author.id]["TIME"] = int(time.time())
