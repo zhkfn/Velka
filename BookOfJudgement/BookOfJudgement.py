@@ -211,8 +211,7 @@ class Velka:
             self.timeout["COOP"][message.author.id] = {} 
         else:
             #find the old message and delete it
-            delmsg = await self.bot.get_message(requests, self.timeout["COOP"][message.author.id]["MSG"])
-            await self.bot.delete_message(delmsg)
+            await self.bot.http.delete_message(requests.id, self.timeout["COOP"][message.author.id]["MSG"])
         # save the request to timeout to auto-delete
         self.timeout["COOP"][message.author.id]["MSG"] = reqMsg.id
         self.timeout["COOP"][message.author.id]["TIME"] = int(time.time())
