@@ -421,7 +421,7 @@ class Velka:
         while True:
             self.cooldownLoop()
             server = self.bot.get_server(self.settings["SERVER"])
-            self.coopLoop(server)
+            await self.coopLoop(server)
             if datetime.datetime.today().weekday() != self.timeout["DAY"]:
                 day = self.timeout["DAY"]
                 self.timeout["DAY"] = datetime.datetime.today().weekday()
