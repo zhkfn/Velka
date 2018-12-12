@@ -93,7 +93,8 @@ class Velka:
             return
         command = splitted[0].lower()
         await self.check_for_score(message)
-        await self.coop(message, command) 
+        await self.coop(message, command)
+        await self.cancelRequest(message, command)
     
     # Give out points to users
     async def check_for_score(self, message):
@@ -193,15 +194,13 @@ class Velka:
         # check if channel is allowed
         if chl.id not in self.settings["CHANNELS"]["sunlight"]:
             await self.bot.send_message(message.channel, "That command is not allowed here. Please use a designated co-op channel.") 
-            return
-                                        
+            return         
         # Put a message in the current channel
         await self.bot.send_message(chl, "A request for help was posted in {} for {}.".format(requests.mention, message.author.mention))
         # Put a message in the request channel (look for NG)
         ng = 0
         if len(command) > 5:
             ng = int(command[5]) 
-            
         ngText = ""
         if ng > 0:
             ngText = " NG+"
@@ -217,19 +216,35 @@ class Velka:
         # save the request to timeout to auto-delete
         self.timeout["COOP"][message.author.id]["MSG"] = reqMsg.id
         self.timeout["COOP"][message.author.id]["TIME"] = int(time.time())
+        self.timeout["COOP"][message.author.id]["CH"] = chl.id
         self.saveTimeout()
         
     async def removeRequest(self, author):
         if author.id not in self.timeout["COOP"]:
-            return
+            return false
         requests = discord.utils.get(server.channels, id=self.settings["REQUESTS"])
+        done = False
         try:
             await self.bot.http.delete_message(requests.id, self.timeout["COOP"][author.id]["MSG"])
+            done = True
         except:
             pass
         self.timeout["COOP"].pop(author.id)
         self.saveTimeout()
+        return done
         
+    async def cancelRequest(self, message, command):
+        if not command == "!complete":
+            return
+        if "CHANNELS" in self.settings and "sunlight" in self.settings["CHANNELS"]:
+            if len(self.settings["CHANNELS"]["sunlight"]) > 0:
+                if message.channel.id in self.settings["CHANNELS"]["sunlight"]:
+                    good = await self.removeRequest(message.author)
+                    if good:
+                        await self.bot.send_message(message.channel, "Your co-op request has been removed.")
+                    else:
+                        await self.bot.send_message(message.channel, "There was no co-op request to remove.")
+                    
 
     # Credit
     @commands.command(pass_context=True)
@@ -375,11 +390,32 @@ class Velka:
         curTime = int(time.time());
         if "COOLDOWN" not in self.timeout:
             self.timeout["COOLDOWN"] = {}
+            self.saveTimeout()
         else:
             for mid in list(self.timeout["COOLDOWN"].keys()):
                 if curTime - self.timeout["COOLDOWN"][mid] > self.settings["COOLDOWN"]:
                     self.timeout["COOLDOWN"].pop(mid)
-        self.saveTimeout()
+                    self.saveTimeout()
+        
+    async def coopLoop(self):
+        curTime = int(time.time());
+        if "COOP" not in self.timeout:
+            self.timeout["COOP"] = {}
+            self.saveTimeout()
+        else:
+            for mid in list(self.timeout["COOLDOWN"].keys()):
+                if curTime - self.timeout["COOLDOWN"][mid]["TIME"] > 360:
+                    if "NOTICE" not in self.timeout["COOLDOWN"][mid]:
+                        ch = discord.utils.get(server.channels, id=self.timeout["COOLDOWN"][mid]["CH"])
+                        auth = discord.utils.get(server.members, id=mid)
+                        await self.bot.send_message(ch, auth.mention + ", do you still need help? If not, please award those who helped you with `!sunlight @<user>` or mark the request completed with `!complete`.")
+                        self.timeout["COOLDOWN"][mid]["NOTICE"] = True
+                        self.saveTimeout()
+                    elif curTime - self.timeout["COOLDOWN"][mid]["TIME"] > 1080:
+                        ch = discord.utils.get(server.channels, id=self.timeout["COOLDOWN"][mid]["CH"])
+                        auth = discord.utils.get(server.members, id=mid)
+                        await self.bot.send_message(ch, auth.mention + ", your co-op request has timed out. If you still need help, please use the `!coop` command again.")
+                        self.removeRequest(self, author)
     
     async def loop(self):
         while True:
