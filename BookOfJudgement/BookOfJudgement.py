@@ -242,13 +242,14 @@ class Velka:
         if "CHANNELS" in self.settings and "sunlight" in self.settings["CHANNELS"]:
             if len(self.settings["CHANNELS"]["sunlight"]) > 0:
                 if message.channel.id in self.settings["CHANNELS"]["sunlight"]:
-                    ch = discord.utils.get(message.server.channels, id=self.timeout["COOP"][message.author.id]["CH"])
-                    good = await self.removeRequest(message.server, message.author)
-                    if good:
-                        await self.bot.send_message(message.channel, "Your co-op request has been removed.")
-                        channel = discord.utils.get(message.server.channels, id=self.settings["LOGGING"])
-                        await self.bot.send_message(channel, message.author.mention + " removed their co-op request in "+ch.mention) 
-                    return
+                    if message.author.id in self.timeout["COOP"]
+                        ch = discord.utils.get(message.server.channels, id=self.timeout["COOP"][message.author.id]["CH"])
+                        good = await self.removeRequest(message.server, message.author)
+                        if good:
+                            await self.bot.send_message(message.channel, "Your co-op request has been removed.")
+                            channel = discord.utils.get(message.server.channels, id=self.settings["LOGGING"])
+                            await self.bot.send_message(channel, message.author.mention + " removed their co-op request in "+ch.mention) 
+                            return
                 await self.bot.send_message(message.channel, "There was no co-op request to remove.")
                     
 
