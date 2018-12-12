@@ -212,14 +212,14 @@ class Velka:
         if message.author.id not in self.timeout["COOP"]:
             self.timeout["COOP"][message.author.id] = {} 
         else:
-            await self.removeRequest(message.author)
+            await self.removeRequest(message.server, message.author)
         # save the request to timeout to auto-delete
         self.timeout["COOP"][message.author.id]["MSG"] = reqMsg.id
         self.timeout["COOP"][message.author.id]["TIME"] = int(time.time())
         self.timeout["COOP"][message.author.id]["CH"] = chl.id
         self.saveTimeout()
         
-    async def removeRequest(self, author):
+    async def removeRequest(self, server, author):
         if author.id not in self.timeout["COOP"]:
             return false
         requests = discord.utils.get(server.channels, id=self.settings["REQUESTS"])
@@ -239,7 +239,7 @@ class Velka:
         if "CHANNELS" in self.settings and "sunlight" in self.settings["CHANNELS"]:
             if len(self.settings["CHANNELS"]["sunlight"]) > 0:
                 if message.channel.id in self.settings["CHANNELS"]["sunlight"]:
-                    good = await self.removeRequest(message.author)
+                    good = await self.removeRequest(message.server, message.author)
                     if good:
                         await self.bot.send_message(message.channel, "Your co-op request has been removed.")
                     else:
@@ -397,7 +397,7 @@ class Velka:
                     self.timeout["COOLDOWN"].pop(mid)
                     self.saveTimeout()
         
-    async def coopLoop(self):
+    async def coopLoop(self, server):
         curTime = int(time.time());
         if "COOP" not in self.timeout:
             self.timeout["COOP"] = {}
@@ -415,18 +415,19 @@ class Velka:
                         ch = discord.utils.get(server.channels, id=self.timeout["COOLDOWN"][mid]["CH"])
                         auth = discord.utils.get(server.members, id=mid)
                         await self.bot.send_message(ch, auth.mention + ", your co-op request has timed out. If you still need help, please use the `!coop` command again.")
-                        self.removeRequest(self, author)
+                        self.removeRequest(self, server, author)
     
     async def loop(self):
         while True:
             self.cooldownLoop()
+            server = self.bot.get_server(self.settings["SERVER"])
+            self.coopLoop(server)
             if datetime.datetime.today().weekday() != self.timeout["DAY"]:
                 day = self.timeout["DAY"]
                 self.timeout["DAY"] = datetime.datetime.today().weekday()
                 self.saveTimeout()
                 if datetime.datetime.today().weekday() < day:
                     await self.weeklyDecay(server)
-                server = self.bot.get_server(self.settings["SERVER"])
                 spam = discord.utils.get(server.channels, id=self.settings["SPAM"])
                 await self.help(server, spam, datetime.datetime.today().weekday() < day)
                 channel = discord.utils.get(server.channels, id=self.settings["LOGGING"])
