@@ -402,16 +402,16 @@ class Velka:
             self.timeout["COOP"] = {}
             self.saveTimeout()
         else:
-            for mid in list(self.timeout["COOLDOWN"].keys()):
-                if curTime - self.timeout["COOLDOWN"][mid]["TIME"] > 360:
-                    if "NOTICE" not in self.timeout["COOLDOWN"][mid]:
-                        ch = discord.utils.get(server.channels, id=self.timeout["COOLDOWN"][mid]["CH"])
+            for mid in list(self.timeout["COOP"].keys()):
+                if curTime - self.timeout["COOP"][mid]["TIME"] > 360:
+                    if "NOTICE" not in self.timeout["COOP"][mid]:
+                        ch = discord.utils.get(server.channels, id=self.timeout["COOP"][mid]["CH"])
                         auth = discord.utils.get(server.members, id=mid)
                         await self.bot.send_message(ch, auth.mention + ", do you still need help? If not, please award those who helped you with `!sunlight @<user>` or mark the request completed with `!complete`.")
-                        self.timeout["COOLDOWN"][mid]["NOTICE"] = True
+                        self.timeout["COOP"][mid]["NOTICE"] = True
                         self.saveTimeout()
-                    elif curTime - self.timeout["COOLDOWN"][mid]["TIME"] > 1080:
-                        ch = discord.utils.get(server.channels, id=self.timeout["COOLDOWN"][mid]["CH"])
+                    elif curTime - self.timeout["COOP"][mid]["TIME"] > 1080:
+                        ch = discord.utils.get(server.channels, id=self.timeout["COOP"][mid]["CH"])
                         auth = discord.utils.get(server.members, id=mid)
                         await self.bot.send_message(ch, auth.mention + ", your co-op request has timed out. If you still need help, please use the `!coop` command again.")
                         self.removeRequest(self, server, author)
