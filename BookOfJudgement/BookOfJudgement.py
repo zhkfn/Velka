@@ -224,7 +224,7 @@ class Velka:
         
     async def removeRequest(self, server, author):
         if author.id not in self.timeout["COOP"]:
-            return false
+            return False
         requests = discord.utils.get(server.channels, id=self.settings["REQUESTS"])
         done = False
         try:
