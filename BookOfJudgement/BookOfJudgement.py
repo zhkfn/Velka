@@ -403,6 +403,8 @@ class Velka:
             self.saveTimeout()
         else:
             for mid in list(self.timeout["COOP"].keys()):
+                spam = discord.utils.get(server.channels, id=self.settings["SPAM"])
+                await self.bot.send_message(spam, curTime - self.timeout["COOP"][mid]["TIME"]) 
                 if curTime - self.timeout["COOP"][mid]["TIME"] > 360:
                     if "NOTICE" not in self.timeout["COOP"][mid]:
                         ch = discord.utils.get(server.channels, id=self.timeout["COOP"][mid]["CH"])
