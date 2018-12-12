@@ -414,7 +414,7 @@ class Velka:
                         ch = discord.utils.get(server.channels, id=self.timeout["COOP"][mid]["CH"])
                         auth = discord.utils.get(server.members, id=mid)
                         await self.bot.send_message(ch, auth.mention + ", your co-op request has timed out. If you still need help, please use the `!coop` command again.")
-                        self.removeRequest(server, auth)
+                        await self.removeRequest(server, auth)
     
     async def loop(self):
         while True:
