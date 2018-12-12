@@ -243,7 +243,7 @@ class Velka:
                     if good:
                         await self.bot.send_message(message.channel, "Your co-op request has been removed.")
                         channel = discord.utils.get(message.server.channels, id=self.settings["LOGGING"])
-                        await self.bot.send_message(channel, message.author.mention + "removed their co-op request in "+ch.mention) 
+                        await self.bot.send_message(channel, message.author.mention + " removed their co-op request in "+ch.mention) 
                     return
                 await self.bot.send_message(message.channel, "There was no co-op request to remove.")
                     
