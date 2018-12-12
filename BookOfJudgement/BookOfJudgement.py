@@ -241,8 +241,11 @@ class Velka:
                     good = await self.removeRequest(message.server, message.author)
                     if good:
                         await self.bot.send_message(message.channel, "Your co-op request has been removed.")
-                    else:
-                        await self.bot.send_message(message.channel, "There was no co-op request to remove.")
+                        channel = discord.utils.get(message.server.channels, id=self.settings["LOGGING"])
+                        ch = discord.utils.get(message.server.channels, id=self.timeout["COOP"][message.author.id]["CH"])
+                        await self.bot.send_message(channel, message.author.mention + "removed their co-op request in "+ch.mention) 
+                        return
+                 await self.bot.send_message(message.channel, "There was no co-op request to remove.")
                     
 
     # Credit
@@ -415,6 +418,9 @@ class Velka:
                         auth = discord.utils.get(server.members, id=mid)
                         await self.bot.send_message(ch, auth.mention + ", your co-op request has timed out. If you still need help, please use the `!coop` command again.")
                         await self.removeRequest(server, auth)
+                        channel = discord.utils.get(server.channels, id=self.settings["LOGGING"])
+                        await self.bot.send_message(channel, auth.mention + "'s co-op request in" + ch.mention + " has timed out." 
+                
     
     async def loop(self):
         while True:
