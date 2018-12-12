@@ -242,7 +242,7 @@ class Velka:
         if "CHANNELS" in self.settings and "sunlight" in self.settings["CHANNELS"]:
             if len(self.settings["CHANNELS"]["sunlight"]) > 0:
                 if message.channel.id in self.settings["CHANNELS"]["sunlight"]:
-                    if message.author.id in self.timeout["COOP"]
+                    if message.author.id in self.timeout["COOP"]:
                         ch = discord.utils.get(message.server.channels, id=self.timeout["COOP"][message.author.id]["CH"])
                         good = await self.removeRequest(message.server, message.author)
                         if good:
