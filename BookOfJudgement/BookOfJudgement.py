@@ -406,14 +406,14 @@ class Velka:
             self.saveTimeout()
         else:
             for mid in list(self.timeout["COOP"].keys()):
-                if curTime - self.timeout["COOP"][mid]["TIME"] > 360:
+                if curTime - self.timeout["COOP"][mid]["TIME"] > 3600:
                     if "NOTICE" not in self.timeout["COOP"][mid]:
                         ch = discord.utils.get(server.channels, id=self.timeout["COOP"][mid]["CH"])
                         auth = discord.utils.get(server.members, id=mid)
                         await self.bot.send_message(ch, auth.mention + ", do you still need help? If not, please award those who helped you with `!sunlight @<user>` or mark the request completed with `!complete`.")
                         self.timeout["COOP"][mid]["NOTICE"] = True
                         self.saveTimeout()
-                    elif curTime - self.timeout["COOP"][mid]["TIME"] > 1080:
+                    elif curTime - self.timeout["COOP"][mid]["TIME"] > 10800:
                         ch = discord.utils.get(server.channels, id=self.timeout["COOP"][mid]["CH"])
                         auth = discord.utils.get(server.members, id=mid)
                         await self.bot.send_message(ch, auth.mention + ", your co-op request has timed out. If you still need help, please use the `!coop` command again.")
