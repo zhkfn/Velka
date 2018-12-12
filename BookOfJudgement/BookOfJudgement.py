@@ -117,13 +117,11 @@ class Velka:
             return
         if "CHANNELS" in self.settings and scoreType in self.settings["CHANNELS"]:
             if len(self.settings["CHANNELS"][scoreType]) > 0:
-                goodChannel = False
-                for ch in self.settings["CHANNELS"][scoreType]:
-                    if message.channel.id == ch:
-                        goodChannel = True
-                if not goodChannel:
+                if message.channel.id not in self.settings["CHANNELS"][scoreType]:
                     await self.bot.send_message(message.channel, "That command is not allowed here.")
                     return
+        if scoreType == "sunlight":
+            await self.removeRequest(message.author)
         for member in mentions:
             if member == user and self.settings['DEBUG'] == False:
                 await self.bot.send_message(message.channel, "Thou canst not judge thyself.")
@@ -215,15 +213,23 @@ class Velka:
         if message.author.id not in self.timeout["COOP"]:
             self.timeout["COOP"][message.author.id] = {} 
         else:
-            #find the old message and delete it
-            try:
-                await self.bot.http.delete_message(requests.id, self.timeout["COOP"][message.author.id]["MSG"])
-            except:
-                pass
+            await self.removeRequest(message.author)
         # save the request to timeout to auto-delete
         self.timeout["COOP"][message.author.id]["MSG"] = reqMsg.id
         self.timeout["COOP"][message.author.id]["TIME"] = int(time.time())
         self.saveTimeout()
+        
+    async def removeRequest(self, author):
+        if author.id not in self.timeout["COOP"]:
+            return
+        requests = discord.utils.get(server.channels, id=self.settings["REQUESTS"])
+        try:
+            await self.bot.http.delete_message(requests.id, self.timeout["COOP"][author.id]["MSG"])
+        except:
+            pass
+        self.timeout["COOP"].pop(author.id)
+        self.saveTimeout()
+        
 
     # Credit
     @commands.command(pass_context=True)
