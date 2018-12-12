@@ -122,7 +122,7 @@ class Velka:
                     await self.bot.send_message(message.channel, "That command is not allowed here.")
                     return
         if scoreType == "sunlight":
-            await self.removeRequest(message.author)
+            await self.removeRequest(message.server, message.author)
         for member in mentions:
             if member == user and self.settings['DEBUG'] == False:
                 await self.bot.send_message(message.channel, "Thou canst not judge thyself.")
