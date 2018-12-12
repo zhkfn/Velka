@@ -210,7 +210,10 @@ class Velka:
         if "COOP" not in self.timeout:
             self.timeout["COOP"] = {} 
         if message.author.id in self.timeout["COOP"]:
-            await self.removeRequest(message.server, message.author)
+            deleted = await self.removeRequest(message.server, message.author)
+            if deleted:
+                channel = discord.utils.get(message.server.channels, id=self.settings["LOGGING"])
+                await self.bot.send_message(channel, message.author.mention + " removed their co-op request in "+chl.mention) 
         # save the request to timeout to auto-delete
         self.timeout["COOP"][message.author.id] = {}
         self.timeout["COOP"][message.author.id]["MSG"] = reqMsg.id
