@@ -422,6 +422,9 @@ class Velka:
         while True:
             self.cooldownLoop()
             server = self.bot.get_server(self.settings["SERVER"])
+            if server is None:
+                await asyncio.sleep(30)
+                continue 
             await self.coopLoop(server)
             if datetime.datetime.today().weekday() != self.timeout["DAY"]:
                 day = self.timeout["DAY"]
