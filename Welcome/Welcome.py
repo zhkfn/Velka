@@ -304,8 +304,8 @@ class Welcome:
         if self.speak_permissions(server):
             msg = self.settings[server.id]["BOTS_MSG"] if bot else rand_msg
             if not bot and self.settings[server.id]["WHISPER"]:
-                await self.bot.send_message(ctx.message.author,
-                        msg.format(ctx.message.author,server))
+                embed=discord.Embed(description=msg.format(ctx.message.author,server), color=4614258)
+                await self.bot.send_message(ctx.message.author, embed=embed)
             if bot or self.settings[server.id]["WHISPER"] is not True:
                 await self.bot.send_message(channel,
                         msg.format(ctx.message.author, server))
