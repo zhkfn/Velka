@@ -310,7 +310,7 @@ class Welcome:
             if not bot and self.settings[server.id]["WHISPER"]:
                 await self.bot.send_message(ctx.message.author, embed=embed)
             if bot or self.settings[server.id]["WHISPER"] is not True:
-                await self.bot.send_message(channel, embed=embed)
+                await self.bot.send_message(channel, ctx.message.author.mention, embed=embed)
         else:
             await self.bot.send_message(ctx.message.channel,
                                         "I do not have permissions "
