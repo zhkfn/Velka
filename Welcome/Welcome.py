@@ -303,12 +303,12 @@ class Welcome:
                                     "`{0.mention}".format(channel))
         if self.speak_permissions(server):
             msg = self.settings[server.id]["BOTS_MSG"] if bot else rand_msg
+            embed=discord.Embed(description=msg.format(ctx.message.author,server), color=4614258)
+
             if not bot and self.settings[server.id]["WHISPER"]:
-                embed=discord.Embed(description=msg.format(ctx.message.author,server), color=4614258)
                 await self.bot.send_message(ctx.message.author, embed=embed)
             if bot or self.settings[server.id]["WHISPER"] is not True:
-                await self.bot.send_message(channel,
-                        msg.format(ctx.message.author, server))
+                await self.bot.send_message(channel, embed=embed)
         else:
             await self.bot.send_message(ctx.message.channel,
                                         "I do not have permissions "
