@@ -264,7 +264,9 @@ class Welcome:
                 print('welcome.py: added {} role to '
                       'bot, {}'.format(role, member))
         # finally, welcome them
-        await self.bot.send_message(channel, msg.format(member, server))
+        embed=discord.Embed(description=msg.format(ctx.message.author,server), color=4614258)
+
+        await self.bot.send_message(channel, embed=embed)
         if failed_to_add_role:
             await asyncio.sleep(5)
             try:
