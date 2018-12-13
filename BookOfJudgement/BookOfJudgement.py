@@ -258,7 +258,7 @@ class Velka:
     async def credits(self, ctx):
         """Credits for Velka"""
         if ctx.message.channel.is_private or ctx.message.channel.id == self.settings["SPAM"]:
-            embed=discord.Embed(description="__**Credits:**__\n\n**[Art](https://www.deviantart.com/thequietsoul21) \n\n[Coding](https://github.com/zhkfn/Velka)**", color=466872)
+            embed=discord.Embed(description="__**Credits:**__\n\n**[Art](https://www.deviantart.com/thequietsoul21) \n\n[Coding](https://github.com/zhkfn/Velka)**", color=4614258)
             await self.bot.say(embed=embed)
         else:
             chn = discord.utils.get(ctx.message.server.channels, id=self.settings["SPAM"])
