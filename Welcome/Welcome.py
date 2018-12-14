@@ -272,7 +272,7 @@ class Welcome:
     @welcomeset.command(pass_context=True)
     async def test(self, ctx):
         """sends a test welcome"""
-        await self.send_testing_message(ctx) 
+        await self.send_testing_msg(ctx) 
         
     async def member_join(self, member):
         server = member.server
