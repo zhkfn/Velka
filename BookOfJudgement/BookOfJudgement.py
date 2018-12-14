@@ -173,6 +173,7 @@ class Velka:
                         self.settings['SCORE_TYPE'][scoreType]["noun_s"],
                         message.channel.mention)
                     await self.bot.send_message(discord.utils.get(message.server.channels, id=self.settings["LOGGING"]), log)
+                    await self.leaderboardChannel()
 
     async def coop(self, message, command):
         if not command[0:5] == "!coop":
@@ -383,6 +384,16 @@ class Velka:
         else:
             await self.bot.say("That leaderboard does not exist.")
     
+    async def leaderboardChannel(self):
+        server = self.bot.get_server(self.settings["SERVER"])
+        channel = discord.utils.get(server.channels, id=self.settings["LEADER"])
+        mgs = [] #Empty list to put all the messages in the log
+        async for x in self.bot.logs_from(channel, limit = 10):
+            mgs.append(x)
+        await self.bot.delete_messages(mgs)
+        for st in self.settings["SCORE_TYPE"]:
+            await self.Leaderboard(st, server, channel)
+    
     async def weeklyDecay(self, server):
         for st, s in self.settings["SCORE_TYPE"].items():
             for mid in list(self.scores.keys()):
@@ -522,7 +533,8 @@ class Velka:
         msg += "\n  2. Spam channel"
         msg += "\n  3. Co-op Requests"
         msg += "\n  4. Co-op Chat"
-        ct = 5
+        msg += "\n  5. Leaderboard" 
+        ct = 6
         for st in self.settings["SCORE_TYPE"]:
             msg += "\n  {}. !{} channels".format(str(ct), st)
             ct += 1
@@ -541,8 +553,10 @@ class Velka:
                 await self.setChannel(server, channel, author, "REQUESTS", "co-op requests")
             elif int(msg) == 4:
                 await self.setChannel(server, channel, author, "COOP_CHAT", "co-op chat")
+            elif int(msg) == 5:
+                await self.setChannel(server, channel, author, "LEADER", "leaderboard")
             else:
-                st = list(self.settings["SCORE_TYPE"].keys())[int(msg)-5]
+                st = list(self.settings["SCORE_TYPE"].keys())[int(msg)-6]
                 if "CHANNELS" not in self.settings:
                     self.settings["CHANNELS"] = {}
                     self.saveSettings()
