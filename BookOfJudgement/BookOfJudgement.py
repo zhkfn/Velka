@@ -394,6 +394,8 @@ class Velka:
     
     async def leaderboardChannel(self):
         server = self.bot.get_server(self.settings["SERVER"])
+        if "LEADER" not in self.settings:
+            return
         channel = discord.utils.get(server.channels, id=self.settings["LEADER"])
         mgs = [] #Empty list to put all the messages in the log
         try:
