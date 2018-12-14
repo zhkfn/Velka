@@ -388,9 +388,12 @@ class Velka:
         server = self.bot.get_server(self.settings["SERVER"])
         channel = discord.utils.get(server.channels, id=self.settings["LEADER"])
         mgs = [] #Empty list to put all the messages in the log
-        async for x in self.bot.logs_from(channel, limit = 10):
-            mgs.append(x)
-        await self.bot.delete_messages(mgs)
+        try:
+            async for x in self.bot.logs_from(channel, limit = 10):
+                mgs.append(x)
+            await self.bot.delete_messages(mgs)
+        except:
+            pass
         for st in self.settings["SCORE_TYPE"]:
             await self.Leaderboard(st, server, channel)
     
