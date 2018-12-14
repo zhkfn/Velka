@@ -124,7 +124,7 @@ class Velka:
         if scoreType == "sunlight":
             await self.removeRequest(message.server, message.author)
         for member in mentions:
-            if member == user and self.settings['DEBUG'] == False:
+            if member == user and self.settings['DEBUG'] == False and not member.server_permissions.manage_messages:
                 await self.bot.send_message(message.channel, "Thou canst not judge thyself.")
             else:
                 if self.settings['DEBUG'] == False:
