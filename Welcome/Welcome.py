@@ -13,7 +13,7 @@ from random import choice as rand_choice
 default_greeting = "Welcome {0.name} to {1.name}!"
 default_settings = {"GREETING": [default_greeting], "ON": False,
                     "CHANNEL": None, "WHISPER": False,
-                    "BOTS_MSG": None, "BOTS_ROLE": None}
+                    "BOTS_MSG": None, "BOTS_ROLE": None, "DM": [default_greeting]} 
 settings_path = "data/welcome/settings.json"
 
 
