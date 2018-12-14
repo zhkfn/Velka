@@ -296,8 +296,8 @@ class Velka:
         
         msg = emote1 + "To check thine sins and victories, speaketh:```!judgement```\n"
         msg += emote2 + "To view the judgement of another, speaketh:```!judgement @<user>```\n"
-        msg += emote1 + "To view the most victorious speaketh:\n```!book sunlight```\n"
-        msg += emote2 + "To view the most wretched speaketh:\n```!book wraith```\n"
+        msg += emote1 + "To view the most victorious, speaketh:\n```!book sunlight```\n"
+        msg += emote2 + "To view the most wretched, speaketh:\n```!book wraith```\n"
         if decay:
             msg += "\n\n{}{} **__The week has ended.__** {}{}".format(emote1, emote2, emote2, emote1) 
             msg += "\nAll scores have been decayed.\n\n"
@@ -322,7 +322,9 @@ class Velka:
             member_dict = self.scores[member.id]
             msg = "Judgement for " + member.name + ":"
             for st, s in self.settings["SCORE_TYPE"].items():
-                if str(member_dict[st]) == "1":
+                if str(member_dict[st]) < 1:
+                    continue 
+                if str(member_dict[st]) == 1:
                     noun = s["noun_s"]
                 else:
                     noun = s["noun"]
@@ -330,18 +332,24 @@ class Velka:
         else:
             msg = member.name + " has not yet been judged."
         msg += "\n\n{} can still give away:".format(member.name)
+        cmltv = 0
         for st, s in self.settings["SCORE_TYPE"].items():
             limit = self.settings["SCORE_TYPE"][st]["dailyLimit"]
             amt = 0
             if st in self.timeout["DAILY_LIMIT"] and member.id in self.timeout["DAILY_LIMIT"][st]:
                 amt = self.timeout["DAILY_LIMIT"][st][member.id]
             total = limit-amt
-            if total == "1":
+            if total < 1:
+                continue
+            cmltv += total
+            if total == 1:
                 noun = s["noun_s"]
             else:
                 noun = s["noun"]
             
             msg += "\n  {} {} {}.".format(self.emote(st), str(total), noun)
+        if cmltv < 1:
+            msg += "\n  nothing."
         await self.bot.say(msg)
 
     # Leaderboard
