@@ -133,7 +133,7 @@ class Welcome:
         self.settings[server.id]["DM"].append(format_msg)
         dataIO.save_json(settings_path, self.settings)
         await self.bot.say("Welcome message added for the server.")
-        #send test message
+        await self.send_msg(server, ctx.message.author, format_msg, True) 
 
     @welcomeset_dm.command(pass_context=True, name="del", no_pm=True)
     async def welcomeset_dm_del(self, ctx):
@@ -326,9 +326,7 @@ class Welcome:
                 print('welcome.py: added {} role to '
                       'bot, {}'.format(role, member))
         # finally, welcome them
-        embed=discord.Embed(description=msg.format(member,server), color=4614258)
-
-        await self.bot.send_message(channel, member.mention, embed=embed)
+        await self.send_msg(server, member, msg, self.settings[server.id]["WHISPER"]) 
         if failed_to_add_role:
             await asyncio.sleep(5)
             try:
@@ -353,6 +351,15 @@ class Welcome:
         return server.get_member(self.bot.user.id
                                  ).permissions_in(channel).send_messages
 
+    async def send_msg(self, server, member, msg, private=False):
+        embed=discord.Embed(description=msg.format(member,server), color=4614258)
+        if private:
+            await self.bot.send_message(member,embed=embed)
+        else:
+            channel = self.get_welcome_channel(server)
+            await self.bot.send_message(channel, member.mention, embed=embed) 
+        
+    
     async def send_testing_msg(self, ctx, bot=False, msg=None):
         server = ctx.message.server
         channel = self.get_welcome_channel(server)
@@ -367,12 +374,7 @@ class Welcome:
                                     "`{0.mention}".format(channel))
         if self.speak_permissions(server):
             msg = self.settings[server.id]["BOTS_MSG"] if bot else rand_msg
-            embed=discord.Embed(description=msg.format(ctx.message.author,server), color=4614258)
-
-            if not bot and self.settings[server.id]["WHISPER"]:
-                await self.bot.send_message(ctx.message.author, embed=embed)
-            if bot or self.settings[server.id]["WHISPER"] is not True:
-                await self.bot.send_message(channel, ctx.message.author.mention, embed=embed)
+            await self.send_msg(server, ctx.message.author, msg, self.settings[server.id]["WHISPER"]) 
         else:
             await self.bot.send_message(ctx.message.channel,
                                         "I do not have permissions "
