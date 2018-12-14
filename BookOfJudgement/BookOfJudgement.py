@@ -157,7 +157,7 @@ class Velka:
                             break
                         except:
                             continue
-                await self._process_scores(member, message.server, 1, scoreType)
+                await self._process_scores(member, message.server, pts, scoreType)
                 self.timeout["COOLDOWN"][member.id] = int(time.time())
                 if self.settings['RESPOND_ON_POINT']:
                     if str(self.scores[member.id][scoreType]) == "1":
