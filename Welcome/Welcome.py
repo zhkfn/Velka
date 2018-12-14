@@ -269,6 +269,11 @@ class Welcome:
                                         "as a DM".format(channel))
         await self.send_testing_msg(ctx)
 
+    @welcomeset.command(pass_context=True)
+    async def test(self, ctx):
+        """sends a test welcome"""
+        await self.send_testing_message(ctx) 
+        
     async def member_join(self, member):
         server = member.server
         if server.id not in self.settings:
@@ -327,6 +332,8 @@ class Welcome:
                       'bot, {}'.format(role, member))
         # finally, welcome them
         await self.send_msg(server, member, msg, self.settings[server.id]["WHISPER"]) 
+        for dm in self.settings[server.id]["DM"]:
+            await self.send_msg(server, member, dm, True) 
         if failed_to_add_role:
             await asyncio.sleep(5)
             try:
@@ -375,6 +382,8 @@ class Welcome:
         if self.speak_permissions(server):
             msg = self.settings[server.id]["BOTS_MSG"] if bot else rand_msg
             await self.send_msg(server, ctx.message.author, msg, self.settings[server.id]["WHISPER"]) 
+            for dm in self.settings[server.id]["DM"]:
+                await self.send_msg(server, ctx.message.author, dm, True) 
         else:
             await self.bot.send_message(ctx.message.channel,
                                         "I do not have permissions "
