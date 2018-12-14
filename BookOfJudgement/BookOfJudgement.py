@@ -349,7 +349,7 @@ class Velka:
             
             msg += "\n  {} {} {}.".format(self.emote(st), str(total), noun)
         if cmltv < 1:
-            msg += "\n  nothing."
+            msg += "\n  nothing. " + u"\U0001F622"
         await self.bot.say(msg)
 
     # Leaderboard
