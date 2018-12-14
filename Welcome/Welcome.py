@@ -106,6 +106,68 @@ class Welcome:
             msg += "  {}. {}\n".format(c, m)
         for page in pagify(msg, ['\n', ' '], shorten_by=20):
             await self.bot.say("```\n{}\n```".format(page))
+         
+    @welcomeset.group(pass_context=True, name="dm")
+    async def welcomeset_dm(self, ctx):
+        """Manage welcome direct messages
+        """
+        if ctx.invoked_subcommand is None or \
+                isinstance(ctx.invoked_subcommand, commands.Group):
+            await send_cmd_help(ctx)
+            return
+        
+    @welcomeset_dm.command(pass_context=True, name="add", no_pm=True)
+    async def welcomeset_dm_add(self, ctx, *, format_msg):
+        """Adds a welcome direct message format for the server to send
+
+        {0} is user
+        {1} is server
+        Default is set to:
+            Welcome {0.name} to {1.name}!
+
+        Example formats:
+            {0.mention}.. What are you doing here?
+            {1.name} has a new member! {0.name}#{0.discriminator} - {0.id}
+            Someone new joined! Who is it?! D: IS HE HERE TO HURT US?!"""
+        server = ctx.message.server
+        self.settings[server.id]["DM"].append(format_msg)
+        dataIO.save_json(settings_path, self.settings)
+        await self.bot.say("Welcome message added for the server.")
+        #send test message
+
+    @welcomeset_dm.command(pass_context=True, name="del", no_pm=True)
+    async def welcomeset_dm_del(self, ctx):
+        """Removes a welcome message from the random message list
+        """
+        server = ctx.message.server
+        author = ctx.message.author
+        msg = 'Choose a welcome message to delete:\n\n'
+        for c, m in enumerate(self.settings[server.id]["DM"]):
+            msg += "  {}. {}\n".format(c, m)
+        for page in pagify(msg, ['\n', ' '], shorten_by=20):
+            await self.bot.say("```\n{}\n```".format(page))
+        answer = await self.bot.wait_for_message(timeout=120, author=author)
+        try:
+            num = int(answer.content)
+            choice = self.settings[server.id]["DM"].pop(num)
+        except:
+            await self.bot.say("That's not a number in the list :/")
+            return
+        if not self.settings[server.id]["DM"]:
+            self.settings[server.id]["DM"] = [default_greeting]
+        dataIO.save_json(settings_path, self.settings)
+        await self.bot.say("**This message was deleted:**\n{}".format(choice))
+
+    @welcomeset_dm.command(pass_context=True, name="list", no_pm=True)
+    async def welcomeset_dm_list(self, ctx):
+        """Lists the welcome messages of this server
+        """
+        server = ctx.message.server
+        msg = 'Welcome messages:\n\n'
+        for c, m in enumerate(self.settings[server.id]["DM"]):
+            msg += "  {}. {}\n".format(c, m)
+        for page in pagify(msg, ['\n', ' '], shorten_by=20):
+            await self.bot.say("```\n{}\n```".format(page))
 
     @welcomeset.command(pass_context=True)
     async def toggle(self, ctx):
