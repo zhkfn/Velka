@@ -124,18 +124,18 @@ class Velka:
         if scoreType == "sunlight":
             await self.removeRequest(message.server, message.author)
         for member in mentions:
-            if member == user and self.settings['DEBUG'] == False and not member.server_permissions.manage_messages:
+            if member == user and self.settings['DEBUG'] == False and not user.server_permissions.manage_messages:
                 await self.bot.send_message(message.channel, "Thou canst not judge thyself.")
             else:
                 if self.settings['DEBUG'] == False:
-                    if member.id in self.timeout["COOLDOWN"]:
+                    if member.id in self.timeout["COOLDOWN"] and not user.server_permissions.manage_messages:
                         await self.bot.send_message(message.channel, member.name + " has been judged recently. Please wait a while longer.")
                         return
                     if scoreType in self.timeout["DAILY_LIMIT"]:
                         if user.id in self.timeout["DAILY_LIMIT"][scoreType]:
                             limit = self.settings["SCORE_TYPE"][scoreType]["dailyLimit"]
                             amt = self.timeout["DAILY_LIMIT"][scoreType][user.id]
-                            if amt >= limit:
+                            if amt >= limit and not user.server_permissions.manage_messages:
                                 msg = user.name + " has already given the maximum "
                                 msg += self.settings['SCORE_TYPE'][scoreType]["noun"] + " for " + scoreType
                                 msg += " today."
@@ -149,6 +149,14 @@ class Velka:
                         self.timeout["DAILY_LIMIT"][scoreType] = {}
                         self.timeout["DAILY_LIMIT"][scoreType][user.id] = 1
                     self.saveTimeout()
+                pts = 1
+                if user.server_permissions.manage_messages:
+                    for word in splitted:
+                        try:
+                            pts = int(word)
+                            break
+                        except:
+                            continue
                 await self._process_scores(member, message.server, 1, scoreType)
                 self.timeout["COOLDOWN"][member.id] = int(time.time())
                 if self.settings['RESPOND_ON_POINT']:
