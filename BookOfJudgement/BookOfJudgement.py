@@ -447,7 +447,7 @@ class Velka:
                     if "NOTICE" not in self.timeout["COOP"][mid]:
                         ch = discord.utils.get(server.channels, id=self.timeout["COOP"][mid]["CH"])
                         auth = discord.utils.get(server.members, id=mid)
-                        if auth is none:
+                        if auth is None:
                             self.timeout["COOP"].pop(mid)
                             self.saveTimeout()
                             return
