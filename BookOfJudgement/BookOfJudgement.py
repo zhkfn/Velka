@@ -642,7 +642,7 @@ class Velka:
             total = 0
             for mid in list(self.scores.keys()):
                 member = discord.utils.get(server.members, id=mid)
-                if member not is None:
+                if member is not None:
                     if st in self.scores[mid]:
                         total += self.scores[mid][st]
             msg += "\n{}: {}".format(st, total) 
