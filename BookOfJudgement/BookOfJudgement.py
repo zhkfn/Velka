@@ -633,6 +633,21 @@ class Velka:
         self.saveSettings()
         await self.bot.send_message(channel, desc.capitalize() + " channel set to " + ch.name)
         await self.setup(server, channel, author)
+        
+    @velkaset.command(pass_context=True, name="stats")
+    async def _velkaset_stats(self, ctx):
+        server = self.bot.get_server(self.settings["SERVER"])
+        msg = "__**Total points currently awarded:**__" 
+        for st, s in self.settings["SCORE_TYPE"].items():
+            total = 0
+            for mid in list(self.scores.keys()):
+                member = discord.utils.get(server.members, id=mid)
+                if member not is None:
+                    if st in self.scores[mid]:
+                        total += self.scores[mid][st]
+            msg += "\n{}: {}".format(st, total) 
+        await self.bot.say(msg)
+    
     
     # Edit score types
     @velkaset.command(pass_context=True, name="scoreEditType")
