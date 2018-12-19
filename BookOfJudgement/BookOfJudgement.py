@@ -311,7 +311,7 @@ class Velka:
 
     @commands.command(pass_context=True)
     async def role(self, ctx):
-        if ctx.message.channel.is_private and not ctx.message.channel.id == self.settings["SPAM"]:
+        if not ctx.message.channel.id == self.settings["SPAM"]:
             chn = discord.utils.get(ctx.message.server.channels, id=self.settings["SPAM"])
             await self.bot.say("That command is not allowed here. Please use the " + chn.mention + " channel.")
             return
