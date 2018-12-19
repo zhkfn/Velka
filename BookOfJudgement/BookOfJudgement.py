@@ -336,10 +336,8 @@ class Velka:
                     await self.bot.say("Done.")
                     return 
                 else:
-                    self.bot.say("Invalid selection. Please pick a number listed above. Exiting role selection.") 
+                    await self.bot.say("Invalid selection. Please pick a number listed above. Exiting role selection.") 
                     return
-                                           
-         
         await self.bot.say("Sorry, you have not earned any roles I can edit.")
     
     # Check user score
