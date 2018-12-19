@@ -316,7 +316,7 @@ class Velka:
             msg = "Which role do you want?\n  1. Default Soul Ranking" 
             earnedRole = 1
             for st, s in self.settings["SCORE_TYPE"].items():
-                if s["roleCost"] <= self.scores[mid][st]:
+                if s["roleCost"] <= self.scores[mid][st] and s["roleCost"] > 0:
                     earnedRole += 1
                     msg += "\n  {}. {}".format(earnedRole, s["role"])
             if earnedRole > 1:
@@ -332,10 +332,18 @@ class Velka:
                     if int(msg) == 1:
                         self.scores[mid]["ROLE"] = "default" 
                     else:
-                        st = list(self.settings["SCORE_TYPE"].keys())[earnedRole - 2]
-                        self.scores[mid]["ROLE"] = st
-                        await self.addRole(ctx.message.server, ctx.message.author, self.settings["SCORE_TYPE"][st]["role"])
+                        ct = 1
+                        stype = "default" 
+                        for st, s in self.settings["SCORE_TYPE"].items():
+                            if s["roleCost"] <= self.scores[mid][st] and s["roleCost"] > 0:
+                                ct += 1
+                                if ct == int(msg):
+                                    stype = st
+                                    await self.addRole(ctx.message.server, ctx.message.author, s["role"])
+                                    break
+                        self.scores[mid]["ROLE"] = stype
                     await self.bot.say("Done.")
+                    self.saveScores()
                     return 
                 else:
                     await self.bot.say("Invalid selection. Please pick a number listed above. Exiting role selection.") 
