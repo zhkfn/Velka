@@ -60,7 +60,8 @@ class Velka:
         roleCost = self.settings['SCORE_TYPE'][judgement_type]['roleCost']
         if role != "" and roleCost > 0:
             if finalscore >= roleCost:
-                await self.addRole(server, member, role)
+                if "ROLE" not in self.scores[member_id] or self.scores[member_id]["ROLE"] = judgement_type
+                    await self.addRole(server, member, role)
             else:
                 await self.remRole(server, member, role)
         self.saveScores()
@@ -313,7 +314,7 @@ class Velka:
             msg = "Which role do you want?\n  1. Default Soul Ranking" 
             earnedRole = 1
             for st, s in self.settings["SCORE_TYPE"].items():
-                if s["rolecost"] <= self.scores[mid][st]:
+                if s["roleCost"] <= self.scores[mid][st]:
                     earnedRole += 1
                     msg += "\n  {}. {}".format(earnedRole, s["role"])
             if earnedRole > 1:
@@ -324,14 +325,14 @@ class Velka:
                     return
                 msg = msg.content
                 if str.isdigit(msg) and int(msg) > 0 and int(msg) <= earnedRole:
-                    for st in self.settings["SCORE_TYPE"]:
-                        await self.remRole(ctx.message.server, ctx.message.author, st) 
+                    for st, s in self.settings["SCORE_TYPE"].items():
+                        await self.remRole(ctx.message.server, ctx.message.author, s["role"]) 
                     if int(msg) == 1:
                         self.scores[mid]["ROLE"] = "default" 
                     else:
                         st = list(self.settings["SCORE_TYPE"].keys())[earnedRole - 2]
                         self.scores[mid]["ROLE"] = st
-                        await self.addRole(ctx.message.server, ctx.message.author, st)
+                        await self.addRole(ctx.message.server, ctx.message.author, self.settings["SCORE_TYPE"][st]["role"])
                     await self.bot.say("Done.")
                     return 
                 else:
