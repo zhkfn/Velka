@@ -284,6 +284,7 @@ class Velka:
         msg += "Points decay weekly to encourage continuous participation. "
         msg += "Achieving certain point thresholds can award you special roles.\n\nCommands:\n"
         msg += "`!judgement <@user>` Check how many points a user has. "
+        msg += "`!role` Swap out your earned roles."
         msg += "Leave `<@user>` blank for your own score.\n"
         msg += "`!book` Show leaderboards.\n"
         for st in self.settings["SCORE_TYPE"]:
@@ -301,6 +302,7 @@ class Velka:
         msg += emote2 + "To view the judgement of another, speaketh:```!judgement @<user>```\n"
         msg += emote1 + "To view the most victorious, speaketh:\n```!book sunlight```\n"
         msg += emote2 + "To view the most wretched, speaketh:\n```!book wraith```\n"
+        msg += emote1 + "To change thine earned roles, speaketh:\n```!book wraith```\n"
         if decay:
             msg += "\n\n{}{} **__The week has ended.__** {}{}".format(emote1, emote2, emote2, emote1) 
             msg += "\nAll scores have been decayed.\n\n"
@@ -311,6 +313,7 @@ class Velka:
 
     @commands.command(pass_context=True)
     async def role(self, ctx):
+        """Choose your role""" 
         if not ctx.message.channel.id == self.settings["SPAM"]:
             chn = discord.utils.get(ctx.message.server.channels, id=self.settings["SPAM"])
             await self.bot.say("That command is not allowed here. Please use the " + chn.mention + " channel.")
