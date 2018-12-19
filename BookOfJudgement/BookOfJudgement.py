@@ -324,7 +324,20 @@ class Velka:
                     return
                 msg = msg.content
                 elif str.isdigit(msg) and int(msg) > 0 and int(msg) <= earnedRole:
-                    
+                    for st in self.settings["SCORE_TYPE"]:
+                        await self.remRole(ctx.message.server, ctx.message.author, st) 
+                    if (int)msg == 1:
+                        self.scores[mid]["ROLE"] = "default" 
+                    else:
+                        st = list(self.settings["SCORE_TYPE"].keys())[earnedRole - 2]
+                        self.scores[mid]["ROLE"] = st
+                        await self.addRole(ctx.message.server, ctx.message.author, st)
+                    await self.bot.say("Done.")
+                    return 
+                else:
+                    self.bot.say("Invalid selection. Please pick a number listed above. Exiting role selection.") 
+                    return
+                                           
          
         await self.bot.say("Sorry, you have not earned any roles I can edit.")
     
