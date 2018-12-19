@@ -326,7 +326,7 @@ class Velka:
                 if str.isdigit(msg) and int(msg) > 0 and int(msg) <= earnedRole:
                     for st in self.settings["SCORE_TYPE"]:
                         await self.remRole(ctx.message.server, ctx.message.author, st) 
-                    if (int)msg == 1:
+                    if int(msg) == 1:
                         self.scores[mid]["ROLE"] = "default" 
                     else:
                         st = list(self.settings["SCORE_TYPE"].keys())[earnedRole - 2]
