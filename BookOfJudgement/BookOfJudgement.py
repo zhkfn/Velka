@@ -306,6 +306,28 @@ class Velka:
             for st in self.settings["SCORE_TYPE"]:
                 await self.Leaderboard(st, server, channel)
 
+    @commands.command(pass_context=True)
+    async def role(self, ctx):
+        mid = ctx.message.author.id 
+        if mid in self.scores:
+            msg = "Which role do you want?\n  1. Default Soul Ranking" 
+            earnedRole = 1
+            for st, s in self.settings["SCORE_TYPE"].items():
+                if s["rolecost"] <= self.scores[mid][st]:
+                    earnedRole += 1
+                    msg += "\n  {}. {}".format(earnedRole, s["role"])
+            if earnedRole > 1:
+                await self.bot.say(msg)
+                msg = await self.bot.wait_for_message(author=ctx.message.author, timeout=60)
+                if msg is None:
+                    await self.bot.say("Nothing selected") 
+                    return
+                msg = msg.content
+                elif str.isdigit(msg) and int(msg) > 0 and int(msg) <= earnedRole:
+                    
+         
+        await self.bot.say("Sorry, you have not earned any roles I can edit.")
+    
     # Check user score
     @commands.command(pass_context=True)
     async def judgement(self, ctx):
