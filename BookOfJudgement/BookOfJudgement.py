@@ -323,7 +323,7 @@ class Velka:
                     await self.bot.say("Nothing selected") 
                     return
                 msg = msg.content
-                elif str.isdigit(msg) and int(msg) > 0 and int(msg) <= earnedRole:
+                if str.isdigit(msg) and int(msg) > 0 and int(msg) <= earnedRole:
                     for st in self.settings["SCORE_TYPE"]:
                         await self.remRole(ctx.message.server, ctx.message.author, st) 
                     if (int)msg == 1:
