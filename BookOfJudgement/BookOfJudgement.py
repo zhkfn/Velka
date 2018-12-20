@@ -601,8 +601,10 @@ class Velka:
         msg += "\n  2. Spam channel"
         msg += "\n  3. Co-op Requests"
         msg += "\n  4. Co-op Chat"
-        msg += "\n  5. Leaderboard" 
-        ct = 6
+        msg += "\n  5. Leaderboard"
+        msg += "\n  6. Trade Requests"
+        msg += "\n  7. PvP Requests"
+        ct = 8
         for st in self.settings["SCORE_TYPE"]:
             msg += "\n  {}. !{} channels".format(str(ct), st)
             ct += 1
@@ -623,8 +625,12 @@ class Velka:
                 await self.setChannel(server, channel, author, "COOP_CHAT", "co-op chat")
             elif int(msg) == 5:
                 await self.setChannel(server, channel, author, "LEADER", "leaderboard")
+            elif int(msg) == 6:
+                await self.setChannel(server, channel, author, "TRADE", "trade requests")
+            elif int(msg) == 7:
+                await self.setChannel(server, channel, author, "PVP", "PvP requests")
             else:
-                st = list(self.settings["SCORE_TYPE"].keys())[int(msg)-6]
+                st = list(self.settings["SCORE_TYPE"].keys())[int(msg)-8]
                 if "CHANNELS" not in self.settings:
                     self.settings["CHANNELS"] = {}
                     self.saveSettings()
