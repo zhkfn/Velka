@@ -302,7 +302,7 @@ class Velka:
         msg += emote2 + "To view the judgement of another, speaketh:```!judgement @<user>```\n"
         msg += emote1 + "To view the most victorious, speaketh:\n```!book sunlight```\n"
         msg += emote2 + "To view the most wretched, speaketh:\n```!book wraith```\n"
-        msg += emote1 + "To change thine earned roles, speaketh:\n```!book wraith```\n"
+        msg += emote1 + "To change thine earned roles, speaketh:\n```!role```\n"
         if decay:
             msg += "\n\n{}{} **__The week has ended.__** {}{}".format(emote1, emote2, emote2, emote1) 
             msg += "\nAll scores have been decayed.\n\n"
