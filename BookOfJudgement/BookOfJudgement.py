@@ -234,17 +234,17 @@ class Velka:
         self.timeout["COOP"][message.author.id]["CH"] = chl.id
         self.saveTimeout()
         
-    async def removeRequest(self, server, author):
-        if author.id not in self.timeout["COOP"]:
+    async def removeRequest(self, server, author, reqType, reqChKey):
+        if author.id not in self.timeout[reqType]:
             return False
-        requests = discord.utils.get(server.channels, id=self.settings["REQUESTS"])
+        requests = discord.utils.get(server.channels, id=self.settings[reqChKey])
         done = False
         try:
-            await self.bot.http.delete_message(requests.id, self.timeout["COOP"][author.id]["MSG"])
+            await self.bot.http.delete_message(requests.id, self.timeout[reqType][author.id]["MSG"])
             done = True
         except:
             pass
-        self.timeout["COOP"].pop(author.id)
+        self.timeout[reqType].pop(author.id)
         self.saveTimeout()
         return done
         
@@ -256,13 +256,37 @@ class Velka:
                 if message.channel.id in self.settings["CHANNELS"]["sunlight"]:
                     if message.author.id in self.timeout["COOP"]:
                         ch = discord.utils.get(message.server.channels, id=self.timeout["COOP"][message.author.id]["CH"])
-                        good = await self.removeRequest(message.server, message.author)
+                        good = await self.removeRequest(message.server, message.author, "COOP", "REQUESTS")
                         if good:
                             await self.bot.send_message(message.channel, "Your co-op request has been removed.")
                             channel = discord.utils.get(message.server.channels, id=self.settings["LOGGING"])
                             await self.bot.send_message(channel, message.author.mention + " removed their co-op request in "+ch.mention) 
                             return
                 await self.bot.send_message(message.channel, "There was no co-op request to remove.")
+        elif "CHANNELS" in self.settings and "deal" in self.settings["CHANNELS"]:
+            if len(self.settings["CHANNELS"]["deal"]) > 0:
+                if message.channel.id in self.settings["CHANNELS"]["deal"]:
+                    if message.author.id in self.timeout["TRADE"]:
+                        ch = discord.utils.get(message.server.channels, id=self.timeout["TRADE"][message.author.id]["CH"])
+                        good = await self.removeRequest(message.server, message.author, "TRADE", "TRADE")
+                        if good:
+                            await self.bot.send_message(message.channel, "Your trade request has been removed.")
+                            channel = discord.utils.get(message.server.channels, id=self.settings["LOGGING"])
+                            await self.bot.send_message(channel, message.author.mention + " removed their trade request in "+ch.mention) 
+                            return
+                await self.bot.send_message(message.channel, "There was no trade request to remove.")
+        elif "CHANNELS" in self.settings and "wraith" in self.settings["CHANNELS"]:
+            if len(self.settings["CHANNELS"]["wraith"]) > 0:
+                if message.channel.id in self.settings["CHANNELS"]["wraith"]:
+                    if message.author.id in self.timeout["PVP"]:
+                        ch = discord.utils.get(message.server.channels, id=self.timeout["PVP"][message.author.id]["CH"])
+                        good = await self.removeRequest(message.server, message.author, "PVP", "PVP")
+                        if good:
+                            await self.bot.send_message(message.channel, "Your PvP request has been removed.")
+                            channel = discord.utils.get(message.server.channels, id=self.settings["LOGGING"])
+                            await self.bot.send_message(channel, message.author.mention + " removed their PvP request in "+ch.mention) 
+                            return
+                await self.bot.send_message(message.channel, "There was no PvP request to remove.")
                     
 
     # Credit
