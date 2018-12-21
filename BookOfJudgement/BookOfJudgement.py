@@ -42,8 +42,8 @@ class Velka:
                     total = 0
                     for score in self.scores[member_id]:
                         if score == "ROLE":
-                            continue 
-                        total += int(self.scores[member_id][score]) 
+                            continue
+                        total += int(self.scores[member_id][score])
                     if total <= 0 and score_to_add < 0:
                         self.scores.pop(member_id)
                 else:
@@ -97,6 +97,8 @@ class Velka:
         command = splitted[0].lower()
         await self.check_for_score(message)
         await self.coop(message, command)
+        await self.trade(message)
+        await self.pvp(message)
         await self.cancelRequest(message, command)
     
     # Give out points to users
@@ -178,62 +180,7 @@ class Velka:
                     await self.bot.send_message(discord.utils.get(message.server.channels, id=self.settings["LOGGING"]), log)
                     await self.leaderboardChannel()
 
-    async def coop(self, message, command):
-        if not command[0:5] == "!coop":
-            return
-        # Check which co-op channel to use
-        server = message.server
-        requests = discord.utils.get(server.channels, id=self.settings["REQUESTS"])
-        chl = message.channel
-        if chl.id == self.settings["COOP_CHAT"]:
-            if len(message.channel_mentions) < 1:
-                await self.bot.send_message(message.channel, "Please mention the co-op area channel you need help in after `" + command + "`.\nEx: `!coop #undead-burg-parish`") 
-                return
-            reqChannel = message.channel_mentions[0]
-            if "CHANNELS" in self.settings and "sunlight" in self.settings["CHANNELS"]:
-                if len(self.settings["CHANNELS"]["sunlight"]) > 0:
-                    goodChannel = False
-                for ch in self.settings["CHANNELS"]["sunlight"]:
-                    if reqChannel.id == ch:
-                        goodChannel = True
-                if reqChannel.id == self.settings["COOP_CHAT"]:
-                    goodChannel = False
-                if not goodChannel:
-                    await self.bot.send_message(message.channel, "That is not a valid channel. Please choose a co-op area channel.")
-                    return
-                chl = message.channel_mentions[0]
-            await self.bot.send_message(message.channel, "A request was posted in {}. Please use {} to organize your co-op.".format(requests.mention, chl.mention))
-        # check if channel is allowed
-        if chl.id not in self.settings["CHANNELS"]["sunlight"]:
-            await self.bot.send_message(message.channel, "That command is not allowed here. Please use a designated co-op channel.") 
-            return         
-        # Put a message in the current channel
-        await self.bot.send_message(chl, "A request for help was posted in {} for {}.".format(requests.mention, message.author.mention))
-        # Put a message in the request channel (look for NG)
-        ng = 0
-        if len(command) > 5:
-            ng = int(command[5]) 
-        ngText = ""
-        if ng > 0:
-            ngText = " NG+"
-            if ng > 1:
-                ngText += str(ng)
-        reqMsg = await self.bot.send_message(requests, "{} requests co-op assistance in{} {}.".format(message.author.mention, ngText, chl.mention))
-        if "COOP" not in self.timeout:
-            self.timeout["COOP"] = {} 
-        if message.author.id in self.timeout["COOP"]:
-            oldch = discord.utils.get(message.server.channels, id=self.timeout["COOP"][message.author.id]["CH"])
-            deleted = await self.removeRequest(message.server, message.author)
-            if deleted:
-                channel = discord.utils.get(message.server.channels, id=self.settings["LOGGING"])
-                await self.bot.send_message(channel, message.author.mention + " removed their co-op request in "+oldch.mention+" by posting another request in" +chl.mention) 
-        # save the request to timeout to auto-delete
-        self.timeout["COOP"][message.author.id] = {}
-        self.timeout["COOP"][message.author.id]["MSG"] = reqMsg.id
-        self.timeout["COOP"][message.author.id]["TIME"] = int(time.time())
-        self.timeout["COOP"][message.author.id]["CH"] = chl.id
-        self.saveTimeout()
-        
+    # Manage requests
     async def removeRequest(self, server, author, reqType, reqChKey):
         if author.id not in self.timeout[reqType]:
             return False
@@ -260,10 +207,10 @@ class Velka:
                         if good:
                             await self.bot.send_message(message.channel, "Your co-op request has been removed.")
                             channel = discord.utils.get(message.server.channels, id=self.settings["LOGGING"])
-                            await self.bot.send_message(channel, message.author.mention + " removed their co-op request in "+ch.mention) 
+                            await self.bot.send_message(channel, message.author.mention + " removed their co-op request in "+ch.mention)
                             return
                 await self.bot.send_message(message.channel, "There was no co-op request to remove.")
-        elif "CHANNELS" in self.settings and "deal" in self.settings["CHANNELS"]:
+        if "CHANNELS" in self.settings and "deal" in self.settings["CHANNELS"]:
             if len(self.settings["CHANNELS"]["deal"]) > 0:
                 if message.channel.id in self.settings["CHANNELS"]["deal"]:
                     if message.author.id in self.timeout["TRADE"]:
@@ -272,10 +219,10 @@ class Velka:
                         if good:
                             await self.bot.send_message(message.channel, "Your trade request has been removed.")
                             channel = discord.utils.get(message.server.channels, id=self.settings["LOGGING"])
-                            await self.bot.send_message(channel, message.author.mention + " removed their trade request in "+ch.mention) 
+                            await self.bot.send_message(channel, message.author.mention + " removed their trade request in "+ch.mention)
                             return
                 await self.bot.send_message(message.channel, "There was no trade request to remove.")
-        elif "CHANNELS" in self.settings and "wraith" in self.settings["CHANNELS"]:
+        if "CHANNELS" in self.settings and "wraith" in self.settings["CHANNELS"]:
             if len(self.settings["CHANNELS"]["wraith"]) > 0:
                 if message.channel.id in self.settings["CHANNELS"]["wraith"]:
                     if message.author.id in self.timeout["PVP"]:
@@ -284,11 +231,128 @@ class Velka:
                         if good:
                             await self.bot.send_message(message.channel, "Your PvP request has been removed.")
                             channel = discord.utils.get(message.server.channels, id=self.settings["LOGGING"])
-                            await self.bot.send_message(channel, message.author.mention + " removed their PvP request in "+ch.mention) 
+                            await self.bot.send_message(channel, message.author.mention + " removed their PvP request in "+ch.mention)
                             return
                 await self.bot.send_message(message.channel, "There was no PvP request to remove.")
-                    
 
+    # Co-op Requests
+    async def coop(self, message, command):
+        if not command[0:5] == "!coop":
+            return
+        # Check which co-op channel to use
+        server = message.server
+        requests = discord.utils.get(server.channels, id=self.settings["REQUESTS"])
+        chl = message.channel
+        if chl.id == self.settings["COOP_CHAT"]:
+            if len(message.channel_mentions) < 1:
+                await self.bot.send_message(message.channel, "Please mention the co-op area channel you need help in after `" + command + "`.\nEx: `!coop #undead-burg-parish`")
+                return
+            reqChannel = message.channel_mentions[0]
+            if "CHANNELS" in self.settings and "sunlight" in self.settings["CHANNELS"]:
+                if len(self.settings["CHANNELS"]["sunlight"]) > 0:
+                    goodChannel = False
+                for ch in self.settings["CHANNELS"]["sunlight"]:
+                    if reqChannel.id == ch:
+                        goodChannel = True
+                if reqChannel.id == self.settings["COOP_CHAT"]:
+                    goodChannel = False
+                if not goodChannel:
+                    await self.bot.send_message(message.channel, "That is not a valid channel. Please choose a co-op area channel.")
+                    return
+                chl = message.channel_mentions[0]
+            await self.bot.send_message(message.channel, "A request was posted in {}. Please use {} to organize your co-op.".format(requests.mention, chl.mention))
+        # check if channel is allowed
+        if chl.id not in self.settings["CHANNELS"]["sunlight"]:
+            await self.bot.send_message(message.channel, "That command is not allowed here. Please use a designated co-op channel.")
+            return
+        # Put a message in the current channel
+        await self.bot.send_message(chl, "A request for help was posted in {} for {}.".format(requests.mention, message.author.mention))
+        # Put a message in the request channel (look for NG)
+        ng = 0
+        if len(command) > 5:
+            ng = int(command[5])
+        ngText = ""
+        if ng > 0:
+            ngText = " NG+"
+            if ng > 1:
+                ngText += str(ng)
+        reqMsg = await self.bot.send_message(requests, "{} requests co-op assistance in{} {}.".format(message.author.mention, ngText, chl.mention))
+        if "COOP" not in self.timeout:
+            self.timeout["COOP"] = {}
+        if message.author.id in self.timeout["COOP"]:
+            oldch = discord.utils.get(message.server.channels, id=self.timeout["COOP"][message.author.id]["CH"])
+            deleted = await self.removeRequest(message.server, message.author, "COOP", "REQUESTS")
+            if deleted:
+                channel = discord.utils.get(message.server.channels, id=self.settings["LOGGING"])
+                if not channel == oldch:
+                    await self.bot.send_message(channel, message.author.mention + " removed their co-op request in "+oldch.mention+" by posting another request in" +chl.mention)
+        # save the request to timeout to auto-delete
+        self.timeout["COOP"][message.author.id] = {}
+        self.timeout["COOP"][message.author.id]["MSG"] = reqMsg.id
+        self.timeout["COOP"][message.author.id]["TIME"] = int(time.time())
+        self.timeout["COOP"][message.author.id]["CH"] = chl.id
+        self.saveTimeout()
+        
+    # Trade Requests
+    async def trade(self, message):
+        if not message.content[0:6] == "!trade":
+            return
+        if len(message.content) < 8:
+            await self.bot.send_message(message.channel, "Please describe your request after `!trade`."
+        # Check which trade channel to use
+        server = message.server
+        requests = discord.utils.get(server.channels, id=self.settings["TRADE"])
+        chl = message.channel
+        # check if channel is allowed
+        if chl.id not in self.settings["CHANNELS"]["deal"]:
+            await self.bot.send_message(message.channel, "That command is not allowed here. Please use a designated trade/transfer channel.")
+            return
+        # Put a message in the current channel
+        await self.bot.send_message(chl, "A request for a deal was posted in {} for {}.".format(requests.mention, message.author.mention))
+        embed = discord.Embed(description=message.content[7:], color=4614258)
+        reqMsg = await self.bot.send_message(requests, "{} requests a trade in {}.".format(message.author.mention, chl.mention), embed=embed)
+        if "TRADE" not in self.timeout:
+            self.timeout["TRADE"] = {}
+        if message.author.id in self.timeout["TRADE"]:
+            oldch = discord.utils.get(message.server.channels, id=self.timeout["TRADE"][message.author.id]["CH"])
+            deleted = await self.removeRequest(message.server, message.author, "TRADE", "TRADE")
+        # save the request to timeout to auto-delete
+        self.timeout["TRADE"][message.author.id] = {}
+        self.timeout["TRADE"][message.author.id]["MSG"] = reqMsg.id
+        self.timeout["TRADE"][message.author.id]["TIME"] = int(time.time())
+        self.timeout["TRADE"][message.author.id]["CH"] = chl.id
+        self.saveTimeout()
+        
+    # PVP Requests
+    async def pvp(self, message):
+        if not message.content[0:4] == "!pvp":
+            return
+        if len(message.content) < 6:
+            await self.bot.send_message(message.channel, "Please describe your request after `!pvp`."
+        # Check which trade channel to use
+        server = message.server
+        requests = discord.utils.get(server.channels, id=self.settings["PVP"])
+        chl = message.channel
+        # check if channel is allowed
+        if chl.id not in self.settings["CHANNELS"]["wraith"]:
+            await self.bot.send_message(message.channel, "That command is not allowed here. Please use a designated PvP channel.")
+            return
+        # Put a message in the current channel
+        await self.bot.send_message(chl, "A request for PvP was posted in {} for {}.".format(requests.mention, message.author.mention))
+        embed = discord.Embed(description=message.content[5:], color=4614258)
+        reqMsg = await self.bot.send_message(requests, "{} requests to PvP in {}.".format(message.author.mention, chl.mention), embed=embed)
+        if "PVP" not in self.timeout:
+            self.timeout["PVP"] = {}
+        if message.author.id in self.timeout["PVP"]:
+            oldch = discord.utils.get(message.server.channels, id=self.timeout["PVP"][message.author.id]["CH"])
+            deleted = await self.removeRequest(message.server, message.author, "PVP", "PVP")
+        # save the request to timeout to auto-delete
+        self.timeout["PVP"][message.author.id] = {}
+        self.timeout["PVP"][message.author.id]["MSG"] = reqMsg.id
+        self.timeout["PVP"][message.author.id]["TIME"] = int(time.time())
+        self.timeout["PVP"][message.author.id]["CH"] = chl.id
+        self.saveTimeout()
+        
     # Credit
     @commands.command(pass_context=True)
     async def credits(self, ctx):
@@ -328,7 +392,7 @@ class Velka:
         msg += emote2 + "To view the most wretched, speaketh:\n```!book wraith```\n"
         msg += emote1 + "To change thine earned roles, speaketh:\n```!role```\n"
         if decay:
-            msg += "\n\n{}{} **__The week has ended.__** {}{}".format(emote1, emote2, emote2, emote1) 
+            msg += "\n\n{}{} **__The week has ended.__** {}{}".format(emote1, emote2, emote2, emote1)
             msg += "\nAll scores have been decayed.\n\n"
         await self.bot.send_message(channel,msg)
         if decay:
@@ -337,14 +401,14 @@ class Velka:
 
     @commands.command(pass_context=True)
     async def role(self, ctx):
-        """Choose your role""" 
+        """Choose your role"""
         if not ctx.message.channel.id == self.settings["SPAM"]:
             chn = discord.utils.get(ctx.message.server.channels, id=self.settings["SPAM"])
             await self.bot.say("That command is not allowed here. Please use the " + chn.mention + " channel.")
             return
-        mid = ctx.message.author.id 
+        mid = ctx.message.author.id
         if mid in self.scores:
-            msg = "Which role do you want?\n  1. Default Soul Ranking" 
+            msg = "Which role do you want?\n  1. Default Soul Ranking"
             earnedRole = 1
             for st, s in self.settings["SCORE_TYPE"].items():
                 if s["roleCost"] <= self.scores[mid][st] and s["roleCost"] > 0:
@@ -354,17 +418,17 @@ class Velka:
                 await self.bot.say(msg)
                 msg = await self.bot.wait_for_message(author=ctx.message.author, timeout=60)
                 if msg is None:
-                    await self.bot.say("Nothing selected") 
+                    await self.bot.say("Nothing selected")
                     return
                 msg = msg.content
                 if str.isdigit(msg) and int(msg) > 0 and int(msg) <= earnedRole:
                     for st, s in self.settings["SCORE_TYPE"].items():
-                        await self.remRole(ctx.message.server, ctx.message.author, s["role"]) 
+                        await self.remRole(ctx.message.server, ctx.message.author, s["role"])
                     if int(msg) == 1:
-                        self.scores[mid]["ROLE"] = "default" 
+                        self.scores[mid]["ROLE"] = "default"
                     else:
                         ct = 1
-                        stype = "default" 
+                        stype = "default"
                         for st, s in self.settings["SCORE_TYPE"].items():
                             if s["roleCost"] <= self.scores[mid][st] and s["roleCost"] > 0:
                                 ct += 1
@@ -375,9 +439,9 @@ class Velka:
                         self.scores[mid]["ROLE"] = stype
                     await self.bot.say("Done.")
                     self.saveScores()
-                    return 
+                    return
                 else:
-                    await self.bot.say("Invalid selection. Please pick a number listed above. Exiting role selection.") 
+                    await self.bot.say("Invalid selection. Please pick a number listed above. Exiting role selection.")
                     return
         await self.bot.say("Sorry, you have not earned any roles I can edit.")
     
@@ -398,7 +462,7 @@ class Velka:
             msg = "Judgement for " + member.name + ":"
             for st, s in self.settings["SCORE_TYPE"].items():
                 if int(member_dict[st]) < 1:
-                    continue 
+                    continue
                 if str(member_dict[st]) == "1":
                     noun = s["noun_s"]
                 else:
@@ -526,7 +590,7 @@ class Velka:
                             self.timeout["COOP"].pop(mid)
                             self.saveTimeout()
                             return
-                        await self.bot.send_message(ch, auth.mention + ", do you still need help? If not, please award those who helped you with `!sunlight @<user>` or mark the request completed with `!complete`.")
+                        await self.bot.send_message(ch, auth.mention + ", do you still need help? If not, please award those who helped you with `!sunlight @user` or mark the request completed with `!complete`.")
                         self.timeout["COOP"][mid]["NOTICE"] = True
                         self.saveTimeout()
                     elif curTime - self.timeout["COOP"][mid]["TIME"] > 10800:
@@ -535,17 +599,70 @@ class Velka:
                         await self.bot.send_message(ch, auth.mention + ", your co-op request has timed out. If you still need help, please use the `!coop` command again.")
                         await self.removeRequest(server, auth)
                         channel = discord.utils.get(server.channels, id=self.settings["LOGGING"])
-                        await self.bot.send_message(channel, u"\u274C" + auth.mention + "'s co-op request in" + ch.mention + " has timed out." ) 
-                
+                        await self.bot.send_message(channel, u"\u274C" + auth.mention + "'s co-op request in" + ch.mention + " has timed out." )
     
+    async def tradeLoop(self, server):
+        curTime = int(time.time());
+        if "TRADE" not in self.timeout:
+            self.timeout["TRADE"] = {}
+            self.saveTimeout()
+        else:
+            for mid in list(self.timeout["TRADE"].keys()):
+                if curTime - self.timeout["TRADE"][mid]["TIME"] > 3600:
+                    if "NOTICE" not in self.timeout["TRADE"][mid]:
+                        ch = discord.utils.get(server.channels, id=self.timeout["TRADE"][mid]["CH"])
+                        auth = discord.utils.get(server.members, id=mid)
+                        if auth is None:
+                            self.timeout["TRADE"].pop(mid)
+                            self.saveTimeout()
+                            return
+                        await self.bot.send_message(ch, auth.mention + ", do you still need to trade? If not, please award those who helped you with `!deal @user` or mark the request completed with `!complete`.")
+                        self.timeout["TRADE"][mid]["NOTICE"] = True
+                        self.saveTimeout()
+                    elif curTime - self.timeout["TRADE"][mid]["TIME"] > 10800:
+                        ch = discord.utils.get(server.channels, id=self.timeout["TRADE"][mid]["CH"])
+                        auth = discord.utils.get(server.members, id=mid)
+                        await self.bot.send_message(ch, auth.mention + ", your trade request has timed out. If you still need help, please use the `!trade` command again.")
+                        await self.removeRequest(server, auth)
+                        channel = discord.utils.get(server.channels, id=self.settings["LOGGING"])
+                        await self.bot.send_message(channel, u"\u274C" + auth.mention + "'s trade request in" + ch.mention + " has timed out." )
+    
+    async def pvpLoop(self, server):
+        curTime = int(time.time());
+        if "PVP" not in self.timeout:
+            self.timeout["PVP"] = {}
+            self.saveTimeout()
+        else:
+            for mid in list(self.timeout["PVP"].keys()):
+                if curTime - self.timeout["PVP"][mid]["TIME"] > 3600:
+                    if "NOTICE" not in self.timeout["PVP"][mid]:
+                        ch = discord.utils.get(server.channels, id=self.timeout["PVP"][mid]["CH"])
+                        auth = discord.utils.get(server.members, id=mid)
+                        if auth is None:
+                            self.timeout["PVP"].pop(mid)
+                            self.saveTimeout()
+                            return
+                        await self.bot.send_message(ch, auth.mention + ", are you still looking for PvP? If not, please mark the request completed with `!complete`. Make sure to award those who PvP with you with `!wraith @user`.")
+                        self.timeout["PVP"][mid]["NOTICE"] = True
+                        self.saveTimeout()
+                    elif curTime - self.timeout["PVP"][mid]["TIME"] > 10800:
+                        ch = discord.utils.get(server.channels, id=self.timeout["PVP"][mid]["CH"])
+                        auth = discord.utils.get(server.members, id=mid)
+                        await self.bot.send_message(ch, auth.mention + ", your PvP request has timed out. If you're still looking for PvP, please use the `!pvp` command again.")
+                        await self.removeRequest(server, auth)
+                        channel = discord.utils.get(server.channels, id=self.settings["LOGGING"])
+                        await self.bot.send_message(channel, u"\u274C" + auth.mention + "'s pvp request in" + ch.mention + " has timed out." )
+                
     async def loop(self):
         while True:
             self.cooldownLoop()
             server = self.bot.get_server(self.settings["SERVER"])
             if server is None:
                 await asyncio.sleep(30)
-                continue 
+                continue
             await self.coopLoop(server)
+            await self.tradeLoop(server)
+            await self.pvpLoop(server)
             if datetime.datetime.today().weekday() != self.timeout["DAY"]:
                 day = self.timeout["DAY"]
                 self.timeout["DAY"] = datetime.datetime.today().weekday()
@@ -691,8 +808,7 @@ class Velka:
                 await self.setup(server, channel, author)
         else:
             await self.bot.say('Invalid Selection. Exiting Setup.')
-            
-            
+             
     async def setChannel(self, server, channel, author, keyword, desc):
         if keyword in self.settings:
             chn = discord.utils.get(server.channels, id=self.settings[keyword])
@@ -722,7 +838,7 @@ class Velka:
     @velkaset.command(pass_context=True, name="stats")
     async def _velkaset_stats(self, ctx):
         server = self.bot.get_server(self.settings["SERVER"])
-        msg = "__**Total points currently awarded:**__" 
+        msg = "__**Total points currently awarded:**__"
         for st, s in self.settings["SCORE_TYPE"].items():
             total = 0
             for mid in list(self.scores.keys()):
@@ -730,9 +846,8 @@ class Velka:
                 if member is not None:
                     if st in self.scores[mid]:
                         total += self.scores[mid][st]
-            msg += "\n{}: {}".format(st, total) 
+            msg += "\n{}: {}".format(st, total)
         await self.bot.say(msg)
-    
     
     # Edit score types
     @velkaset.command(pass_context=True, name="scoreEditType")
@@ -740,7 +855,6 @@ class Velka:
         """Edit the categories of scores"""
         await self.ScoreEditType(ctx, scoreType)
 
-    # Edit score types
     async def ScoreEditType(self, ctx, scoreType : str):
         if scoreType:
             if scoreType in self.settings['SCORE_TYPE']:
@@ -1017,4 +1131,4 @@ def setup(bot):
     bot.add_listener(n.parse_message, "on_message")
     loop = asyncio.get_event_loop()
     loop.create_task(n.loop())
-    bot.add_cog(n)  
+    bot.add_cog(n)
