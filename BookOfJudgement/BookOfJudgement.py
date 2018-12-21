@@ -593,7 +593,7 @@ class Velka:
                         ch = discord.utils.get(server.channels, id=self.timeout["COOP"][mid]["CH"])
                         auth = discord.utils.get(server.members, id=mid)
                         await self.bot.send_message(ch, auth.mention + ", your co-op request has timed out. If you still need help, please use the `!coop` command again.")
-                        await self.removeRequest(server, auth)
+                        await self.removeRequest(server, auth, "COOP", "REQUESTS")
                         channel = discord.utils.get(server.channels, id=self.settings["LOGGING"])
                         await self.bot.send_message(channel, u"\u274C" + auth.mention + "'s co-op request in" + ch.mention + " has timed out." )
     
@@ -619,7 +619,7 @@ class Velka:
                         ch = discord.utils.get(server.channels, id=self.timeout["TRADE"][mid]["CH"])
                         auth = discord.utils.get(server.members, id=mid)
                         await self.bot.send_message(ch, auth.mention + ", your trade request has timed out. If you still need help, please use the `!trade` command again.")
-                        await self.removeRequest(server, auth)
+                        await self.removeRequest(server, auth, "TRADE", "TRADE")
                         channel = discord.utils.get(server.channels, id=self.settings["LOGGING"])
                         await self.bot.send_message(channel, u"\u274C" + auth.mention + "'s trade request in" + ch.mention + " has timed out." )
     
@@ -645,7 +645,7 @@ class Velka:
                         ch = discord.utils.get(server.channels, id=self.timeout["PVP"][mid]["CH"])
                         auth = discord.utils.get(server.members, id=mid)
                         await self.bot.send_message(ch, auth.mention + ", your PvP request has timed out. If you're still looking for PvP, please use the `!pvp` command again.")
-                        await self.removeRequest(server, auth)
+                        await self.removeRequest(server, auth, "PVP", "PVP")
                         channel = discord.utils.get(server.channels, id=self.settings["LOGGING"])
                         await self.bot.send_message(channel, u"\u274C" + auth.mention + "'s pvp request in" + ch.mention + " has timed out." )
                 
