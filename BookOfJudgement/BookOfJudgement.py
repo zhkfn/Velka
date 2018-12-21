@@ -209,7 +209,7 @@ class Velka:
                             channel = discord.utils.get(message.server.channels, id=self.settings["LOGGING"])
                             await self.bot.send_message(channel, message.author.mention + " removed their co-op request in "+ch.mention)
                             return
-                await self.bot.send_message(message.channel, "There was no co-op request to remove.")
+                    await self.bot.send_message(message.channel, "There was no co-op request to remove.")
         if "CHANNELS" in self.settings and "deal" in self.settings["CHANNELS"]:
             if len(self.settings["CHANNELS"]["deal"]) > 0:
                 if message.channel.id in self.settings["CHANNELS"]["deal"]:
@@ -218,10 +218,8 @@ class Velka:
                         good = await self.removeRequest(message.server, message.author, "TRADE", "TRADE")
                         if good:
                             await self.bot.send_message(message.channel, "Your trade request has been removed.")
-                            channel = discord.utils.get(message.server.channels, id=self.settings["LOGGING"])
-                            await self.bot.send_message(channel, message.author.mention + " removed their trade request in "+ch.mention)
                             return
-                await self.bot.send_message(message.channel, "There was no trade request to remove.")
+                    await self.bot.send_message(message.channel, "There was no trade request to remove.")
         if "CHANNELS" in self.settings and "wraith" in self.settings["CHANNELS"]:
             if len(self.settings["CHANNELS"]["wraith"]) > 0:
                 if message.channel.id in self.settings["CHANNELS"]["wraith"]:
@@ -230,10 +228,8 @@ class Velka:
                         good = await self.removeRequest(message.server, message.author, "PVP", "PVP")
                         if good:
                             await self.bot.send_message(message.channel, "Your PvP request has been removed.")
-                            channel = discord.utils.get(message.server.channels, id=self.settings["LOGGING"])
-                            await self.bot.send_message(channel, message.author.mention + " removed their PvP request in "+ch.mention)
                             return
-                await self.bot.send_message(message.channel, "There was no PvP request to remove.")
+                    await self.bot.send_message(message.channel, "There was no PvP request to remove.")
 
     # Co-op Requests
     async def coop(self, message, command):
