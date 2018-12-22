@@ -299,6 +299,7 @@ class Velka:
             return
         if len(message.content) < 8:
             await self.bot.send_message(message.channel, "Please describe your request after `!trade`.") 
+            return
         # Check which trade channel to use
         server = message.server
         requests = discord.utils.get(server.channels, id=self.settings["TRADE"])
@@ -329,6 +330,7 @@ class Velka:
             return
         if len(message.content) < 6:
             await self.bot.send_message(message.channel, "Please describe your request after `!pvp`.") 
+            return 
         # Check which trade channel to use
         server = message.server
         requests = discord.utils.get(server.channels, id=self.settings["PVP"])
